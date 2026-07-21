@@ -31,7 +31,10 @@ exports.getTopicsByChapter = async (req, res) => {
 
 exports.getTopicById = async (req, res) => {
     try {
-        const topic = await Topic.findById(req.params.id);
+        const topic = await Topic.findById(req.params.id).populate({
+            path: 'chapterId',
+            populate: { path: 'subjectId' }
+        });
         res.json(topic);
     } catch (err) {
         res.status(500).send('Server error');
