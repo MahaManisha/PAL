@@ -1,0 +1,801 @@
+--- Extracting math_drive\Chapter 1\Assessments\01_Matrices_Assesment_subtopic_1.3.2.pdf ---
+Page 1:
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                     
+ 
+CHAPTER-1 
+ROW ECHELON FORM 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 2:
+1. The process of converting a matrix to Row Echelon Form is called: 
+A) Matrix inversion 
+B) Gaussian Elimination  
+C) LU Decomposition 
+D) Gram-Schmidt Process 
+2. In Row Echelon Form, what must be true about rows consisting entirely of zeros? 
+A) They must appear at the top 
+B) They must appear in the middle 
+C) They must appear at the bottom  
+D) They cannot exist 
+3. Which elementary row operation is NOT valid when reducing a matrix? 
+A) Swapping two rows 
+B) Multiplying a row by a non-zero scalar 
+C) Adding a multiple of one row to another 
+D) Multiplying a row by zero  
+4. What is the pivot in a row? 
+A) The last non-zero entry in a row 
+B) The first non-zero entry in a row  
+C) The largest entry in a row 
+D) The entry on the main diagonal 
+5. How many pivots does a 3×3 identity matrix have in Row Echelon Form? 
+A) 1 
+B) 2 
+C) 3  
+D) 0 
+ 
+ 
+ 
+ 
+Page 3:
+6. A matrix is said to be in Row Echelon Form if: 
+A) All pivots equal 1 
+B) All entries below each pivot are zero  
+C) All entries above and below each pivot are zero 
+D) The matrix is square 
+ 
+7. How many pivots does a 3×3 identity matrix have in Row Echelon Form? 
+A) 1 
+B) 2 
+C) 3  
+D) 0 
+8. Which statement about Row Echelon Form is FALSE? 
+A) Every matrix has a unique Row Echelon Form 
+B) Every matrix has a unique Reduced Row Echelon Form 
+C) Row Echelon Form is not unique but Reduced Row Echelon Form is 
+D) Row operations are reversible 
+9. Which of the following is a requirement for a matrix to be in Row Echelon Form ? 
+A) All entries must be 1 or 0 
+B) The pivot in each row must be to the left of the leading entry in the row below 
+C) The pivot in each row must be to the right of the leading entry in the row below  
+D) All diagonal entries must be 1 
+10. What happens to the solution set when you multiply a row by a non-zero scalar? 
+A) It remains unchanged  
+B) It doubles 
+C) It becomes empty 
+D) A new solution is added 
+ 
+ 
+Page 4:
+ 
+ANSWERS: 
+ 
+  
+       QUESTION NO 
+ 
+ANSWER OPTIONS 
+             1)          B) 
+             2)          C) 
+             3)          D) 
+             4)          B) 
+             5)          C) 
+             6)          B) 
+             7)          C) 
+             8)          A) 
+             9)          C) 
+            10)          A) 
+
+==================================================
+
+--- Extracting math_drive\Chapter 2\Assessments\02_Complex_Assessment_Ex 2.3.pdf ---
+Page 1:
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+CHAPTER 2 
+BASIC ALGEBRAIC PROPERTIES OF COMPLEX NUMBERS 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 2:
+1.Which of the following correctly states the commutative property under addition for 
+complex numbers? 
+   A) z₁ + z₂ = z₁ − z₂ 
+   B) z₁ · z₂ = z₂ + z₁ 
+   C) z₁ + z₂ = z₂ + z₁ 
+   D) z₁ + z₂ = z₁ · z₂ 
+ 
+2.Which expression correctly shows the associative property of multiplication for complex 
+numbers? 
+   A) (z₁ · z₂) + z₃ = z₁ · (z₂ + z₃) 
+   B) (z₁ · z₂) · z₃ = z₁ · (z₂ · z₃) 
+   C) z₁ · z₂ = z₂ · z₁ 
+   D) z₁ · (z₂ + z₃) = z₁z₂ + z₁z₃ 
+ 
+3.What is the additive identity for complex numbers? 
+   A) 1 
+   B) i 
+   C) 0 + 0i 
+   D) 1 + 0i 
+ 
+4.What is the multiplicative identity for complex numbers? 
+   A) 0 
+   B) i 
+   C) 0 + i 
+   D) 1 = 1 + 0i 
+ 
+ 
+ 
+ 
+ 
+Page 3:
+5.For which values of z does the multiplicative inverse z⁻¹ NOT exist? 
+A) When z is purely real 
+   B)  When z = 0 
+   C) When z is purely imaginary 
+   D) When z has a negative real part 
+ 
+6.If z = 3 + 4i, what is the denominator used in computing z⁻¹? 
+   A) 7 
+   B) 12 
+   C) 25  
+   D) 1 
+ 
+7.Which property directly tells us that (z₁ + z₂) + z₃ = z₁ + (z₂ + z₃)? 
+   A) Commutative property of addition 
+   B) Distributive property 
+   C) Associative property of addition 
+   D) Additive identity 
+ 
+8.Division of z₁ by z₂ (z₂ ≠ 0) is formally written as: 
+   A) z₁ − z₂ 
+   B) z₁ · z₂ 
+   C)z₁ · z₂⁻¹ 
+   D)z₁ + (−z₂) 
+ 
+9.What does the commutative property under multiplication state? 
+   A) z₁ + z₂ = z₂ + z₁ 
+   B) z₁ · z₂ = z₁ + z₂ 
+   C) z₁ · z₂ = z₂ · z₁ 
+   D) z₁ · (z₂ · z₃) = (z₁ · z₂) · z₃ 
+Page 4:
+ 
+10.If z = x + iy, which expression gives z⁻¹? 
+   A) x/(x²+y²) + i·y/(x²+y²) 
+   B) x/(x²+y²) − i·y/(x²+y²) 
+   C) −x/(x²+y²) + i·y/(x²+y²) 
+   D) 1/(x+y) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 5:
+ 
+ANSWERS 
+     
+     QUESTION NO 
+ 
+  ANSWER OPTION 
+          1)          C) 
+          2)         B) 
+          3)         C) 
+          4)         D) 
+          5)         B) 
+          6)         C) 
+          7)        C) 
+          8)        C) 
+          9)        C) 
+         10)         B) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+==================================================
+
+--- Extracting math_drive\Chapter 3\Assesments\03_Equations_ Assessement_Subtopic_3.1 ---
+Page 1:
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+அத்தியாயம ் 3 (CHAPTER 3) 
+பிரிவு 3.1 அறிமுகம ் 
+ Section 3.1 Introduction) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 2:
+எளிதானவை (1-3) 
+1. சமன ் பாட்டியல ் எந்தப் பாடப்பிரிவைச் சார்ந்தது? 
+A)  இயற்பியல ்  
+B)  வைதியியல ்  
+C)  கணிதம ்  
+D)  உயிரியல ் 
+2. தனது குறிப்வபட்டில ் "ைட்டத்வத சதுரமாக்குதல ்" என ் ற கணக்கிற்குத் 
+வதாராயமான தீர் வை ைழங ் கியைர் யார்? 
+A)  யூக்ளிட்  
+B)  ஏபபல ்  
+C)  சீனிைாச ராமானுஜன ்  
+D)  பிபவனாசி  
+3. கைராயம ் மற்றும ் அளவுவகால ் ஆகியைற்வற மட்டும ் பயன ் படுத்தி, 
+பின ் ைருைனைற்றில ் எவத அவமக்க முடியும ் ? 
+A)  ஒரு வகாணத்வத முப்பங ் கிடுதல ்  
+B)  ஒரு கனசதுரத்வத இரட்டிப்பாக்குதல ்  
+C)  ஒரு ஒழுங ் கான அறுவகாணம ்  
+D)  ைட்டத்வத சதுரமாக்குதல ்  
+நடுத்தரமானவை (4-6) 
+4. பபரும ் பாலான நிஜ ைாழ்க்வகச் சிக்கல ் கவள கணித ரீதியாக 
+மாற்றும ் வபா து அவை எந்த ைவகயான சமன ் பாடுகளாக மாறுகின ் றன? 
+A)  வநரியல ் சமன ் பாடுகள ்  
+B)  முக்வகாணவியல ் சமன ் பாடுகள ்  
+C)  பல ் லுறுப்புக் வகாவைச் சமன ் பாடுகள ்  
+D)  மடக்வகச் சமன ் பாடுகள ்  
+5. ஒரு ைட்டமும ் ஒரு வநர் க்வகாடும ் அதிகபட்சமாக எத்தவன புள ்ளிகளில ் 
+பைட்டிக்பகாள ்ள முடியும ்? 
+A)  1 
+B)  2 
+C)  3 
+D)  4 
+ 
+ 
+ 
+Page 3:
+6. பபட்டி கணக்கில ் , அகலம ் x எனில ், அடிப்பகுதியின ் ந ீ ளம ் என ் ன? 
+A)  x + 3 
+B)  x + 9 
+C)  x + 6 
+D)  2x 
+கடினமானவை (7-10) 
+7. குவற எண ் கவள உள ்ளடக்கிய இருபடிச் சமன ் பாடுகவள முதன ் முதலில ் 
+தீர் த்த கணிதவியலாளர் யார்? 
+A)  யூக்ளிட்  
+B)  பிரம ்மகுப்தர் 
+C)  உமர் கயாம ்  
+D)  படகார்ட்ஸ ்  
+8. அறிமுகப் பகுதியில ் பகாடுக்கப்பட்டுள ்ள உற்பத்திச் சிக்கலில ் (manufacturing 
+problem) பபட்டியின ் கனஅளவு என ் னைாக இருந்தது? 
+A)  1000 கன அலகுகள ்  
+B)  1618 கன அலகுகள ்  
+C)  2618 கன அலகுகள ்  
+D)  3618 கன அலகுகள ்  
+9. எந்தப் படிவயக் பகாண ் ட சமன ் பாடுகவளத் தீர் க்க இயற்கணித சூத்திரம ் 
+ஏ தும ் இல ் வல என ் பவத ஏபபல ் 1823-இல ் நிரூபித்தார்? 
+A)  3 
+B)  4 
+C)  5 
+D)  6 
+10. பபட்டி கணக்கில ், பபட்டியின ் உயரமானது அதன ் ந ீ ளம ் மற்றும ் 
+அகலத்தின ் சராசரி ஆகும ். அகலம ் = x எனில ், அதன ் உயரம ் என ் ன? 
+A)  x + 6 
+B)  x + 3 
+C)  x + 4.5 
+D)  2x + 6 
+ 
+ 
+ 
+ 
+ 
+Page 4:
+விவடக்குறிப்பு  
+வினா எண ் விவட 
+1) C) 
+2) C) 
+3) C) 
+4) C) 
+5) B) 
+6) C) 
+7) B) 
+8) C) 
+9) C) 
+10) B) 
+ 
+
+==================================================
+
+--- Extracting math_drive\Chapter 3\Assesments\03_Equations_ Assessment_Subtopic_3.2 ---
+Page 1:
+ 
+ 
+ 
+ 
+ 
+ 
+அத்தியாயம ் 3 (CHAPTER 3) 
+3.2 பல ் லுறுப்புக் ககாவைச் சமன ் பாடுகளின ் அடிப்பவைகள ் 
+(BASICS OF POLYNOMIAL EQUATIONS) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 2:
+எளிதானவை (1-3) 
+1. 5x³ + 2x - 1 என ் ற பல ் லுறுப்புக் ககாவையின ் படி  என ் ன? 
+A)  1 
+B)  2 
+C)  3 
+D)  5 
+2. முதன ் வைக் ககழு 1 ஆகக் ககாண ் ட ஒரு பல ் லுறுப்புக் ககாவை எை ் ைாறு 
+அவைக்கப்படுகிறது? 
+A)  முப்படிப் பல ் லுறுப்புக் ககாவை  
+B)  ஒற்வறப்படியின பல ்லுறுப்புக் ககாவை  
+C)  நாற்படிப் பல ் லுறுப்புக் ககாவை  
+D)  பூச்சியப் பல ் லுறுப்புக் ககாவை  
+3. பின ் ைருைனைற்றில ் எது இருபடிப் பல ் லுறுப்புக் ககாவை ஆகுை ்? 
+A)  x³ + 2x + 1 
+B)  x² - 4x + 5 
+C)  x⁴ + 1 
+D)  x + 1 
+நடுத்தரைானவை (4-6) 
+4. 3x² + 5x - 1 இல ் x² இன ் ககழு (coefficient) என ் ன? 
+A)  2 
+B)  3 
+C)  5 
+D)  -1 
+5. படி (degree) 3 ஐக் ககாண ் ட பல ் லுறுப்புக் ககாவை எை ் ைாறு 
+அவைக்கப்படுகிறது? 
+A)  இருபடி (Quadratic) 
+B)  நாற்படி (Quartic) 
+C)  முப்படி (Cubic) 
+D)  கநரியல ் (Linear) 
+6. பின ் ைருைனைற்றில ் எது பூச்சியப் பல ் லுறுப்புக் ககாவை (zero polynomial) 
+ஆகுை ்? 
+A)  x 
+B)  1 
+C)  x + 1 
+D)  0 
+Page 3:
+கடினைானவை (7-10) 
+7. பின ் ைருைனைற்றில ் எது பல ் லுறுப்புக் ககாவை அல ் ல (NOT a polynomial)? 
+A)  3x² + 1 
+B)  x³ - x + 2 
+C)  3x⁻² + 1 
+D)  5x + 4 
+8. பூச்சியைற்ற ஒை ் கைாரு ைாறிலிப் பல ் லுறுப்புக் ககாவையின ் (nonzero constant 
+polynomial) படி என ் ன? 
+A)  0 
+B)  1 
+C)  2 
+D)  ைவரயறுக்கப்படவில ் வல (Not defined) 
+9. பின ் ைருை ் கூற்றுகளில ் எது ஒரு முற்கறாருவை (identity) ஆகுை ்? 
+A)  sin x + cos x = 1 
+B)  sin³x + cos³x = 1 
+C)  sin²x + cos²x = 1 
+D)  sin x = 0 
+10. P(c) = 0 என ஆகுை ் படி c அவைந்தால ், அந்த c ஆனது எை ் ைாறு 
+அவைக்கப்படுகிறது? 
+A)  ககழு (Coefficient) 
+B)  ைாறி (Variable) 
+C)  பல ் லுறுப்புக் ககாவையின ் பூச்சியைாக்கி (Zero of the polynomial) 
+D)  படி (Degree) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 4:
+விவடகள ்  
+வினா எண ் விவட 
+1) C) 
+2) B) 
+3) B) 
+4) B) 
+5) C) 
+6) D) 
+7) C) 
+8) A) 
+9) C) 
+10) C) 
+ 
+
+==================================================
+
+--- Extracting math_drive\Chapter 3\Assesments\03_Equations_Assessment_Subtopic_3.1 ---
+Page 1:
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                               CHAPTER 3  
+        Theory of Equations -Section 3.1 Introduction 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 2:
+EASY(Q1-3) 
+1. Which subject area does the Theory of Equations belong to? 
+A)  Physics 
+B)  Chemistry 
+C)  Mathematics 
+D)  Biology 
+2. Who gave an approximate solution to "Squaring a circle" in his Note Book? 
+A)  Euclid 
+B)  Abel 
+C)  Srinivasa Ramanujan 
+D)  Fibonacci 
+3. Using only a compass and ruler, which of the following CAN be constructed? 
+A)  Trisecting an angle 
+B)  Doubling a cube 
+C)  A regular hexagon 
+D)  Squaring a circle 
+ 
+MODERATE (Q4–6) 
+4. What type of equations do most real-life problems turn into when converted 
+mathematically? 
+A)  Linear equations 
+B)  Trigonometric equations 
+C)  Polynomial equations 
+D)  Logarithmic equations 
+5. A circle and a straight line can intersect at most at how many points? 
+A)  1 
+B)  2 
+C)  3 
+D)  4 
+Page 3:
+6. In the box problem, if the breadth is x, what is the length of the base? 
+A)  x + 3 
+B)  x + 9 
+C)  x + 6 
+D)  2x 
+HARD (Q7–10) 
+7. Which mathematician first solved quadratic equations involving negative numbers? 
+A)  Euclid 
+B)  Brahmagupa 
+C)  Omar Khayyam 
+D)  Descartes 
+8. What was the volume of the box in the manufacturing problem given in the introduction? 
+A)  1000 cubic units 
+B)  1618 cubic units 
+C)  2618 cubic units 
+D)  3618 cubic units 
+9. Abel proved in 1823 that there is no algebraic formula to solve equations of degree: 
+A)  3 
+B)  4 
+C)  5 
+D)  6 
+10. In the box problem, the height of the box is the average of the length and the breadth. If 
+breadth = x, what is the height? 
+A)  x + 6 
+B)  x + 3 
+C)  x + 4.5 
+D)  2x + 6 
+ 
+ 
+Page 4:
+ 
+ANSWER KEY 
+           Q.No            Answer 
+         Q1                B 
+         Q2                C 
+         Q3               C 
+         Q4               C 
+         Q5               B 
+         Q6              C 
+         Q7              B 
+        Q8             C 
+       Q9             C 
+       Q10             B 
+ 
+ 
+
+==================================================
+
+--- Extracting math_drive\Chapter 3\Assesments\03_Equations_Assessment_subtopic_3.2 ---
+Page 1:
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+CHAPTER 3 
+3.2 BASICS OF POLYNOMIAL EQUATIONS 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 2:
+ 
+Easy(1-3) 
+1. The degree of the polynomial 5x³ + 2x − 1 is: 
+A)  1 
+B)  2 
+C)  3 
+D)  5 
+2. A polynomial with leading coefficient 1 is called: 
+A)  Cubic polynomial 
+B)  Monic polynomial 
+C)  Quartic polynomial 
+D)  Zero polynomial 
+3. Which of the following is a quadratic polynomial? 
+A)  x³+2x+1 
+B)  x²−4x+5 
+C)  x⁴+1 
+D)  x+1 
+Moderate(4-6) 
+4. The coefficient of x² in 3x²+5x−1 is: 
+A)  2 
+B)  3 
+C)  5 
+D)  −1 
+5. The polynomial of degree 3 is called: 
+A)  Quadratic 
+B)  Quartic 
+C)  Cubic 
+D)  Linear 
+Page 3:
+ 
+6. Which of the following is the zero polynomial? 
+A)  x 
+B)  1 
+C)  x+1 
+D)  0 
+Hard(7-10) 
+7. Which of the following is NOT a polynomial? 
+A)  3x²+1 
+B)  x³−x+2 
+C)  3x⁻²+1 
+D)  5x+4 
+8. The degree of every nonzero constant polynomial is: 
+A)  0 
+B)  1 
+C)  2 
+D)  Not defined 
+9. Which statement is an identity? 
+A)  sin x + cos x = 1 
+B)  sin³x + cos³x = 1 
+C)  sin²x + cos²x = 1 
+D)  sin x = 0 
+10. If c makes P(c)=0, then c is called a: 
+A)  Coefficient 
+B)  Variable 
+C)  Zero of the polynomial 
+D)  Degree 
+ 
+Page 4:
+ 
+ANSWER: 
+ 
+QUESTION NUMBER 
+ 
+ 
+ANSWER 
+1) C) 
+2) B) 
+3) B) 
+4) B) 
+5) C) 
+6) D) 
+7) C) 
+8) A) 
+9) C) 
+10) C) 
+ 
+ 
+
+==================================================
+
+--- Extracting math_drive\Chapter 3\Assesments\03_Equations_Assessment_Subtopic_3.3 ---
+Page 1:
+ 
+ 
+ 
+ 
+ 
+அத்தியாயம ் 3 (CHAPTER 3) 
+3.3 பல ் லுறுப்புக் ககாவைச் சமன ் பாடுகளுக்கான வியட்டாவின ் 
+சூத்திரம ் 
+(VIETA’S FORMULA FOR POLYNOMIAL EQUATIONS) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 2:
+எளிதானவை (1-3) 
+1. P(x) = 0 இன ் ஒரு மூலம ் a எனில ், பின ் ைருைனைற்றில ் எது P(x) இன ் 
+காரணியாகும ்? 
+A) (x - a) 
+B) (x + a) 
+C) (a - x) 
+D) x 
+2. 4 படிவயக் ககாண ் ட ஒரு பல ் லுறுப்புக் ககாவைச் சமன ் பாடு அதிகபட்சமாக 
+எத்தவன மூலங ் கவளக் ககாண ் டிருக்கலாம ்? 
+A) 1 
+B) 6 
+C) 8 
+D) 4 
+3. இயற்கணிதத்தின ் அடிப்பவடத் கதற்றத்தின ் படி (Fundamental Theorem of Algebra), 
+படி n ≥ 1 ககாண ் ட ஒை ் கைாரு பல ் லுறுப்புக் ககாவைச் சமன ் பாடும ் 
+குவறந்தபட்சம ் ஒரு ________ மூலத்வதக் ககாண ் டிருக்கும ்: 
+A) கமய ் மூலம ் (real root) 
+B) கலப்கபண ் மூலம ் (complex root) 
+C) இரண ் டு மூலங ் கள ் 
+D) மூன ் று மூலங ் கள ் 
+நடுத்தரமானவை (4–6) 
+4. x² − 7x + 12 = 0 என ் ற சமன ் பாட்டின ் மூலங ் களின ் கூடுதவலக் காண ் க. 
+A) 5 
+B) 6 
+C) 7 
+D) 8 
+5. x² − 7x + 12 = 0 இன ் மூலங ் கள ் a மற்றும ் b எனில ், ab இன ் மதிப்பு எது? 
+A) 0 
+B) 6 
+C) 2 
+D) 3 
+ 
+Page 3:
+6. வியட்டாவின ் சூத்திரத்தின ் படி, x² − 9x + 20 = 0 என ் ற சமன ் பாட்டிற்கு α + β இன ் 
+மதிப்பு என ் ன? 
+A) 3 
+B) 5 
+C) 7 
+D) 9 
+கடினமானவை (7–10) 
+7. x² − 7x + 12 = 0 என ் ற சமன ் பாட்டின ் மூலங ் களின ் கபருக்கற்பலவனக் காண ் க. 
+A) 9 
+B) 3 
+C) 12 
+D) 8 
+8. ஒரு முப்படிச் சமன ் பாட்டின ் (cubic equation) மூலங ் கள ் 1, 2, மற்றும ் 3 எனில ், α + β + 
+γ இன ் மதிப்வபக்காண ் க. 
+A) 4 
+B) 5 
+C) 6 
+D) 7 
+9. ஒரு முப்படிச் சமன ் பாட்டின ் மூலங ் கள ் 1, 2, மற்றும ் 3 எனில ், αβ + βγ + γα இன ் 
+மதிப்வபக்காண ் க. 
+A) 11 
+B) 10 
+C) 16 
+D) 20 
+10. 2x² − 7x + 13 = 0 இன ் மூலங ் கள ் a மற்றும ் b எனில ், a² + b² இன ் மதிப்பு: 
+A) 3/4 
+B) 49/2 
+C) 169/4 
+D) -3/4 
+ 
+ 
+ 
+ 
+Page 4:
+விவடகள ்  
+வினா எண ் விவட 
+1) A) 
+2) D) 
+3) B) 
+4) C) 
+5) B) 
+6) D) 
+7) C) 
+8) C) 
+ 
+9) A) 
+10) D) 
+ 
+
+==================================================
+
