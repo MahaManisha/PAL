@@ -27,8 +27,29 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('user');
     };
 
+    const updateUserInterest = async (interest) => {
+        if (!user) return;
+        try {
+            const res = await axios.put('http://localhost:5000/api/auth/update-interest', {
+                userId: user.id,
+                interest
+            });
+            setUser(res.data.user);
+            localStorage.setItem('user', JSON.stringify(res.data.user));
+        } catch (err) {
+            console.error('Failed to update interest', err);
+        }
+    };
+
+    const updateUserStats = (updatedFields) => {
+        if (!user) return;
+        const updated = { ...user, ...updatedFields };
+        setUser(updated);
+        localStorage.setItem('user', JSON.stringify(updated));
+    };
+
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, logout, updateUserInterest, updateUserStats, loading }}>
             {children}
         </AuthContext.Provider>
     );

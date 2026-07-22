@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { getAssessmentByTopic, submitAssessment } = require('../controllers/assessmentController');
+const { getAssessmentByTopic, submitAssessment, getDailyQuest, submitDailyQuest } = require('../controllers/assessmentController');
 
-router.get('/:topicId', getAssessmentByTopic);
+router.get('/daily-quest/:userId', getDailyQuest);
+router.post('/daily-quest/submit', submitDailyQuest);
 router.post('/submit', submitAssessment);
+router.get('/:topicId', getAssessmentByTopic);
 
 module.exports = router;

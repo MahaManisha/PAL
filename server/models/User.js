@@ -5,7 +5,13 @@ const UserSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: false },
-    googleId: { type: String }
+    googleId: { type: String },
+    interest: { type: String, enum: ['gameified', 'movie', 'professional'], default: 'professional' },
+    points: { type: Number, default: 0 },
+    streak: { type: Number, default: 0 },
+    tokens: { type: Number, default: 0 },
+    lastStudyDate: { type: String, default: '' },
+    completedDailyQuestDate: { type: String, default: '' }
 }, { timestamps: true });
 
 UserSchema.pre('save', async function(next) {

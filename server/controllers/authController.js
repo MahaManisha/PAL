@@ -4,19 +4,27 @@ const { OAuth2Client } = require('google-auth-library');
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
+const buildUserPayload = (user) => ({
+    name: user.name, email: user.email, id: user._id || user.id,
+    interest: user.interest || 'professional',
+    points: user.points || 0, streak: user.streak || 0, tokens: user.tokens || 0,
+    lastStudyDate: user.lastStudyDate || '',
+    completedDailyQuestDate: user.completedDailyQuestDate || ''
+});
+
 exports.register = async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, interest } = req.body;
     try {
         let user = await User.findOne({ email });
         if (user) return res.status(400).json({ msg: 'User already exists' });
 
-        user = new User({ name, email, password });
+        user = new User({ name, email, password, interest });
         await user.save();
 
         const payload = { user: { id: user.id } };
         jwt.sign(payload, process.env.JWT_SECRET || 'secret', { expiresIn: '1h' }, (err, token) => {
             if (err) throw err;
-            res.json({ token, user: { name: user.name, email: user.email, id: user.id } });
+            res.json({ token, user: buildUserPayload(user) });
         });
     } catch (err) {
         console.error(err.message);
@@ -36,7 +44,7 @@ exports.login = async (req, res) => {
         const payload = { user: { id: user.id } };
         jwt.sign(payload, process.env.JWT_SECRET || 'secret', { expiresIn: '1h' }, (err, token) => {
             if (err) throw err;
-            res.json({ token, user: { name: user.name, email: user.email, id: user.id } });
+            res.json({ token, user: buildUserPayload(user) });
         });
     } catch (err) {
         console.error(err.message);
@@ -57,11 +65,7 @@ exports.googleLogin = async (req, res) => {
 
         let user = await User.findOne({ email });
         if (!user) {
-            user = new User({
-                name: name || 'Google User',
-                email,
-                googleId
-            });
+            user = new User({ name: name || 'Google User', email, googleId });
             await user.save();
         } else if (!user.googleId) {
             user.googleId = googleId;
@@ -71,10 +75,26 @@ exports.googleLogin = async (req, res) => {
         const jwtPayload = { user: { id: user.id } };
         jwt.sign(jwtPayload, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' }, (err, token) => {
             if (err) throw err;
-            res.json({ token, user: { name: user.name, email: user.email, id: user.id } });
+            res.json({ token, user: buildUserPayload(user) });
         });
     } catch (err) {
         console.error('Google Auth Error:', err);
         res.status(400).json({ msg: `Google auth error: ${err.message || 'Token verification failed'}` });
+    }
+};
+
+exports.updateInterest = async (req, res) => {
+    const { userId, interest } = req.body;
+    try {
+        let user = await User.findById(userId);
+        if (!user) return res.status(404).json({ msg: 'User not found' });
+
+        user.interest = interest;
+        await user.save();
+
+        res.json({ msg: 'Interest updated successfully', user: buildUserPayload(user) });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
     }
 };

@@ -7,7 +7,7 @@ import { HelpCircle, Award, CheckCircle2, ChevronRight, Check } from 'lucide-rea
 
 const AssessmentPage = () => {
     const { topicId } = useParams();
-    const { user } = useContext(AuthContext);
+    const { user, updateUserStats } = useContext(AuthContext);
     const [assessment, setAssessment] = useState(null);
     const [answers, setAnswers] = useState({});
     const [loading, setLoading] = useState(true);
@@ -41,7 +41,8 @@ const AssessmentPage = () => {
             });
 
             if (res.data.status === 'pass') {
-                alert(`Congratulations! You passed with ${res.data.score}%`);
+                if (res.data.user) updateUserStats(res.data.user);
+                alert(`Congratulations! You passed with ${Math.round(res.data.score)}%`);
                 navigate('/dashboard');
             } else {
                 alert(`Score: ${res.data.score}%. You need 70% to pass. Let's review the slides.`);

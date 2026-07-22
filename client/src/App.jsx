@@ -19,25 +19,39 @@ const ProtectedRoute = ({ children }) => {
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
+const AppContent = () => {
+  const { user } = React.useContext(AuthContext);
+
+  React.useEffect(() => {
+    document.body.classList.remove('theme-professional', 'theme-gameified', 'theme-movie');
+    document.body.classList.add(`theme-${user?.interest || 'professional'}`);
+  }, [user]);
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/subject/:id" element={<ProtectedRoute><SubjectPage /></ProtectedRoute>} />
+        <Route path="/topic/:id" element={<ProtectedRoute><TopicPage /></ProtectedRoute>} />
+        <Route path="/assessment/:topicId" element={<ProtectedRoute><AssessmentPage /></ProtectedRoute>} />
+        <Route path="/slides/:subject/:chapter/:topic" element={<ProtectedRoute><SlidesPage /></ProtectedRoute>} />
+      </Routes>
+    </Router>
+  );
+};
+
 function App() {
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/subject/:id" element={<ProtectedRoute><SubjectPage /></ProtectedRoute>} />
-            <Route path="/topic/:id" element={<ProtectedRoute><TopicPage /></ProtectedRoute>} />
-            <Route path="/assessment/:topicId" element={<ProtectedRoute><AssessmentPage /></ProtectedRoute>} />
-            <Route path="/slides/:subject/:chapter/:topic" element={<ProtectedRoute><SlidesPage /></ProtectedRoute>} />
-          </Routes>
-        </Router>
+        <AppContent />
       </AuthProvider>
     </GoogleOAuthProvider>
   );
 }
 
 export default App;
+
