@@ -3,7 +3,8 @@ import { AuthContext } from '../context/AuthContext';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Book, BarChart2, Flame, Award, Ticket, Star, Zap, X, Check, HelpCircle } from 'lucide-react';
+import { Book, BarChart2, Flame, Award, Ticket, Star, Zap, X, Check, HelpCircle, Brain, Target, Clock, TrendingUp } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const getRewardConfig = (interest) => {
     switch (interest) {
@@ -16,9 +17,10 @@ const getRewardConfig = (interest) => {
     }
 };
 
+const mockChartData = [];
+
 const DailyQuestModal = ({ quest, onClose, onSubmit, submitted, result }) => {
     const [selected, setSelected] = useState(null);
-
     return (
         <div style={{
             position: 'fixed', inset: 0, zIndex: 100,
@@ -34,7 +36,6 @@ const DailyQuestModal = ({ quest, onClose, onSubmit, submitted, result }) => {
                 <button onClick={onClose} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
                     <X size={20} />
                 </button>
-
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
                     <Zap size={20} color="var(--primary)" />
                     <span style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', color: 'var(--primary)', textTransform: 'uppercase' }}>
@@ -44,7 +45,6 @@ const DailyQuestModal = ({ quest, onClose, onSubmit, submitted, result }) => {
                 <h3 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '1.5rem', lineHeight: 1.5, color: 'var(--text)' }}>
                     {quest.questionText}
                 </h3>
-
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
                     {quest.options.map((opt, i) => {
                         let border = '1px solid var(--card-border)';
@@ -77,7 +77,6 @@ const DailyQuestModal = ({ quest, onClose, onSubmit, submitted, result }) => {
                         );
                     })}
                 </div>
-
                 {submitted && result ? (
                     <div style={{
                         padding: '1rem', borderRadius: '0.6rem', textAlign: 'center',
@@ -153,7 +152,7 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="container" style={{ paddingTop: '4rem' }}>
+        <div className="container" style={{ paddingTop: '6rem' }}>
             <AnimatePresence>
                 {questModalOpen && dailyQuest?.question && (
                     <DailyQuestModal
@@ -165,76 +164,67 @@ const Dashboard = () => {
                     />
                 )}
             </AnimatePresence>
-
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem', flexWrap: 'wrap', gap: '1rem' }}>
+            
+            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
-                    <h2 className="heading-gradient" style={{ fontSize: '2.5rem' }}>Welcome, {user.name}!</h2>
-                    <p style={{ color: 'var(--text-muted)' }}>Ready to advance your learning today?</p>
-                </div>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                    <select
-                        value={user.interest || 'professional'}
-                        onChange={(e) => updateUserInterest(e.target.value)}
-                        style={{
-                            padding: '0.6rem 1rem', background: 'var(--input-bg)',
-                            border: '1px solid var(--input-border)', borderRadius: '0.5rem',
-                            color: 'var(--text)', cursor: 'pointer', outline: 'none', fontSize: '0.9rem'
-                        }}
-                    >
-                        <option value="professional">⚡ Professional</option>
-                        <option value="gameified">🎮 Gameified</option>
-                        <option value="movie">🎬 Movie</option>
-                    </select>
-                    <button onClick={logout} className="btn" style={{ color: 'var(--error)', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)' }}>Logout</button>
+                    <h2 className="heading-gradient" style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>Welcome back, {user.name}!</h2>
+                    <p style={{ color: 'var(--text-muted)' }}>Here is your learning progress and AI insights for today.</p>
                 </div>
             </header>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '2rem', alignItems: 'start' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.5rem' }}>
-                    {subjects.map((subject) => (
-                        <Link key={subject._id} to={`/subject/${subject._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                            <motion.div whileHover={{ scale: 1.02 }} className="glass-card" style={{ height: '100%' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                                    <div style={{ padding: '0.75rem', borderRadius: '0.5rem', background: 'rgba(99,102,241,0.15)' }}>
-                                        <Book color="var(--primary)" />
-                                    </div>
-                                    <h3 style={{ fontSize: '1.3rem', color: 'var(--text)' }}>{subject.name}</h3>
-                                </div>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                                    Explore chapters and unlock topics in {subject.name}.
-                                </p>
-                            </motion.div>
-                        </Link>
-                    ))}
+            {/* Smart Stats Row */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+                <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <div style={{ padding: '1rem', background: 'rgba(139, 92, 246, 0.1)', borderRadius: '1rem', color: '#8b5cf6' }}>
+                        <Book size={24} />
+                    </div>
+                    <div>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Topics Mastered</p>
+                        <h3 style={{ fontSize: '1.5rem' }}>{passedTopics}</h3>
+                    </div>
                 </div>
+                <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', borderLeft: `4px solid ${rewardConfig.color}` }}>
+                    <div style={{ padding: '1rem', background: 'var(--surface)', borderRadius: '1rem', color: rewardConfig.color }}>
+                        {rewardConfig.icon}
+                    </div>
+                    <div>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{rewardConfig.label}</p>
+                        <h3 style={{ fontSize: '1.5rem', color: rewardConfig.color }}>{rewardValue}</h3>
+                    </div>
+                </div>
+            </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                    {/* Reward Badge */}
-                    <div className="glass-card" style={{ padding: '1.5rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
-                            {rewardConfig.icon}
-                            <h3 style={{ color: 'var(--text)' }}>{rewardConfig.label}</h3>
-                        </div>
-                        <div style={{ textAlign: 'center', padding: '0.5rem 0 1rem' }}>
-                            <motion.div
-                                key={rewardValue}
-                                initial={{ scale: 1.3, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                style={{ fontSize: '3.5rem', fontWeight: 900, color: rewardConfig.color, lineHeight: 1 }}
-                            >
-                                {rewardValue}
-                            </motion.div>
-                            <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem', fontSize: '0.9rem' }}>{rewardConfig.unit}</p>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
-                            <BarChart2 size={14} />
-                            <span>{passedTopics} topics completed</span>
-                        </div>
-                        <div style={{ height: '6px', background: 'rgba(128,128,128,0.2)', borderRadius: '3px', overflow: 'hidden' }}>
-                            <div style={{ width: `${Math.min(passedTopics * 10, 100)}%`, height: '100%', background: rewardConfig.color, borderRadius: '3px', transition: 'width 0.5s ease' }} />
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem', alignItems: 'start' }}>
+                
+                {/* Main Content Area */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                    
+                    {/* Subjects Grid */}
+                    <div>
+                        <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>Your Subjects</h3>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
+                            {subjects.map((subject) => (
+                                <Link key={subject._id} to={`/subject/${subject._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    <motion.div whileHover={{ scale: 1.02 }} className="glass-card" style={{ height: '100%' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                                            <div style={{ padding: '0.75rem', borderRadius: '0.5rem', background: 'rgba(99,102,241,0.15)' }}>
+                                                <Book color="var(--primary)" />
+                                            </div>
+                                            <h3 style={{ fontSize: '1.2rem', color: 'var(--text)' }}>{subject.name}</h3>
+                                        </div>
+                                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+                                            Explore chapters and unlock topics in {subject.name}.
+                                        </p>
+                                    </motion.div>
+                                </Link>
+                            ))}
                         </div>
                     </div>
+                </div>
 
+                {/* Sidebar Area */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                    
                     {/* Daily Quest Card */}
                     <motion.div className="glass-card" style={{ padding: '1.5rem' }} whileHover={{ scale: 1.01 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
@@ -246,7 +236,6 @@ const Dashboard = () => {
                                 textTransform: 'uppercase', letterSpacing: '0.05em'
                             }}>GATE</span>
                         </div>
-
                         {dailyQuest?.alreadyCompleted ? (
                             <div style={{ textAlign: 'center', padding: '1rem 0' }}>
                                 <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>✅</div>

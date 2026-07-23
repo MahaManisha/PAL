@@ -17,7 +17,7 @@ const THEMES = [
     },
     {
         id: 'gameified',
-        label: 'Gameified',
+        label: 'Gamified',
         icon: <Sparkles size={28} />,
         desc: 'Level up your skills with streaks and challenges.',
         gradient: 'linear-gradient(135deg, #7c3aed, #ec4899)',
@@ -25,9 +25,9 @@ const THEMES = [
     },
     {
         id: 'movie',
-        label: 'Movie',
+        label: 'Cinematic',
         icon: <Film size={28} />,
-        desc: 'Cinematic learning experience. Collect Tokens.',
+        desc: 'Immersive dark UI with story-like progression.',
         gradient: 'linear-gradient(135deg, #b45309, #f59e0b)',
         reward: '🎟️ Tokens'
     }
@@ -53,7 +53,7 @@ const Signup = () => {
         try {
             const res = await axios.post('http://localhost:5000/api/auth/register', formData);
             login(res.data);
-            navigate('/dashboard');
+            navigate('/dashboard'); // Go directly to dashboard
         } catch (err) {
             alert(err.response?.data?.msg || 'Signup failed');
         }
@@ -65,6 +65,7 @@ const Signup = () => {
                 idToken: credentialResponse.credential
             });
             login(res.data);
+            // If they login via google, they just go to dashboard.
             navigate('/dashboard');
         } catch (err) {
             console.error('Google Auth Signup error:', err);
@@ -77,7 +78,7 @@ const Signup = () => {
     };
 
     return (
-        <div className="container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <div className="container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', paddingTop: '4rem', paddingBottom: '4rem' }}>
             <AnimatePresence mode="wait">
                 {step === 1 ? (
                     <motion.div
@@ -133,30 +134,30 @@ const Signup = () => {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 40 }}
                         className="glass-card"
-                        style={{ width: '100%', maxWidth: '540px' }}
+                        style={{ width: '100%', maxWidth: '750px' }}
                     >
                         <button
                             onClick={() => setStep(1)}
-                            style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', marginBottom: '0.5rem', fontSize: '0.9rem' }}
+                            style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', marginBottom: '1rem', fontSize: '0.95rem', padding: '0.5rem 0' }}
                         >
-                            ← Back
+                            ← Back to details
                         </button>
-                        <h2 style={{ marginBottom: '0.5rem', textAlign: 'center' }}>Choose Your Style</h2>
-                        <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '0.9rem' }}>
-                            Step 2 of 2 — Pick your learning experience
+                        <h2 style={{ marginBottom: '0.5rem', textAlign: 'center', fontSize: '2rem' }}>Choose Your Learning Experience</h2>
+                        <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginBottom: '2.5rem', fontSize: '1rem' }}>
+                            You can change this anytime in your dashboard settings.
                         </p>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
                             {THEMES.map((theme) => (
                                 <motion.div
                                     key={theme.id}
-                                    whileHover={{ scale: 1.04 }}
-                                    whileTap={{ scale: 0.97 }}
+                                    whileHover={{ scale: 1.03 }}
+                                    whileTap={{ scale: 0.98 }}
                                     onClick={() => setFormData({ ...formData, interest: theme.id })}
                                     style={{
                                         cursor: 'pointer',
-                                        borderRadius: '1rem',
-                                        padding: '1.25rem 1rem',
+                                        borderRadius: '1.25rem',
+                                        padding: '1.5rem',
                                         textAlign: 'center',
                                         border: formData.interest === theme.id
                                             ? '2px solid white'
@@ -165,33 +166,34 @@ const Signup = () => {
                                             ? theme.gradient
                                             : 'rgba(255,255,255,0.03)',
                                         position: 'relative',
-                                        transition: 'all 0.2s'
+                                        transition: 'all 0.2s ease',
+                                        boxShadow: formData.interest === theme.id ? '0 10px 25px rgba(0,0,0,0.2)' : 'none'
                                     }}
                                 >
                                     {formData.interest === theme.id && (
                                         <div style={{
-                                            position: 'absolute', top: '8px', right: '8px',
-                                            background: 'white', borderRadius: '50%', padding: '2px',
+                                            position: 'absolute', top: '12px', right: '12px',
+                                            background: 'white', borderRadius: '50%', padding: '4px',
                                             display: 'flex', alignItems: 'center', justifyContent: 'center'
                                         }}>
-                                            <Check size={12} color="#000" />
+                                            <Check size={16} color="#000" />
                                         </div>
                                     )}
-                                    <div style={{ marginBottom: '0.5rem' }}>{theme.icon}</div>
-                                    <div style={{ fontWeight: 700, fontSize: '0.95rem', marginBottom: '0.4rem' }}>{theme.label}</div>
-                                    <div style={{ fontSize: '0.72rem', color: formData.interest === theme.id ? 'rgba(255,255,255,0.85)' : 'var(--text-muted)', lineHeight: 1.4 }}>
+                                    <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>{theme.icon}</div>
+                                    <div style={{ fontWeight: 700, fontSize: '1.2rem', marginBottom: '0.75rem' }}>{theme.label}</div>
+                                    <div style={{ fontSize: '0.85rem', color: formData.interest === theme.id ? 'rgba(255,255,255,0.9)' : 'var(--text-muted)', lineHeight: 1.5, marginBottom: '1rem' }}>
                                         {theme.desc}
                                     </div>
-                                    <div style={{ marginTop: '0.6rem', fontSize: '0.75rem', fontWeight: 700, opacity: 0.9 }}>
-                                        {theme.reward}
+                                    <div style={{ fontSize: '0.9rem', fontWeight: 700, opacity: 0.9 }}>
+                                        Reward: {theme.reward}
                                     </div>
                                 </motion.div>
                             ))}
                         </div>
 
-                        <form onSubmit={handleSubmit}>
-                            <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
-                                🚀 Create My Account
+                        <form onSubmit={handleSubmit} style={{ display: 'flex', justifyContent: 'center' }}>
+                            <button type="submit" className="btn btn-primary" style={{ padding: '1rem 3rem', fontSize: '1.1rem' }}>
+                                🚀 Complete Registration
                             </button>
                         </form>
                     </motion.div>

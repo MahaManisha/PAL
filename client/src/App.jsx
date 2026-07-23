@@ -11,6 +11,9 @@ import TopicPage from './pages/TopicPage';
 import AssessmentPage from './pages/AssessmentPage';
 import SlidesPage from './pages/SlidesPage';
 
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = React.useContext(AuthContext);
   if (loading) return <div>Loading...</div>;
@@ -29,16 +32,20 @@ const AppContent = () => {
 
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/subject/:id" element={<ProtectedRoute><SubjectPage /></ProtectedRoute>} />
-        <Route path="/topic/:id" element={<ProtectedRoute><TopicPage /></ProtectedRoute>} />
-        <Route path="/assessment/:topicId" element={<ProtectedRoute><AssessmentPage /></ProtectedRoute>} />
-        <Route path="/slides/:subject/:chapter/:topic" element={<ProtectedRoute><SlidesPage /></ProtectedRoute>} />
-      </Routes>
+      <Navbar />
+      <div style={{ minHeight: '80vh' }}>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/subject/:id" element={<ProtectedRoute><SubjectPage /></ProtectedRoute>} />
+          <Route path="/topic/:id" element={<ProtectedRoute><TopicPage /></ProtectedRoute>} />
+          <Route path="/assessment/:topicId" element={<ProtectedRoute><AssessmentPage /></ProtectedRoute>} />
+          <Route path="/slides/:subject/:chapter/:topic" element={<ProtectedRoute><SlidesPage /></ProtectedRoute>} />
+        </Routes>
+      </div>
+      {!user && <Footer />}
     </Router>
   );
 };
