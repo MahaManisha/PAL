@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../api/apiClient';
 import { AuthContext } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { GoogleLogin } from '@react-oauth/google';
@@ -13,7 +13,7 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/login', formData);
+            const res = await apiClient.post('/api/auth/login', formData);
             login(res.data);
             navigate('/dashboard');
         } catch (err) {
@@ -23,7 +23,7 @@ const Login = () => {
 
     const handleGoogleSuccess = async (credentialResponse) => {
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/google', {
+            const res = await apiClient.post('/api/auth/google', {
                 idToken: credentialResponse.credential
             });
             login(res.data);

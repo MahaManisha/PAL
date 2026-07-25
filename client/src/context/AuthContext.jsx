@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import apiClient from '../api/apiClient';
 
 export const AuthContext = createContext();
 
@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
     const updateUserInterest = async (interest) => {
         if (!user) return;
         try {
-            const res = await axios.put('http://localhost:5000/api/auth/update-interest', {
+            const res = await apiClient.put('/api/auth/update-interest', {
                 userId: user.id,
                 interest
             });

@@ -5,7 +5,8 @@ const AssessmentSchema = new mongoose.Schema({
     questions: [{
         questionText: String,
         options: [String],
-        correctAnswer: Number // Index of the correct option
+        correctAnswer: Number, // Index of the correct option
+        conceptTag: { type: String, default: null }
     }],
     passScore: { type: Number, default: 70 }
 });

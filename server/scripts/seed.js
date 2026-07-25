@@ -56,17 +56,20 @@ const seedData = async () => {
                 {
                     questionText: 'The process of converting a matrix to Row Echelon Form is called:',
                     options: ['Matrix inversion', 'Gaussian Elimination', 'LU Decomposition', 'Gram-Schmidt Process'],
-                    correctAnswer: 1
+                    correctAnswer: 1,
+                    conceptTag: 'Gaussian Elimination'
                 },
                 {
                     questionText: 'In Row Echelon Form, what must be true about rows consisting entirely of zeros?',
                     options: ['They must appear at the top', 'They must appear in the middle', 'They must appear at the bottom', 'They cannot exist'],
-                    correctAnswer: 2
+                    correctAnswer: 2,
+                    conceptTag: 'Row Echelon Form Properties'
                 },
                 {
                     questionText: 'Which elementary row operation is NOT valid when reducing a matrix?',
                     options: ['Swapping two rows', 'Multiplying a row by a non-zero scalar', 'Adding a multiple of one row to another', 'Multiplying a row by zero'],
-                    correctAnswer: 3
+                    correctAnswer: 3,
+                    conceptTag: 'Elementary Row Operations'
                 },
                 {
                     questionText: 'What is the pivot in a row?',

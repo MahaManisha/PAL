@@ -1,41 +1,50 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../api/apiClient';
 import { AuthContext } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GoogleLogin } from '@react-oauth/google';
-import { Check, BookOpen, Sparkles, Film } from 'lucide-react';
+import { Check, BookOpen, Sparkles, Film, ChevronLeft, ArrowRight } from 'lucide-react';
+import { EXPERIENCE_CONFIG } from '../config/experiences';
 
-const THEMES = [
+// Canonical experience IDs (Phase 2)
+const EXPERIENCES = [
     {
         id: 'professional',
         label: 'Professional',
         icon: <BookOpen size={28} />,
+        emoji: '💼',
         desc: 'Clean, focused learning environment. Earn Points.',
-        gradient: 'linear-gradient(135deg, #2563eb, #0ea5e9)',
-        reward: '⭐ Points'
+        gradient: 'linear-gradient(135deg, #1e40af, #3b82f6)',
+        reward: '⭐ Points',
     },
     {
-        id: 'gameified',
+        id: 'gamified',
         label: 'Gamified',
         icon: <Sparkles size={28} />,
+        emoji: '🎮',
         desc: 'Level up your skills with streaks and challenges.',
         gradient: 'linear-gradient(135deg, #7c3aed, #ec4899)',
-        reward: '🔥 Streaks'
+        reward: '🔥 Streaks',
     },
     {
-        id: 'movie',
+        id: 'cinematic',
         label: 'Cinematic',
         icon: <Film size={28} />,
+        emoji: '🎬',
         desc: 'Immersive dark UI with story-like progression.',
         gradient: 'linear-gradient(135deg, #b45309, #f59e0b)',
-        reward: '🎟️ Tokens'
-    }
+        reward: '🎟️ Tokens',
+    },
 ];
 
 const Signup = () => {
     const [step, setStep] = useState(1);
-    const [formData, setFormData] = useState({ name: '', email: '', password: '', interest: 'professional' });
+    const [formData, setFormData] = useState({
+        name: '', email: '', password: '',
+        interest: 'professional',
+        subTheme: 'corporate',
+    });
     const { login } = useContext(AuthContext);
     const navigate = useNavigate();
 
@@ -48,12 +57,17 @@ const Signup = () => {
         setStep(2);
     };
 
+    const handleExpSelect = (id) => {
+        const defaultSub = EXPERIENCE_CONFIG[id]?.defaultSubTheme || 'corporate';
+        setFormData({ ...formData, interest: id, subTheme: defaultSub });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/register', formData);
+            const res = await apiClient.post('/api/auth/register', formData);
             login(res.data);
-            navigate('/dashboard'); // Go directly to dashboard
+            navigate('/dashboard');
         } catch (err) {
             alert(err.response?.data?.msg || 'Signup failed');
         }
@@ -61,14 +75,12 @@ const Signup = () => {
 
     const handleGoogleSuccess = async (credentialResponse) => {
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/google', {
-                idToken: credentialResponse.credential
+            const res = await apiClient.post('/api/auth/google', {
+                idToken: credentialResponse.credential,
             });
             login(res.data);
-            // If they login via google, they just go to dashboard.
             navigate('/dashboard');
         } catch (err) {
-            console.error('Google Auth Signup error:', err);
             alert(err.response?.data?.msg || err.message || 'Google Signup failed');
         }
     };
@@ -77,32 +89,32 @@ const Signup = () => {
         alert('Google Sign-In was unsuccessful. Please try again.');
     };
 
+    const subThemes = formData.interest ? Object.entries(EXPERIENCE_CONFIG[formData.interest]?.subThemes || {}) : [];
+
     return (
         <div className="container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', paddingTop: '4rem', paddingBottom: '4rem' }}>
             <AnimatePresence mode="wait">
-                {step === 1 ? (
+                {/* ─── Step 1: Credentials ─── */}
+                {step === 1 && (
                     <motion.div
                         key="step1"
-                        initial={{ opacity: 0, x: -40 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -40 }}
+                        initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
                         className="glass-card"
                         style={{ width: '100%', maxWidth: '420px' }}
                     >
                         <h2 style={{ marginBottom: '0.5rem', textAlign: 'center' }}>Create Account</h2>
                         <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
-                            Step 1 of 2 — Your details
+                            Step 1 of 3 — Your details
                         </p>
-
                         <form onSubmit={handleNextStep}>
                             <label>Full Name</label>
-                            <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
+                            <input type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} required />
                             <label>Email</label>
-                            <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required />
+                            <input type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} required />
                             <label>Password</label>
-                            <input type="password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} required />
+                            <input type="password" value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} required />
                             <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
-                                Continue →
+                                Continue <ArrowRight size={16} style={{ marginLeft: 4 }} />
                             </button>
                         </form>
 
@@ -113,89 +125,149 @@ const Signup = () => {
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'center' }}>
-                            <GoogleLogin
-                                onSuccess={handleGoogleSuccess}
-                                onError={handleGoogleError}
-                                useOneTap
-                                theme="filled_blue"
-                                shape="rectangular"
-                                width="350"
-                            />
+                            <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleError} useOneTap theme="filled_blue" shape="rectangular" width="350" />
                         </div>
 
                         <p style={{ marginTop: '1.5rem', textAlign: 'center', color: 'var(--text-muted)' }}>
                             Already have an account? <Link to="/login" style={{ color: 'var(--primary)' }}>Login</Link>
                         </p>
                     </motion.div>
-                ) : (
+                )}
+
+                {/* ─── Step 2: Choose Main Experience ─── */}
+                {step === 2 && (
                     <motion.div
                         key="step2"
-                        initial={{ opacity: 0, x: 40 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 40 }}
+                        initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }}
                         className="glass-card"
-                        style={{ width: '100%', maxWidth: '750px' }}
+                        style={{ width: '100%', maxWidth: '780px' }}
                     >
-                        <button
-                            onClick={() => setStep(1)}
-                            style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', marginBottom: '1rem', fontSize: '0.95rem', padding: '0.5rem 0' }}
-                        >
-                            ← Back to details
+                        <button onClick={() => setStep(1)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', marginBottom: '1rem', fontSize: '0.95rem', padding: '0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                            <ChevronLeft size={16} /> Back
                         </button>
                         <h2 style={{ marginBottom: '0.5rem', textAlign: 'center', fontSize: '2rem' }}>Choose Your Learning Experience</h2>
                         <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginBottom: '2.5rem', fontSize: '1rem' }}>
-                            You can change this anytime in your dashboard settings.
+                            Step 2 of 3 — You can change this anytime from your Dashboard.
                         </p>
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
-                            {THEMES.map((theme) => (
+                            {EXPERIENCES.map(exp => (
                                 <motion.div
-                                    key={theme.id}
-                                    whileHover={{ scale: 1.03 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    onClick={() => setFormData({ ...formData, interest: theme.id })}
+                                    key={exp.id}
+                                    whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}
+                                    onClick={() => handleExpSelect(exp.id)}
                                     style={{
-                                        cursor: 'pointer',
-                                        borderRadius: '1.25rem',
-                                        padding: '1.5rem',
-                                        textAlign: 'center',
-                                        border: formData.interest === theme.id
-                                            ? '2px solid white'
-                                            : '2px solid rgba(255,255,255,0.08)',
-                                        background: formData.interest === theme.id
-                                            ? theme.gradient
-                                            : 'rgba(255,255,255,0.03)',
-                                        position: 'relative',
-                                        transition: 'all 0.2s ease',
-                                        boxShadow: formData.interest === theme.id ? '0 10px 25px rgba(0,0,0,0.2)' : 'none'
+                                        cursor: 'pointer', borderRadius: '1.25rem', padding: '1.5rem', textAlign: 'center',
+                                        border: formData.interest === exp.id ? '2px solid white' : '2px solid rgba(255,255,255,0.08)',
+                                        background: formData.interest === exp.id ? exp.gradient : 'rgba(255,255,255,0.03)',
+                                        position: 'relative', transition: 'all 0.2s ease',
+                                        boxShadow: formData.interest === exp.id ? '0 10px 25px rgba(0,0,0,0.2)' : 'none',
+                                        color: '#fff',
                                     }}
                                 >
-                                    {formData.interest === theme.id && (
-                                        <div style={{
-                                            position: 'absolute', top: '12px', right: '12px',
-                                            background: 'white', borderRadius: '50%', padding: '4px',
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center'
-                                        }}>
+                                    {formData.interest === exp.id && (
+                                        <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'white', borderRadius: '50%', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                             <Check size={16} color="#000" />
                                         </div>
                                     )}
-                                    <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>{theme.icon}</div>
-                                    <div style={{ fontWeight: 700, fontSize: '1.2rem', marginBottom: '0.75rem' }}>{theme.label}</div>
-                                    <div style={{ fontSize: '0.85rem', color: formData.interest === theme.id ? 'rgba(255,255,255,0.9)' : 'var(--text-muted)', lineHeight: 1.5, marginBottom: '1rem' }}>
-                                        {theme.desc}
-                                    </div>
-                                    <div style={{ fontSize: '0.9rem', fontWeight: 700, opacity: 0.9 }}>
-                                        Reward: {theme.reward}
-                                    </div>
+                                    <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>{exp.icon}</div>
+                                    <div style={{ fontWeight: 700, fontSize: '1.2rem', marginBottom: '0.75rem' }}>{exp.emoji} {exp.label}</div>
+                                    <div style={{ fontSize: '0.85rem', color: formData.interest === exp.id ? 'rgba(255,255,255,0.9)' : 'var(--text-muted)', lineHeight: 1.5, marginBottom: '1rem' }}>{exp.desc}</div>
+                                    <div style={{ fontSize: '0.9rem', fontWeight: 700, opacity: 0.9 }}>Reward: {exp.reward}</div>
                                 </motion.div>
                             ))}
                         </div>
 
+                        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <button onClick={() => setStep(3)} className="btn btn-primary" style={{ borderRadius: '9999px', padding: '0.85rem 2.5rem', fontSize: '1rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                Next: Choose Style <ArrowRight size={16} />
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* ─── Step 3: Choose Sub-theme ─── */}
+                {step === 3 && (
+                    <motion.div
+                        key="step3"
+                        initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }}
+                        className="glass-card"
+                        style={{ width: '100%', maxWidth: '820px' }}
+                    >
+                        <button onClick={() => setStep(2)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', marginBottom: '1rem', fontSize: '0.95rem', padding: '0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                            <ChevronLeft size={16} /> Back
+                        </button>
+                        <h2 style={{ marginBottom: '0.5rem', textAlign: 'center', fontSize: '1.8rem' }}>
+                            {EXPERIENCE_CONFIG[formData.interest]?.emoji} {EXPERIENCE_CONFIG[formData.interest]?.label} — Choose Your Style
+                        </h2>
+                        <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '1rem' }}>
+                            Step 3 of 3 — Pick the visual atmosphere that feels right.
+                        </p>
+
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+                            gap: '0.85rem',
+                            marginBottom: '2.5rem',
+                            maxHeight: '380px',
+                            overflowY: 'auto',
+                            paddingRight: '4px',
+                        }}>
+                            {subThemes.map(([subKey, cfg]) => {
+                                const isSelected = formData.subTheme === subKey;
+                                const primaryColor = cfg.palette['--primary'] || '#6366f1';
+                                return (
+                                    <motion.button
+                                        key={subKey}
+                                        whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}
+                                        onClick={() => setFormData({ ...formData, subTheme: subKey })}
+                                        style={{
+                                            cursor: 'pointer',
+                                            borderRadius: cfg.cardShape === 'pill' ? '9999px' : cfg.cardShape === 'rounded-xl' ? '1.25rem' : cfg.cardShape === 'sharp' ? '0.25rem' : '0.75rem',
+                                            padding: '1rem', textAlign: 'left',
+                                            border: isSelected ? `2px solid ${primaryColor}` : '2px solid rgba(255,255,255,0.10)',
+                                            background: isSelected ? `linear-gradient(135deg, rgba(15,23,42,0.85), ${primaryColor}33)` : 'rgba(255,255,255,0.06)',
+                                            position: 'relative', transition: 'all 0.2s ease',
+                                            boxShadow: isSelected ? `0 0 18px ${primaryColor}44` : 'none',
+                                            minHeight: '90px', display: 'flex', flexDirection: 'column', gap: '0.4rem',
+                                        }}
+                                    >
+                                        {isSelected && (
+                                            <div style={{ position: 'absolute', top: '8px', right: '8px', background: primaryColor, borderRadius: '50%', padding: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px' }}>
+                                                <Check size={12} color="#fff" />
+                                            </div>
+                                        )}
+                                        <div style={{ display: 'flex', gap: '4px', marginBottom: '0.25rem' }}>
+                                            {[cfg.palette['--primary'], cfg.palette['--secondary'], cfg.palette['--accent']].filter(Boolean).map((c, i) => (
+                                                <div key={i} style={{ width: '12px', height: '12px', borderRadius: '50%', background: c, border: '1px solid rgba(255,255,255,0.2)', boxShadow: `0 0 4px ${c}66` }} />
+                                            ))}
+                                            <span style={{ marginLeft: '4px', fontSize: '0.75rem', opacity: 0.9 }}>{cfg.emoji}</span>
+                                        </div>
+                                        {/* Title — always white-based; modal/signup bg is always dark */}
+                                        <div style={{ fontWeight: 700, fontSize: '0.85rem', color: isSelected ? '#ffffff' : '#f1f5f9' }}>{cfg.label}</div>
+                                        {/* Description — always white-based */}
+                                        <div style={{ fontSize: '0.72rem', color: isSelected ? 'rgba(255,255,255,0.85)' : 'rgba(226,232,240,0.72)', lineHeight: 1.4 }}>{cfg.description}</div>
+                                    </motion.button>
+                                );
+                            })}
+                        </div>
+
                         <form onSubmit={handleSubmit} style={{ display: 'flex', justifyContent: 'center' }}>
-                            <button type="submit" className="btn btn-primary" style={{ padding: '1rem 3rem', fontSize: '1.1rem' }}>
+                            <button type="submit" className="btn btn-primary" style={{ padding: '1rem 3rem', fontSize: '1.1rem', borderRadius: '9999px', fontWeight: 700 }}>
                                 🚀 Complete Registration
                             </button>
                         </form>
+
+                        {/* Step indicator */}
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '1.5rem' }}>
+                            {[1, 2, 3].map(s => (
+                                <div key={s} style={{
+                                    width: step === s ? '24px' : '8px', height: '8px', borderRadius: '99px',
+                                    background: step === s ? 'var(--primary, #6366f1)' : 'rgba(255,255,255,0.2)',
+                                    transition: 'all 0.3s ease',
+                                }} />
+                            ))}
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>

@@ -1,26 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
+import apiClient from '../api/apiClient';
 import { motion } from 'framer-motion';
-import { FileText, ArrowLeft, RefreshCcw, Download, Globe, Video, Play, BookOpen } from 'lucide-react';
+import { FileText, ArrowLeft, Download, Globe, Video, BookOpen, CheckCircle, ChevronRight, Lock } from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { useProgression } from '../hooks/useProgression';
 
 const SlidesPage = () => {
     const { subject, chapter, topic } = useParams();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { user } = useContext(AuthContext);
+    const { themeConfig } = useTheme();
 
-    const decodedSubject = decodeURIComponent(subject);
-    const decodedChapter = decodeURIComponent(chapter);
-    const decodedTopic = decodeURIComponent(topic);
+    // Extract topicId safely from location.state or query parameter
+    const queryParams = new URLSearchParams(location.search);
+    const topicId = location.state?.topicId || queryParams.get('topicId');
+
+    const decodedSubject = decodeURIComponent(subject || '');
+    const decodedChapter = decodeURIComponent(chapter || '');
+    const decodedTopic   = decodeURIComponent(topic || '');
 
     const [hasPdf, setHasPdf] = useState(false);
     const [hasPptx, setHasPptx] = useState(false);
     const [hasTamil, setHasTamil] = useState(false);
     const [hasVideo, setHasVideo] = useState(false);
     const [loadingAssets, setLoadingAssets] = useState(true);
+    const [isCompleting, setIsCompleting] = useState(false);
     const [language, setLanguage] = useState('en'); // 'en' | 'ta'
 
     const folderChapter = decodedChapter.includes(':') ? decodedChapter.split(':')[0].trim() : decodedChapter;
+
+    // Gate state
+    const [topicDetail, setTopicDetail] = useState(null);
+    const [subjectIdStr, setSubjectIdStr] = useState(null);
+    const [isLocked, setIsLocked] = useState(false);
+    const [isGateResolved, setIsGateResolved] = useState(false);
+
+    const { getTopicState, loading: progressionLoading, progressRecords } = useProgression(subjectIdStr);
     
-    const pdfUrl = `/slides/${encodeURIComponent(decodedSubject)}/${encodeURIComponent(folderChapter)}/${encodeURIComponent(decodedTopic)}.pdf`;
-    const pptxUrl = `/slides/${encodeURIComponent(decodedSubject)}/${encodeURIComponent(folderChapter)}/${encodeURIComponent(decodedTopic)}.pptx`;
+    const pdfUrl   = `/slides/${encodeURIComponent(decodedSubject)}/${encodeURIComponent(folderChapter)}/${encodeURIComponent(decodedTopic)}.pdf`;
+    const pptxUrl  = `/slides/${encodeURIComponent(decodedSubject)}/${encodeURIComponent(folderChapter)}/${encodeURIComponent(decodedTopic)}.pptx`;
     const tamilUrl = `/slides/${encodeURIComponent(decodedSubject)}/${encodeURIComponent(folderChapter)}/${encodeURIComponent(decodedTopic)}_Tamil.pdf`;
     const videoUrl = `/videos/${encodeURIComponent(decodedSubject)}/${encodeURIComponent(folderChapter)}/${encodeURIComponent(decodedTopic)}.mp4`;
 
@@ -52,14 +73,103 @@ const SlidesPage = () => {
         checkAssets();
     }, [pdfUrl, pptxUrl, tamilUrl, videoUrl]);
 
+    // Phase 1: Resolve topic identity
+    useEffect(() => {
+        if (!topicId) {
+            setIsGateResolved(true); // Fallback: allow if no stable ID
+            return;
+        }
+
+        const verifyAccess = async () => {
+            try {
+                const res = await apiClient.get(`/api/topics/detail/${topicId}`);
+                const detail = res.data;
+                setTopicDetail(detail);
+                if (detail?.chapterId?.subjectId?._id) {
+                    setSubjectIdStr(String(detail.chapterId.subjectId._id));
+                } else {
+                    setIsGateResolved(true);
+                }
+            } catch (e) {
+                console.error('SlidesPage: Error verifying access', e);
+                setIsGateResolved(true);
+            }
+        };
+        verifyAccess();
+    }, [topicId]);
+
+    // Phase 2: Evaluate lock
+    useEffect(() => {
+        if (!topicDetail || progressionLoading) return;
+
+        const state = getTopicState(topicDetail, topicDetail.chapterId);
+        const hasPassed = progressRecords?.find(p => p.topicId === topicId)?.status === 'pass';
+        
+        if (state === 'LOCKED' && !hasPassed) {
+            setIsLocked(true);
+        }
+        
+        setIsGateResolved(true);
+    }, [topicDetail, progressionLoading, getTopicState, progressRecords, topicId]);
+
     const activeSlideUrl = language === 'ta' && hasTamil ? tamilUrl : pdfUrl;
 
+    const handleCompleteLearning = async () => {
+        if (!topicId || !user?.id) {
+            // Fallback navigation if no topicId
+            navigate('/dashboard');
+            return;
+        }
+
+        setIsCompleting(true);
+        try {
+            await apiClient.post('/api/progress/complete-learning', {
+                userId: user.id,
+                topicId
+            });
+        } catch (err) {
+            console.error('SlidesPage: Error completing learning stage', err);
+        } finally {
+            setIsCompleting(false);
+            navigate(`/topic/${topicId}?tab=practice`);
+        }
+    };
+
+    if (!isGateResolved || (topicId && progressionLoading)) {
+        return (
+            <div className="container" style={{ paddingTop: '6rem', display: 'flex', justifyContent: 'center' }}>
+                <div style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Verifying access...</div>
+            </div>
+        );
+    }
+
+    if (isLocked) {
+        return (
+            <div className="container" style={{ paddingTop: '8rem', textAlign: 'center' }}>
+                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-card" style={{ maxWidth: '500px', margin: '0 auto', padding: '3rem' }}>
+                    <Lock size={48} color="var(--text-muted)" style={{ marginBottom: '1.5rem', opacity: 0.6 }} />
+                    <h2 style={{ fontSize: '1.75rem', marginBottom: '1rem', color: 'var(--text)' }}>Materials Locked</h2>
+                    <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', lineHeight: 1.6 }}>
+                        You must complete the required earlier {themeConfig?.terminology?.chapter?.toLowerCase() || 'chapter'}s to unlock this topic's learning materials.
+                    </p>
+                    <Link to={subjectIdStr ? `/subject/${subjectIdStr}` : '/dashboard'} className="btn btn-primary" style={{ display: 'inline-flex', padding: '0.85rem 2rem', fontWeight: 600 }}>
+                        <ArrowLeft size={18} style={{ marginRight: '0.5rem' }} /> Return to Roadmap
+                    </Link>
+                </motion.div>
+            </div>
+        );
+    }
+
     return (
-        <div className="container" style={{ paddingTop: '3rem', maxWidth: '1400px' }}>
+        <div className="container" style={{ paddingTop: '3rem', maxWidth: '1400px', paddingBottom: '4rem' }}>
             {/* Header Area */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-                <Link to="/dashboard" className="btn btn-secondary" style={{ gap: '0.5rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text)' }}>
-                    <ArrowLeft size={18} /> Back to Dashboard
+                <Link
+                    to={topicId ? `/topic/${topicId}` : '/dashboard'}
+                    className="btn btn-secondary"
+                    style={{ gap: '0.5rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text)' }}
+                >
+                    <ArrowLeft size={18} /> Back to Topic
                 </Link>
                 <div style={{ textAlign: 'center' }}>
                     <h2 className="heading-gradient" style={{ fontSize: '2rem' }}>Learning Portal</h2>
@@ -67,7 +177,7 @@ const SlidesPage = () => {
                 </div>
                 
                 {/* Language Toggle */}
-                {hasTamil && (
+                {hasTamil ? (
                     <button 
                         onClick={() => setLanguage(language === 'en' ? 'ta' : 'en')} 
                         className="btn" 
@@ -81,8 +191,7 @@ const SlidesPage = () => {
                         <Globe size={18} color="var(--primary)" />
                         {language === 'en' ? 'Switch to Tamil Slides' : 'Switch to English Slides'}
                     </button>
-                )}
-                {!hasTamil && <div style={{ width: '150px' }}></div>}
+                ) : <div style={{ width: '150px' }} />}
             </div>
 
             {loadingAssets ? (
@@ -134,7 +243,7 @@ const SlidesPage = () => {
                                     <FileText size={70} color="var(--primary)" style={{ marginBottom: '1.5rem', opacity: 0.8 }} />
                                     <h4 style={{ marginBottom: '1rem', fontSize: '1.25rem' }}>PowerPoint Presentation</h4>
                                     <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '0.95rem', lineHeight: '1.5' }}>
-                                        This topic slide is formatted as a PowerPoint presentation (PPTX), which cannot be embedded natively. Download it to study.
+                                        This topic slide is formatted as a PowerPoint presentation (PPTX). Download it to study.
                                     </p>
                                     <a href={pptxUrl} download className="btn btn-primary" style={{ padding: '0.8rem 2rem' }}>
                                         <Download size={18} /> Download Presentation (.pptx)
@@ -173,7 +282,6 @@ const SlidesPage = () => {
                                         src={videoUrl} 
                                         controls 
                                         style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                                        poster="/video-poster.jpg" // fallback poster
                                     >
                                         Your browser does not support HTML5 video playback.
                                     </video>
@@ -182,7 +290,7 @@ const SlidesPage = () => {
                                 <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '0.5rem', border: '1px solid rgba(255,255,255,0.05)' }}>
                                     <h4 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--secondary)' }}>Video Notes</h4>
                                     <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: '1.4' }}>
-                                        Watch the detailed lecture video corresponding to <strong>{decodedTopic}</strong>. Pay close attention to formulas and problem-solving techniques before attempting the assessment again.
+                                        Watch the lecture video for <strong>{decodedTopic}</strong> carefully before advancing to practice.
                                     </p>
                                 </div>
                             </div>
@@ -192,19 +300,24 @@ const SlidesPage = () => {
                 </div>
             )}
 
-            {/* Try Assessment Again Area */}
-            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2.5rem', marginBottom: '3rem' }}>
+            {/* Complete Learning & Continue CTA */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2.5rem' }}>
                 <button 
-                    onClick={() => window.history.back()} 
+                    onClick={handleCompleteLearning}
+                    disabled={isCompleting}
                     className="btn btn-primary" 
                     style={{ 
                         gap: '0.75rem', 
                         padding: '1rem 2.5rem', 
                         fontSize: '1.1rem',
-                        boxShadow: '0 8px 25px rgba(99, 102, 241, 0.4)' 
+                        fontWeight: 700,
+                        boxShadow: '0 8px 25px rgba(99, 102, 241, 0.4)',
+                        opacity: isCompleting ? 0.7 : 1
                     }}
                 >
-                    <RefreshCcw size={20} /> Try Assessment Again
+                    <CheckCircle size={20} />
+                    {isCompleting ? 'Saving Progress...' : 'Complete Learning & Continue to Practice'}
+                    <ChevronRight size={20} />
                 </button>
             </div>
         </div>
