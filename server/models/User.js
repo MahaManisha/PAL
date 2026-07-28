@@ -34,7 +34,14 @@ const UserSchema = new mongoose.Schema({
         avatar: { type: String, default: '' },
         profile_frame: { type: String, default: '' },
         theme_accent: { type: String, default: '' }
-    }
+    },
+    // Optional Profile Datas
+    avatarUrl: { type: String, default: '' },
+    bio: { type: String, default: '' },
+    targetGoal: { type: String, default: '' },
+    institution: { type: String, default: '' },
+    preferredStudyHours: { type: String, default: '' },
+    socialLink: { type: String, default: '' }
 }, { timestamps: true });
 
 UserSchema.pre('save', async function(next) {

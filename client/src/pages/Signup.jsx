@@ -40,6 +40,7 @@ const EXPERIENCES = [
 
 const Signup = () => {
     const [step, setStep] = useState(1);
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: '', email: '', password: '',
         interest: 'professional',
@@ -64,12 +65,21 @@ const Signup = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (loading) return;
+        setLoading(true);
         try {
-            const res = await apiClient.post('/api/auth/register', formData);
+            const cleanedData = {
+                ...formData,
+                name: formData.name.trim(),
+                email: formData.email.trim().toLowerCase()
+            };
+            const res = await apiClient.post('/api/auth/register', cleanedData);
             login(res.data);
             navigate('/dashboard');
         } catch (err) {
             alert(err.response?.data?.msg || 'Signup failed');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -253,8 +263,8 @@ const Signup = () => {
                         </div>
 
                         <form onSubmit={handleSubmit} style={{ display: 'flex', justifyContent: 'center' }}>
-                            <button type="submit" className="btn btn-primary" style={{ padding: '1rem 3rem', fontSize: '1.1rem', borderRadius: '9999px', fontWeight: 700 }}>
-                                🚀 Complete Registration
+                            <button type="submit" disabled={loading} className="btn btn-primary" style={{ padding: '1rem 3rem', fontSize: '1.1rem', borderRadius: '9999px', fontWeight: 700, opacity: loading ? 0.7 : 1 }}>
+                                {loading ? 'Registering...' : '🚀 Complete Registration'}
                             </button>
                         </form>
 

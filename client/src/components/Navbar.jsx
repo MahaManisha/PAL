@@ -2,8 +2,9 @@ import React, { useContext, useState, useEffect, useCallback, useRef } from 'rea
 import { Link, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { Menu, X, Brain, Search } from 'lucide-react';
+import { Menu, X, Brain, Search, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ProfileAvatarRing from './ProfileAvatarRing';
 
 // Search Modal
 const SearchModal = ({ onClose }) => (
@@ -313,13 +314,17 @@ const Navbar = () => {
                             </>
                         ) : (
                             <>
-                                <button onClick={logout} className="nav-link" aria-label="Logout" style={{ color: 'var(--text)' }}>Logout</button>
-                                <div
-                                    aria-label={`User avatar for ${user.name}`}
-                                    style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem', cursor: 'default' }}
+                                <Link to="/profile" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                    Profile
+                                </Link>
+                                <button onClick={logout} className="nav-link" aria-label="Logout" style={{ color: 'var(--text-muted, #64748b)', fontSize: '0.9rem' }}>Logout</button>
+                                <Link
+                                    to="/profile"
+                                    aria-label={`View profile for ${user.name}`}
+                                    style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}
                                 >
-                                    {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
-                                </div>
+                                    <ProfileAvatarRing user={user} size={42} strokeWidth={3} showBadge={true} />
+                                </Link>
                             </>
                         )}
                     </div>

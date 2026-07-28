@@ -6,6 +6,7 @@ import {
     HelpCircle, Lock, Zap, ArrowLeft, RefreshCw, Award, AlertCircle
 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
+import apiClient from '../api/apiClient';
 import { useTheme } from '../context/ThemeContext';
 import { normalizeId } from '../utils/progressionEngine';
 import { useProgression } from '../hooks/useProgression';
@@ -87,7 +88,12 @@ const TopicPage = () => {
 
     // Evaluate gate and auto-start
     useEffect(() => {
-        if (loading || progressionLoading || !topicDetail) return;
+        if (loading || progressionLoading) return;
+
+        if (!topicDetail) {
+            setIsGateResolved(true);
+            return;
+        }
 
         const evaluateGate = async () => {
             const topicState = getTopicState(topicDetail, topicDetail.chapterId);
@@ -187,6 +193,23 @@ const TopicPage = () => {
         return (
             <div className="container" style={{ paddingTop: '6rem', display: 'flex', justifyContent: 'center' }}>
                 <div style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Loading topic journey...</div>
+            </div>
+        );
+    }
+
+    if (!topicDetail) {
+        return (
+            <div className="container" style={{ paddingTop: '8rem', textAlign: 'center' }}>
+                <div className="glass-card" style={{ maxWidth: '500px', margin: '0 auto', padding: '3rem' }}>
+                    <AlertCircle size={48} color="var(--text-muted)" style={{ marginBottom: '1.5rem' }} />
+                    <h2 style={{ fontSize: '1.75rem', marginBottom: '1rem' }}>Topic Not Found</h2>
+                    <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>
+                        The requested topic could not be loaded. Please return to the dashboard.
+                    </p>
+                    <Link to="/dashboard" className="btn btn-primary" style={{ display: 'inline-flex', padding: '0.85rem 2rem' }}>
+                        <ArrowLeft size={18} style={{ marginRight: '0.5rem' }} /> Return to Dashboard
+                    </Link>
+                </div>
             </div>
         );
     }

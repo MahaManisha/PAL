@@ -12,6 +12,7 @@ import TopicPage from './pages/TopicPage';
 import AssessmentPage from './pages/AssessmentPage';
 import SlidesPage from './pages/SlidesPage';
 import Leaderboard from './pages/Leaderboard';
+import ProfilePage from './pages/ProfilePage';
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -63,6 +64,7 @@ const AppContent = () => {
             <Route path="/signup" element={<Signup />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
             <Route path="/subject/:id" element={<ProtectedRoute><SubjectPage /></ProtectedRoute>} />
             <Route path="/topic/:id" element={<ProtectedRoute><TopicPage /></ProtectedRoute>} />
             <Route path="/assessment/:topicId" element={<ProtectedRoute><AssessmentPage /></ProtectedRoute>} />
