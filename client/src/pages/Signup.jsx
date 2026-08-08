@@ -188,9 +188,14 @@ const Signup = () => {
                             ))}
                         </div>
 
-                        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                            <button onClick={() => setStep(3)} className="btn btn-primary" style={{ borderRadius: '9999px', padding: '0.85rem 2.5rem', fontSize: '1rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                Next: Choose Style <ArrowRight size={16} />
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1rem' }}>
+                            {formData.interest !== 'professional' && (
+                                <button type="button" onClick={() => setStep(3)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '0.88rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                    Customize Style (Optional) <ArrowRight size={14} />
+                                </button>
+                            )}
+                            <button type="button" onClick={handleSubmit} disabled={loading} className="btn btn-primary" style={{ borderRadius: '9999px', padding: '0.85rem 2.5rem', fontSize: '1rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem', opacity: loading ? 0.7 : 1 }}>
+                                {loading ? 'Registering...' : '🚀 Complete Registration'}
                             </button>
                         </div>
                     </motion.div>

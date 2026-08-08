@@ -271,17 +271,46 @@ const ThemeSelectModal = ({ isOpen, mode = 'setup', initialExp = 'professional',
                                         </motion.button>
                                     ))}
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1rem' }}>
+                                    {!isSetup && (
+                                        <button
+                                            onClick={onDismiss}
+                                            style={{
+                                                padding: '0.85rem 1.75rem', borderRadius: '9999px',
+                                                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
+                                                color: '#94a3b8', cursor: 'pointer', fontWeight: 600, fontSize: '0.95rem',
+                                            }}
+                                        >
+                                            Cancel
+                                        </button>
+                                    )}
+
+                                    {selectedExp !== 'professional' && (
+                                        <button
+                                            onClick={handleNext}
+                                            style={{
+                                                background: 'none', border: 'none',
+                                                color: '#94a3b8', cursor: 'pointer',
+                                                fontSize: '0.88rem', fontWeight: 600,
+                                                display: 'flex', alignItems: 'center', gap: '0.35rem'
+                                            }}
+                                        >
+                                            Customize Style (Optional) <ArrowRight size={14} />
+                                        </button>
+                                    )}
+
                                     <button
-                                        onClick={handleNext}
+                                        onClick={handleSave}
+                                        disabled={isSaving}
                                         className="btn btn-primary"
                                         style={{
                                             borderRadius: '9999px', padding: '0.85rem 2.5rem',
                                             fontSize: '1rem', fontWeight: 700,
+                                            opacity: isSaving ? 0.7 : 1,
                                             display: 'flex', alignItems: 'center', gap: '0.5rem',
                                         }}
                                     >
-                                        Next: Choose Style <ArrowRight size={16} />
+                                        {isSaving ? 'Applying…' : isSetup ? '🚀 Start Learning' : '✓ Apply Experience'}
                                     </button>
                                 </div>
                             </motion.div>
