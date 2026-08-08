@@ -605,7 +605,7 @@ const AssessmentPage = () => {
                                         }}
                                         style={{
                                             padding: '1rem 1.25rem', textAlign: 'left', cursor: 'pointer',
-                                            background: isSelected ? 'rgba(37,99,235,0.15)' : 'rgba(255,255,255,0.02)',
+                                            background: isSelected ? 'rgba(37,99,235,0.15)' : 'var(--input-bg)',
                                             border: isSelected ? '2px solid var(--primary)' : '1px solid var(--card-border)',
                                             borderRadius: '0.6rem',
                                             color: isSelected ? 'var(--primary)' : 'var(--text)',
@@ -618,7 +618,7 @@ const AssessmentPage = () => {
                                             width: '24px', height: '24px', borderRadius: '50%',
                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                                             fontSize: '0.8rem', fontWeight: 700,
-                                            background: isSelected ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
+                                            background: isSelected ? 'var(--primary)' : 'var(--card-border)',
                                             color: isSelected ? '#fff' : 'var(--text-muted)'
                                         }}>
                                             {alphabet[oIdx]}

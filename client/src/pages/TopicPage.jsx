@@ -353,8 +353,8 @@ const TopicPage = () => {
                             </div>
                         </div>
 
-                        <div style={{ background: 'rgba(0,0,0,0.2)', padding: '1.5rem', borderRadius: '0.75rem', marginBottom: '2rem', border: '1px solid var(--card-border)' }}>
-                            <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>Learning Objectives</h3>
+                        <div style={{ background: 'var(--input-bg)', padding: '1.5rem', borderRadius: '0.75rem', marginBottom: '2rem', border: '1px solid var(--card-border)' }}>
+                            <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: 'var(--text)' }}>Learning Objectives</h3>
                             <ul style={{ color: 'var(--text-muted)', paddingLeft: '1.25rem', lineHeight: 1.6, margin: 0 }}>
                                 <li>Understand core principles and mathematical definitions of {topicName}.</li>
                                 <li>Study key properties, equations, and elementary row operations.</li>
@@ -429,7 +429,7 @@ const TopicPage = () => {
                                             key={qIdx}
                                             style={{
                                                 padding: '1.5rem',
-                                                background: 'rgba(0,0,0,0.22)',
+                                                background: 'var(--input-bg)',
                                                 borderRadius: '0.75rem',
                                                 border: '1px solid var(--card-border)'
                                             }}
@@ -441,7 +441,7 @@ const TopicPage = () => {
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                                                 {q.options.map((opt, oIdx) => {
                                                     let border = '1px solid var(--card-border)';
-                                                    let bg = 'rgba(255,255,255,0.03)';
+                                                    let bg = 'var(--surface)';
                                                     let color = 'var(--text)';
 
                                                     if (hasAnswered) {

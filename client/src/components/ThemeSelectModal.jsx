@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check, ChevronLeft, Sparkles, BookOpen, Film, ArrowRight } from 'lucide-react';
 import { EXPERIENCE_CONFIG } from '../config/experiences';
@@ -21,12 +21,6 @@ const EXPERIENCE_GRADIENTS = {
 function SubThemeCard({ subKey, cfg, selected, onClick }) {
     const primaryColor = cfg.palette['--primary'] || '#6366f1';
 
-    // Modal-stable semantic colors (always white-based — modal is always dark)
-    const CARD_TITLE_COLOR = '#f1f5f9';              // always readable on dark modal
-    const CARD_DESC_COLOR = 'rgba(226,232,240,0.72)'; // always readable on dark modal
-    const CARD_SELECTED_TITLE = '#ffffff';
-    const CARD_SELECTED_DESC = 'rgba(255,255,255,0.85)';
-
     return (
         <motion.button
             whileHover={{ scale: 1.04, y: -2 }}
@@ -39,14 +33,14 @@ function SubThemeCard({ subKey, cfg, selected, onClick }) {
                     : cfg.cardShape === 'sharp' ? '0.25rem' : '0.75rem',
                 padding: '1rem',
                 textAlign: 'left',
-                border: selected ? `2px solid ${primaryColor}` : '2px solid rgba(255,255,255,0.10)',
+                border: selected ? `2px solid ${primaryColor}` : '2px solid rgba(255,255,255,0.12)',
                 background: selected
-                    ? `linear-gradient(135deg, rgba(15,23,42,0.85), ${primaryColor}33)`
+                    ? `linear-gradient(135deg, rgba(30,41,59,0.95), ${primaryColor}44)`
                     : 'rgba(255,255,255,0.06)',
                 position: 'relative',
                 transition: 'all 0.2s ease',
-                boxShadow: selected ? `0 0 20px ${primaryColor}44` : 'none',
-                minHeight: '90px',
+                boxShadow: selected ? `0 0 20px ${primaryColor}66, 0 4px 12px rgba(0,0,0,0.5)` : 'none',
+                minHeight: '95px',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '0.4rem',
@@ -57,34 +51,35 @@ function SubThemeCard({ subKey, cfg, selected, onClick }) {
                     position: 'absolute', top: '8px', right: '8px',
                     background: primaryColor, borderRadius: '50%', padding: '3px',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    width: '20px', height: '20px',
+                    width: '22px', height: '22px',
+                    boxShadow: `0 0 8px ${primaryColor}`
                 }}>
-                    <Check size={12} color="#fff" />
+                    <Check size={14} color="#fff" strokeWidth={3} />
                 </div>
             )}
             {/* Color swatch row — preserves visual identity dots + emoji */}
-            <div style={{ display: 'flex', gap: '4px', marginBottom: '0.25rem' }}>
+            <div style={{ display: 'flex', gap: '5px', marginBottom: '0.25rem', alignItems: 'center' }}>
                 {[cfg.palette['--primary'], cfg.palette['--secondary'], cfg.palette['--accent']].filter(Boolean).map((c, i) => (
                     <div key={i} style={{
-                        width: '12px', height: '12px', borderRadius: '50%', background: c,
-                        border: '1px solid rgba(255,255,255,0.2)',
-                        boxShadow: `0 0 4px ${c}66`,
+                        width: '13px', height: '13px', borderRadius: '50%', background: c,
+                        border: '1px solid rgba(255,255,255,0.3)',
+                        boxShadow: `0 0 6px ${c}88`,
                     }} />
                 ))}
-                <span style={{ marginLeft: '4px', fontSize: '0.75rem', opacity: 0.9 }}>{cfg.emoji}</span>
+                <span style={{ marginLeft: '4px', fontSize: '0.85rem' }}>{cfg.emoji}</span>
             </div>
-            {/* Title — modal-stable light color, never uses sub-theme runtime CSS vars */}
+            {/* Title — modal-stable light color */}
             <div style={{
-                fontWeight: 700,
-                fontSize: '0.85rem',
-                color: selected ? CARD_SELECTED_TITLE : CARD_TITLE_COLOR,
+                fontWeight: 800,
+                fontSize: '0.9rem',
+                color: '#ffffff',
             }}>
                 {cfg.label}
             </div>
             {/* Description — modal-stable light color */}
             <div style={{
-                fontSize: '0.72rem',
-                color: selected ? CARD_SELECTED_DESC : CARD_DESC_COLOR,
+                fontSize: '0.75rem',
+                color: selected ? '#f1f5f9' : 'rgba(226,232,240,0.78)',
                 lineHeight: 1.4,
             }}>
                 {cfg.description}
@@ -109,6 +104,15 @@ const ThemeSelectModal = ({ isOpen, mode = 'setup', initialExp = 'professional',
     const [step, setStep] = useState(1); // 1 = pick experience, 2 = pick sub-theme
     const [selectedExp, setSelectedExp] = useState(initialExp);
     const [selectedSub, setSelectedSub] = useState(initialSub || EXPERIENCE_CONFIG[initialExp]?.defaultSubTheme || 'corporate');
+
+    useEffect(() => {
+        if (isOpen) {
+            setSelectedExp(initialExp || 'professional');
+            const expKey = initialExp || 'professional';
+            setSelectedSub(initialSub || EXPERIENCE_CONFIG[expKey]?.defaultSubTheme || 'corporate');
+            setStep(1);
+        }
+    }, [isOpen, initialExp, initialSub]);
 
     const expConfig = EXPERIENCE_CONFIG[selectedExp];
 

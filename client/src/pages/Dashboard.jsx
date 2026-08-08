@@ -308,7 +308,7 @@ const Dashboard = () => {
                         onClick={() => setExperienceModalOpen(true)}
                         style={{
                             padding: '0.6rem 1.2rem', borderRadius: '9999px',
-                            background: 'rgba(255,255,255,0.06)',
+                            background: 'var(--surface)',
                             border: '1px solid var(--card-border)',
                             color: 'var(--text-muted)', cursor: 'pointer',
                             display: 'flex', alignItems: 'center', gap: '0.5rem',
@@ -336,7 +336,7 @@ const Dashboard = () => {
                 style={{
                     marginBottom: '2rem', padding: '0.9rem 1.25rem',
                     borderRadius: '0.85rem',
-                    background: 'rgba(255,255,255,0.04)',
+                    background: 'var(--input-bg)',
                     border: '1px solid var(--card-border)',
                     display: 'flex', alignItems: 'center', gap: '0.75rem',
                     flexWrap: 'wrap',

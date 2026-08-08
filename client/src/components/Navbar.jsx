@@ -2,9 +2,10 @@ import React, { useContext, useState, useEffect, useCallback, useRef } from 'rea
 import { Link, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { Menu, X, Brain, Search, User } from 'lucide-react';
+import { Menu, X, Brain, Search, User, Palette } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProfileAvatarRing from './ProfileAvatarRing';
+import ThemeSelectModal from './ThemeSelectModal';
 
 // Search Modal
 const SearchModal = ({ onClose }) => (
@@ -76,8 +77,8 @@ const Navbar = () => {
     const themeCtx = useTheme ? useTheme() : null;
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [activeSection, setActiveSection] = useState('home');
     const [searchOpen, setSearchOpen] = useState(false);
+    const [themeModalOpen, setThemeModalOpen] = useState(false);
     const location = useLocation();
     const isLandingPage = location.pathname === '/';
     const drawerRef = useRef(null);
@@ -230,19 +231,45 @@ const Navbar = () => {
                             <Link to="/dashboard" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>Dashboard</Link>
                             <Link to="/leaderboard" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>Leaderboard</Link>
                             {themeCtx && (
-                                <span style={{
-                                    padding: '0.25rem 0.75rem', borderRadius: '9999px',
-                                    background: 'rgba(99,102,241,0.1)',
-                                    border: '1px solid rgba(99,102,241,0.2)',
-                                    fontSize: '0.78rem', fontWeight: 700,
-                                    color: 'var(--primary, #6366f1)',
-                                    display: 'flex', alignItems: 'center', gap: '0.35rem',
-                                }}>
+                                <button
+                                    onClick={() => setThemeModalOpen(true)}
+                                    title="Click to change theme/experience"
+                                    style={{
+                                        padding: '0.3rem 0.85rem', borderRadius: '9999px',
+                                        background: 'var(--surface)',
+                                        border: '1.5px solid var(--primary, #6366f1)',
+                                        fontSize: '0.8rem', fontWeight: 700,
+                                        color: 'var(--primary, #6366f1)',
+                                        display: 'flex', alignItems: 'center', gap: '0.4rem',
+                                        cursor: 'pointer',
+                                        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                                        transition: 'all 0.2s ease',
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.04)'}
+                                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                                >
+                                    <Palette size={14} />
                                     {themeCtx.themeConfig?.experienceCfg?.emoji}
                                     {themeCtx.themeConfig?.subThemeCfg?.label || themeCtx.experience}
-                                </span>
+                                </button>
                             )}
                         </nav>
+                    )}
+
+                    {/* Theme Modal Triggered from Navbar */}
+                    {themeCtx && (
+                        <ThemeSelectModal
+                            isOpen={themeModalOpen}
+                            mode="edit"
+                            initialExp={themeCtx.experience}
+                            initialSub={themeCtx.subTheme}
+                            onSave={async (exp, sub) => {
+                                await themeCtx.savePreference(exp, sub);
+                                setThemeModalOpen(false);
+                            }}
+                            onDismiss={() => setThemeModalOpen(false)}
+                            isSaving={themeCtx.isChanging}
+                        />
                     )}
 
                     {/* ─── Right Section ─── */}

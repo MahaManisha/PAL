@@ -132,7 +132,8 @@ function ProgressOrbs({ topics, getTopicState, chapter, terminology }) {
         <div style={{
             display: 'flex', flexWrap: 'wrap', gap: '0.5rem',
             marginBottom: '1.5rem', alignItems: 'center',
-            background: 'rgba(0,0,0,0.15)', padding: '0.6rem 1rem', borderRadius: '12px'
+            background: 'var(--input-bg)', padding: '0.6rem 1rem', borderRadius: '12px',
+            border: '1px solid var(--card-border)'
         }}>
             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginRight: '0.5rem' }}>
                 {terminology.progress || 'XP'} Nodes:
@@ -410,13 +411,13 @@ const ChapterCard = ({
                                 >
                                     <div style={{
                                         padding: '0.9rem 1rem',
-                                        background: 'rgba(0,0,0,0.22)',
+                                        background: 'var(--input-bg)',
                                         borderRadius: '0.6rem',
                                         display: 'flex', flexDirection: 'column', gap: '0.5rem',
                                         border: `1px solid ${borderColor}`,
                                         transition: 'all 0.2s ease',
                                         cursor: isTopicLocked ? 'not-allowed' : 'pointer',
-                                        opacity: isTopicLocked ? 0.5 : 1,
+                                        opacity: isTopicLocked ? 0.6 : 1,
                                     }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                                             <div style={{ color, flexShrink: 0 }}>

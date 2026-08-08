@@ -235,28 +235,26 @@ const Signup = () => {
                                             cursor: 'pointer',
                                             borderRadius: cfg.cardShape === 'pill' ? '9999px' : cfg.cardShape === 'rounded-xl' ? '1.25rem' : cfg.cardShape === 'sharp' ? '0.25rem' : '0.75rem',
                                             padding: '1rem', textAlign: 'left',
-                                            border: isSelected ? `2px solid ${primaryColor}` : '2px solid rgba(255,255,255,0.10)',
-                                            background: isSelected ? `linear-gradient(135deg, rgba(15,23,42,0.85), ${primaryColor}33)` : 'rgba(255,255,255,0.06)',
+                                            border: isSelected ? `2px solid ${primaryColor}` : '2px solid rgba(255,255,255,0.12)',
+                                            background: isSelected ? `linear-gradient(135deg, rgba(30,41,59,0.95), ${primaryColor}44)` : 'rgba(255,255,255,0.06)',
                                             position: 'relative', transition: 'all 0.2s ease',
-                                            boxShadow: isSelected ? `0 0 18px ${primaryColor}44` : 'none',
-                                            minHeight: '90px', display: 'flex', flexDirection: 'column', gap: '0.4rem',
+                                            boxShadow: isSelected ? `0 0 20px ${primaryColor}66, 0 4px 12px rgba(0,0,0,0.5)` : 'none',
+                                            minHeight: '95px', display: 'flex', flexDirection: 'column', gap: '0.4rem',
                                         }}
                                     >
                                         {isSelected && (
-                                            <div style={{ position: 'absolute', top: '8px', right: '8px', background: primaryColor, borderRadius: '50%', padding: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px' }}>
-                                                <Check size={12} color="#fff" />
+                                            <div style={{ position: 'absolute', top: '8px', right: '8px', background: primaryColor, borderRadius: '50%', padding: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', boxShadow: `0 0 8px ${primaryColor}` }}>
+                                                <Check size={14} color="#fff" strokeWidth={3} />
                                             </div>
                                         )}
-                                        <div style={{ display: 'flex', gap: '4px', marginBottom: '0.25rem' }}>
+                                        <div style={{ display: 'flex', gap: '5px', marginBottom: '0.25rem', alignItems: 'center' }}>
                                             {[cfg.palette['--primary'], cfg.palette['--secondary'], cfg.palette['--accent']].filter(Boolean).map((c, i) => (
-                                                <div key={i} style={{ width: '12px', height: '12px', borderRadius: '50%', background: c, border: '1px solid rgba(255,255,255,0.2)', boxShadow: `0 0 4px ${c}66` }} />
+                                                <div key={i} style={{ width: '13px', height: '13px', borderRadius: '50%', background: c, border: '1px solid rgba(255,255,255,0.3)', boxShadow: `0 0 6px ${c}88` }} />
                                             ))}
-                                            <span style={{ marginLeft: '4px', fontSize: '0.75rem', opacity: 0.9 }}>{cfg.emoji}</span>
+                                            <span style={{ marginLeft: '4px', fontSize: '0.85rem' }}>{cfg.emoji}</span>
                                         </div>
-                                        {/* Title — always white-based; modal/signup bg is always dark */}
-                                        <div style={{ fontWeight: 700, fontSize: '0.85rem', color: isSelected ? '#ffffff' : '#f1f5f9' }}>{cfg.label}</div>
-                                        {/* Description — always white-based */}
-                                        <div style={{ fontSize: '0.72rem', color: isSelected ? 'rgba(255,255,255,0.85)' : 'rgba(226,232,240,0.72)', lineHeight: 1.4 }}>{cfg.description}</div>
+                                        <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#ffffff' }}>{cfg.label}</div>
+                                        <div style={{ fontSize: '0.75rem', color: isSelected ? '#f1f5f9' : 'rgba(226,232,240,0.78)', lineHeight: 1.4 }}>{cfg.description}</div>
                                     </motion.button>
                                 );
                             })}

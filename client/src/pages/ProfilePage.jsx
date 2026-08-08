@@ -222,24 +222,24 @@ const ProfilePage = () => {
                                         onChange={e => setFormData({ ...formData, name: e.target.value })}
                                         placeholder="Enter your name"
                                         required
-                                        style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: 'var(--text, #ffffff)', fontSize: '0.95rem' }}
+                                        style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text)', fontSize: '0.95rem' }}
                                     />
                                 </div>
 
                                 <div style={{ marginBottom: '1.25rem' }}>
-                                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.4rem', color: 'var(--text-muted, #94a3b8)' }}>
+                                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.4rem', color: 'var(--text-muted)' }}>
                                         Email Address (Registered)
                                     </label>
                                     <input
                                         type="email"
                                         value={formData.email}
                                         disabled
-                                        style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-muted, #64748b)', fontSize: '0.95rem', cursor: 'not-allowed' }}
+                                        style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'var(--input-bg)', border: '1px solid var(--card-border)', color: 'var(--text-muted)', fontSize: '0.95rem', cursor: 'not-allowed', opacity: 0.7 }}
                                     />
                                 </div>
 
                                 <div style={{ marginBottom: '1.25rem' }}>
-                                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.4rem', color: 'var(--text-muted, #94a3b8)' }}>
+                                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.4rem', color: 'var(--text-muted)' }}>
                                         Bio / About Me
                                     </label>
                                     <textarea
@@ -247,12 +247,12 @@ const ProfilePage = () => {
                                         onChange={e => setFormData({ ...formData, bio: e.target.value })}
                                         placeholder="Tell us a little bit about yourself or your learning journey..."
                                         rows={3}
-                                        style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: 'var(--text, #ffffff)', fontSize: '0.95rem', resize: 'vertical' }}
+                                        style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text)', fontSize: '0.95rem', resize: 'vertical' }}
                                     />
                                 </div>
 
                                 <div style={{ marginBottom: '1.25rem' }}>
-                                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.4rem', color: 'var(--text-muted, #94a3b8)' }}>
+                                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.4rem', color: 'var(--text-muted)' }}>
                                         Target Learning Goal
                                     </label>
                                     <input
@@ -260,13 +260,13 @@ const ProfilePage = () => {
                                         value={formData.targetGoal}
                                         onChange={e => setFormData({ ...formData, targetGoal: e.target.value })}
                                         placeholder="e.g. Master Web Development & Maintain 30-Day Streak"
-                                        style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: 'var(--text, #ffffff)', fontSize: '0.95rem' }}
+                                        style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text)', fontSize: '0.95rem' }}
                                     />
                                 </div>
 
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
                                     <div>
-                                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.4rem', color: 'var(--text-muted, #94a3b8)' }}>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.4rem', color: 'var(--text-muted)' }}>
                                             Institution / School
                                         </label>
                                         <input
@@ -274,28 +274,28 @@ const ProfilePage = () => {
                                             value={formData.institution}
                                             onChange={e => setFormData({ ...formData, institution: e.target.value })}
                                             placeholder="e.g. University / Self-Taught"
-                                            style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: 'var(--text, #ffffff)', fontSize: '0.95rem' }}
+                                            style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text)', fontSize: '0.95rem' }}
                                         />
                                     </div>
                                     <div>
-                                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.4rem', color: 'var(--text-muted, #94a3b8)' }}>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.4rem', color: 'var(--text-muted)' }}>
                                             Preferred Study Time
                                         </label>
                                         <select
                                             value={formData.preferredStudyHours}
                                             onChange={e => setFormData({ ...formData, preferredStudyHours: e.target.value })}
-                                            style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: '#0f172a', border: '1px solid rgba(255,255,255,0.2)', color: '#ffffff', fontSize: '0.95rem' }}
+                                            style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text)', fontSize: '0.95rem' }}
                                         >
-                                            <option value="Morning" style={{ background: '#1e293b', color: '#ffffff' }}>Morning 🌅</option>
-                                            <option value="Afternoon" style={{ background: '#1e293b', color: '#ffffff' }}>Afternoon ☀️</option>
-                                            <option value="Evening" style={{ background: '#1e293b', color: '#ffffff' }}>Evening 🌆</option>
-                                            <option value="Night Owl" style={{ background: '#1e293b', color: '#ffffff' }}>Night Owl 🌙</option>
+                                            <option value="Morning">Morning 🌅</option>
+                                            <option value="Afternoon">Afternoon ☀️</option>
+                                            <option value="Evening">Evening 🌆</option>
+                                            <option value="Night Owl">Night Owl 🌙</option>
                                         </select>
                                     </div>
                                 </div>
 
                                 <div style={{ marginBottom: '2rem' }}>
-                                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.4rem', color: 'var(--text-muted, #94a3b8)' }}>
+                                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.4rem', color: 'var(--text-muted)' }}>
                                         Social / Portfolio Link
                                     </label>
                                     <input
@@ -303,7 +303,7 @@ const ProfilePage = () => {
                                         value={formData.socialLink}
                                         onChange={e => setFormData({ ...formData, socialLink: e.target.value })}
                                         placeholder="https://github.com/yourusername"
-                                        style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: 'var(--text, #ffffff)', fontSize: '0.95rem' }}
+                                        style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text)', fontSize: '0.95rem' }}
                                     />
                                 </div>
 
