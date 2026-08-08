@@ -1,37 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-    X, Check, ChevronLeft, Sparkles, BookOpen, Film, ArrowRight,
-    Building2, GraduationCap, Square, Moon, Flower2, Heart, Coffee,
-    Gamepad2, Trophy, Swords, Ghost, Bot, Zap, Orbit, Camera, Monitor, Briefcase
-} from 'lucide-react';
+import { X, Check, ChevronLeft, Sparkles, BookOpen, Film, ArrowRight } from 'lucide-react';
 import { EXPERIENCE_CONFIG } from '../config/experiences';
 
 const EXPERIENCE_ICONS = {
-    professional: <Briefcase size={28} />,
-    gamified: <Gamepad2 size={28} />,
+    professional: <BookOpen size={28} />,
+    gamified: <Sparkles size={28} />,
     cinematic: <Film size={28} />,
-};
-
-const SUBTHEME_ICONS = {
-    corporate: <Building2 size={16} />,
-    academic: <GraduationCap size={16} />,
-    minimal: <Square size={16} />,
-    darkProf: <Moon size={16} />,
-    aesthetic: <Flower2 size={16} />,
-    girly: <Heart size={16} />,
-    cozy: <Coffee size={16} />,
-    playful: <Gamepad2 size={16} />,
-    competitive: <Trophy size={16} />,
-    rpg: <Swords size={16} />,
-    pixel: <Ghost size={16} />,
-    cyber: <Bot size={16} />,
-    neonoir: <Film size={16} />,
-    cyberpunkCin: <Zap size={16} />,
-    scifi: <Orbit size={16} />,
-    anime: <Sparkles size={16} />,
-    vintage: <Camera size={16} />,
-    imax: <Monitor size={16} />
 };
 
 const EXPERIENCE_GRADIENTS = {
@@ -40,6 +15,8 @@ const EXPERIENCE_GRADIENTS = {
     cinematic: 'linear-gradient(135deg, #b45309, #f59e0b)',
 };
 
+// Swatch color from the sub-theme's primary palette value
+// NOTE: The modal shell is always dark (#0f172a), so card text must always
 function SubThemeCard({ subKey, cfg, selected, onClick }) {
     const primaryColor = cfg.palette['--primary'] || '#6366f1';
     const IconComponent = SUBTHEME_ICONS[subKey] || <Sparkles size={16} />;
@@ -51,17 +28,17 @@ function SubThemeCard({ subKey, cfg, selected, onClick }) {
             onClick={() => onClick(subKey)}
             style={{
                 cursor: 'pointer',
-                borderRadius: '0.85rem',
-                padding: '0.85rem 1rem',
+                borderRadius: '1rem',
+                padding: '0.85rem 1.1rem',
                 textAlign: 'left',
-                border: selected ? `2px solid ${primaryColor}` : '1.5px solid rgba(255,255,255,0.12)',
+                border: selected ? `2px solid ${primaryColor}` : '1.5px solid rgba(255,255,255,0.1)',
                 background: selected
                     ? `linear-gradient(135deg, rgba(30,41,59,0.95), ${primaryColor}44)`
-                    : 'rgba(255,255,255,0.06)',
+                    : 'rgba(255,255,255,0.05)',
                 position: 'relative',
                 transition: 'all 0.2s ease',
-                boxShadow: selected ? `0 0 16px ${primaryColor}66, 0 4px 12px rgba(0,0,0,0.5)` : 'none',
-                height: '82px',
+                boxShadow: selected ? `0 0 20px ${primaryColor}55, 0 4px 12px rgba(0,0,0,0.4)` : 'none',
+                height: '80px',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
@@ -69,17 +46,17 @@ function SubThemeCard({ subKey, cfg, selected, onClick }) {
         >
             {selected && (
                 <div style={{
-                    position: 'absolute', top: '8px', right: '8px',
+                    position: 'absolute', top: '10px', right: '10px',
                     background: primaryColor, borderRadius: '50%', padding: '3px',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     width: '20px', height: '20px',
-                    boxShadow: `0 0 8px ${primaryColor}`
+                    boxShadow: `0 0 10px ${primaryColor}`
                 }}>
                     <Check size={12} color="#fff" strokeWidth={3} />
                 </div>
             )}
-            
-            {/* Color swatches + Lucide Icon */}
+
+            {/* Color swatches + Lucide Icon pill */}
             <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                 {[cfg.palette['--primary'], cfg.palette['--secondary'], cfg.palette['--accent']].filter(Boolean).map((c, i) => (
                     <div key={i} style={{
@@ -88,7 +65,13 @@ function SubThemeCard({ subKey, cfg, selected, onClick }) {
                         boxShadow: `0 0 6px ${c}88`,
                     }} />
                 ))}
-                <span style={{ marginLeft: '4px', color: primaryColor, display: 'flex', alignItems: 'center' }}>
+                <span style={{
+                    marginLeft: 'auto', marginRight: selected ? '24px' : '0px',
+                    color: primaryColor, background: `${primaryColor}22`,
+                    padding: '3px 8px', borderRadius: '99px',
+                    display: 'inline-flex', alignItems: 'center', gap: '4px',
+                    fontSize: '0.75rem', fontWeight: 700
+                }}>
                     {IconComponent}
                 </span>
             </div>
@@ -96,8 +79,9 @@ function SubThemeCard({ subKey, cfg, selected, onClick }) {
             {/* Catchy Title Only */}
             <div style={{
                 fontWeight: 800,
-                fontSize: '0.92rem',
+                fontSize: '0.98rem',
                 color: '#ffffff',
+                letterSpacing: '0.01em',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis'
@@ -123,7 +107,6 @@ const ThemeSelectModal = ({ isOpen, mode = 'setup', initialExp = 'professional',
     const [step, setStep] = useState(1); // 1 = pick experience, 2 = pick sub-theme
     const [selectedExp, setSelectedExp] = useState(initialExp);
     const [selectedSub, setSelectedSub] = useState(initialSub || EXPERIENCE_CONFIG[initialExp]?.defaultSubTheme || 'corporate');
-
     useEffect(() => {
         if (isOpen) {
             setSelectedExp(initialExp || 'professional');
@@ -132,23 +115,17 @@ const ThemeSelectModal = ({ isOpen, mode = 'setup', initialExp = 'professional',
             setStep(1);
         }
     }, [isOpen, initialExp, initialSub]);
-
     const expConfig = EXPERIENCE_CONFIG[selectedExp];
-
     const handleExpSelect = (expKey) => {
         setSelectedExp(expKey);
         setSelectedSub(EXPERIENCE_CONFIG[expKey].defaultSubTheme);
     };
-
     const handleNext = () => setStep(2);
     const handleBack = () => setStep(1);
-
     const handleSave = () => {
         if (onSave) onSave(selectedExp, selectedSub);
     };
-
     const isSetup = mode === 'setup';
-
     if (!isOpen) return null;
 
     return (
@@ -291,46 +268,17 @@ const ThemeSelectModal = ({ isOpen, mode = 'setup', initialExp = 'professional',
                                         </motion.button>
                                     ))}
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1rem' }}>
-                                    {!isSetup && (
-                                        <button
-                                            onClick={onDismiss}
-                                            style={{
-                                                padding: '0.85rem 1.75rem', borderRadius: '9999px',
-                                                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-                                                color: '#94a3b8', cursor: 'pointer', fontWeight: 600, fontSize: '0.95rem',
-                                            }}
-                                        >
-                                            Cancel
-                                        </button>
-                                    )}
-
-                                    {selectedExp !== 'professional' && (
-                                        <button
-                                            onClick={handleNext}
-                                            style={{
-                                                background: 'none', border: 'none',
-                                                color: '#94a3b8', cursor: 'pointer',
-                                                fontSize: '0.88rem', fontWeight: 600,
-                                                display: 'flex', alignItems: 'center', gap: '0.35rem'
-                                            }}
-                                        >
-                                            Customize Style (Optional) <ArrowRight size={14} />
-                                        </button>
-                                    )}
-
+                                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                                     <button
-                                        onClick={handleSave}
-                                        disabled={isSaving}
+                                        onClick={handleNext}
                                         className="btn btn-primary"
                                         style={{
                                             borderRadius: '9999px', padding: '0.85rem 2.5rem',
                                             fontSize: '1rem', fontWeight: 700,
-                                            opacity: isSaving ? 0.7 : 1,
                                             display: 'flex', alignItems: 'center', gap: '0.5rem',
                                         }}
                                     >
-                                        {isSaving ? 'Applying…' : isSetup ? '🚀 Start Learning' : '✓ Apply Experience'}
+                                        Next: Choose Style <ArrowRight size={16} />
                                     </button>
                                 </div>
                             </motion.div>

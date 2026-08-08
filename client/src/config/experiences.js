@@ -125,7 +125,7 @@ const professional = {
             micro: 'slide',
         },
         'dark-pro': {
-            label: 'Dark Professional',
+            label: 'Dark',
             emoji: '🌑',
             description: 'Late-night focus mode. Navy depth with electric blue accents.',
             palette: {
@@ -235,7 +235,7 @@ const gamified = {
             micro: 'sparkle',
         },
         cozy: {
-            label: 'Cozy / Pookie',
+            label: 'Cozy',
             emoji: '🧸',
             description: 'Warm earth tones, soft textures, and snug vibes.',
             palette: {
@@ -264,7 +264,7 @@ const gamified = {
             micro: 'bounce',
         },
         playful: {
-            label: 'Playful / Toy',
+            label: 'Playful',
             emoji: '🪀',
             description: 'Primary colors and bouncy cartoon energy.',
             palette: {
@@ -322,7 +322,7 @@ const gamified = {
             micro: 'glow',
         },
         rpg: {
-            label: 'RPG Adventure',
+            label: 'RPG',
             emoji: '⚔️',
             description: 'Embark on an epic learning quest. Every topic is a dungeon.',
             palette: {
@@ -351,7 +351,7 @@ const gamified = {
             micro: 'glow',
         },
         pixel: {
-            label: 'Pixel Arcade',
+            label: 'Pixel',
             emoji: '👾',
             description: '8-bit nostalgia. Retro grids and pixel-perfect precision.',
             palette: {
