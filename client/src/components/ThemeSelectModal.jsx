@@ -1,12 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Check, ChevronLeft, Sparkles, BookOpen, Film, ArrowRight } from 'lucide-react';
+import {
+    X, Check, ChevronLeft, Sparkles, BookOpen, Film, ArrowRight,
+    Building2, GraduationCap, Square, Moon, Flower2, Heart, Coffee,
+    Gamepad2, Trophy, Swords, Ghost, Bot, Zap, Orbit, Camera, Monitor,
+    Briefcase, Clapperboard
+} from 'lucide-react';
 import { EXPERIENCE_CONFIG } from '../config/experiences';
 
 const EXPERIENCE_ICONS = {
-    professional: <BookOpen size={28} />,
-    gamified: <Sparkles size={28} />,
-    cinematic: <Film size={28} />,
+    professional: <Briefcase size={28} />,
+    gamified: <Gamepad2 size={28} />,
+    cinematic: <Clapperboard size={28} />,
+};
+
+const SUBTHEME_ICONS = {
+    corporate: <Building2 size={16} />,
+    academic: <GraduationCap size={16} />,
+    minimal: <Square size={16} />,
+    'dark-pro': <Moon size={16} />,
+    aesthetic: <Flower2 size={16} />,
+    girly: <Heart size={16} />,
+    cozy: <Coffee size={16} />,
+    playful: <Gamepad2 size={16} />,
+    competitive: <Trophy size={16} />,
+    rpg: <Swords size={16} />,
+    pixel: <Ghost size={16} />,
+    cyber: <Bot size={16} />,
+    action: <Zap size={16} />,
+    thriller: <Moon size={16} />,
+    romance: <Heart size={16} />,
+    classic: <Film size={16} />,
+    neonoir: <Film size={16} />,
+    cyberpunkCin: <Zap size={16} />,
+    scifi: <Orbit size={16} />,
+    anime: <Sparkles size={16} />,
+    vintage: <Camera size={16} />,
+    imax: <Monitor size={16} />
 };
 
 const EXPERIENCE_GRADIENTS = {
@@ -15,10 +45,8 @@ const EXPERIENCE_GRADIENTS = {
     cinematic: 'linear-gradient(135deg, #b45309, #f59e0b)',
 };
 
-// Swatch color from the sub-theme's primary palette value
-// NOTE: The modal shell is always dark (#0f172a), so card text must always
 function SubThemeCard({ subKey, cfg, selected, onClick }) {
-    const primaryColor = cfg.palette['--primary'] || '#6366f1';
+    const primaryColor = cfg?.palette?.['--primary'] || '#6366f1';
     const IconComponent = SUBTHEME_ICONS[subKey] || <Sparkles size={16} />;
 
     return (
