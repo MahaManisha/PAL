@@ -30,7 +30,7 @@ function SubThemeCard({ subKey, cfg, selected, onClick }) {
                 cursor: 'pointer',
                 borderRadius: cfg.cardShape === 'pill' ? '9999px'
                     : cfg.cardShape === 'rounded-xl' ? '1.25rem'
-                    : cfg.cardShape === 'sharp' ? '0.25rem' : '0.75rem',
+                        : cfg.cardShape === 'sharp' ? '0.25rem' : '0.75rem',
                 padding: '1rem',
                 textAlign: 'left',
                 border: selected ? `2px solid ${primaryColor}` : '2px solid rgba(255,255,255,0.12)',
@@ -87,7 +87,6 @@ function SubThemeCard({ subKey, cfg, selected, onClick }) {
         </motion.button>
     );
 }
-
 /**
  * ThemeSelectModal
  *
