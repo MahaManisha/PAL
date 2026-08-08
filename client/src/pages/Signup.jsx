@@ -238,28 +238,26 @@ const Signup = () => {
                                         onClick={() => setFormData({ ...formData, subTheme: subKey })}
                                         style={{
                                             cursor: 'pointer',
-                                            borderRadius: cfg.cardShape === 'pill' ? '9999px' : cfg.cardShape === 'rounded-xl' ? '1.25rem' : cfg.cardShape === 'sharp' ? '0.25rem' : '0.75rem',
-                                            padding: '1rem', textAlign: 'left',
-                                            border: isSelected ? `2px solid ${primaryColor}` : '2px solid rgba(255,255,255,0.12)',
+                                            borderRadius: '0.85rem',
+                                            padding: '0.85rem 1rem', textAlign: 'left',
+                                            border: isSelected ? `2px solid ${primaryColor}` : '1.5px solid rgba(255,255,255,0.12)',
                                             background: isSelected ? `linear-gradient(135deg, rgba(30,41,59,0.95), ${primaryColor}44)` : 'rgba(255,255,255,0.06)',
                                             position: 'relative', transition: 'all 0.2s ease',
-                                            boxShadow: isSelected ? `0 0 20px ${primaryColor}66, 0 4px 12px rgba(0,0,0,0.5)` : 'none',
-                                            minHeight: '95px', display: 'flex', flexDirection: 'column', gap: '0.4rem',
+                                            boxShadow: isSelected ? `0 0 16px ${primaryColor}66, 0 4px 12px rgba(0,0,0,0.5)` : 'none',
+                                            height: '82px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
                                         }}
                                     >
                                         {isSelected && (
-                                            <div style={{ position: 'absolute', top: '8px', right: '8px', background: primaryColor, borderRadius: '50%', padding: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', boxShadow: `0 0 8px ${primaryColor}` }}>
-                                                <Check size={14} color="#fff" strokeWidth={3} />
+                                            <div style={{ position: 'absolute', top: '8px', right: '8px', background: primaryColor, borderRadius: '50%', padding: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px', boxShadow: `0 0 8px ${primaryColor}` }}>
+                                                <Check size={12} color="#fff" strokeWidth={3} />
                                             </div>
                                         )}
-                                        <div style={{ display: 'flex', gap: '5px', marginBottom: '0.25rem', alignItems: 'center' }}>
+                                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                                             {[cfg.palette['--primary'], cfg.palette['--secondary'], cfg.palette['--accent']].filter(Boolean).map((c, i) => (
-                                                <div key={i} style={{ width: '13px', height: '13px', borderRadius: '50%', background: c, border: '1px solid rgba(255,255,255,0.3)', boxShadow: `0 0 6px ${c}88` }} />
+                                                <div key={i} style={{ width: '11px', height: '11px', borderRadius: '50%', background: c, border: '1px solid rgba(255,255,255,0.3)', boxShadow: `0 0 6px ${c}88` }} />
                                             ))}
-                                            <span style={{ marginLeft: '4px', fontSize: '0.85rem' }}>{cfg.emoji}</span>
                                         </div>
-                                        <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#ffffff' }}>{cfg.label}</div>
-                                        <div style={{ fontSize: '0.75rem', color: isSelected ? '#f1f5f9' : 'rgba(226,232,240,0.78)', lineHeight: 1.4 }}>{cfg.description}</div>
+                                        <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{cfg.label}</div>
                                     </motion.button>
                                 );
                             })}

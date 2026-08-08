@@ -1,12 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Check, ChevronLeft, Sparkles, BookOpen, Film, ArrowRight } from 'lucide-react';
+import {
+    X, Check, ChevronLeft, Sparkles, BookOpen, Film, ArrowRight,
+    Building2, GraduationCap, Square, Moon, Flower2, Heart, Coffee,
+    Gamepad2, Trophy, Swords, Ghost, Bot, Zap, Orbit, Camera, Monitor, Briefcase
+} from 'lucide-react';
 import { EXPERIENCE_CONFIG } from '../config/experiences';
 
 const EXPERIENCE_ICONS = {
-    professional: <BookOpen size={28} />,
-    gamified: <Sparkles size={28} />,
+    professional: <Briefcase size={28} />,
+    gamified: <Gamepad2 size={28} />,
     cinematic: <Film size={28} />,
+};
+
+const SUBTHEME_ICONS = {
+    corporate: <Building2 size={16} />,
+    academic: <GraduationCap size={16} />,
+    minimal: <Square size={16} />,
+    darkProf: <Moon size={16} />,
+    aesthetic: <Flower2 size={16} />,
+    girly: <Heart size={16} />,
+    cozy: <Coffee size={16} />,
+    playful: <Gamepad2 size={16} />,
+    competitive: <Trophy size={16} />,
+    rpg: <Swords size={16} />,
+    pixel: <Ghost size={16} />,
+    cyber: <Bot size={16} />,
+    neonoir: <Film size={16} />,
+    cyberpunkCin: <Zap size={16} />,
+    scifi: <Orbit size={16} />,
+    anime: <Sparkles size={16} />,
+    vintage: <Camera size={16} />,
+    imax: <Monitor size={16} />
 };
 
 const EXPERIENCE_GRADIENTS = {
@@ -15,11 +40,9 @@ const EXPERIENCE_GRADIENTS = {
     cinematic: 'linear-gradient(135deg, #b45309, #f59e0b)',
 };
 
-// Swatch color from the sub-theme's primary palette value
-// NOTE: The modal shell is always dark (#0f172a), so card text must always
-// use white-based stable colors regardless of the sub-theme's own atmosphere.
 function SubThemeCard({ subKey, cfg, selected, onClick }) {
     const primaryColor = cfg.palette['--primary'] || '#6366f1';
+    const IconComponent = SUBTHEME_ICONS[subKey] || <Sparkles size={16} />;
 
     return (
         <motion.button
@@ -28,22 +51,20 @@ function SubThemeCard({ subKey, cfg, selected, onClick }) {
             onClick={() => onClick(subKey)}
             style={{
                 cursor: 'pointer',
-                borderRadius: cfg.cardShape === 'pill' ? '9999px'
-                    : cfg.cardShape === 'rounded-xl' ? '1.25rem'
-                        : cfg.cardShape === 'sharp' ? '0.25rem' : '0.75rem',
-                padding: '1rem',
+                borderRadius: '0.85rem',
+                padding: '0.85rem 1rem',
                 textAlign: 'left',
-                border: selected ? `2px solid ${primaryColor}` : '2px solid rgba(255,255,255,0.12)',
+                border: selected ? `2px solid ${primaryColor}` : '1.5px solid rgba(255,255,255,0.12)',
                 background: selected
                     ? `linear-gradient(135deg, rgba(30,41,59,0.95), ${primaryColor}44)`
                     : 'rgba(255,255,255,0.06)',
                 position: 'relative',
                 transition: 'all 0.2s ease',
-                boxShadow: selected ? `0 0 20px ${primaryColor}66, 0 4px 12px rgba(0,0,0,0.5)` : 'none',
-                minHeight: '95px',
+                boxShadow: selected ? `0 0 16px ${primaryColor}66, 0 4px 12px rgba(0,0,0,0.5)` : 'none',
+                height: '82px',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '0.4rem',
+                justifyContent: 'space-between',
             }}
         >
             {selected && (
@@ -51,38 +72,37 @@ function SubThemeCard({ subKey, cfg, selected, onClick }) {
                     position: 'absolute', top: '8px', right: '8px',
                     background: primaryColor, borderRadius: '50%', padding: '3px',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    width: '22px', height: '22px',
+                    width: '20px', height: '20px',
                     boxShadow: `0 0 8px ${primaryColor}`
                 }}>
-                    <Check size={14} color="#fff" strokeWidth={3} />
+                    <Check size={12} color="#fff" strokeWidth={3} />
                 </div>
             )}
-            {/* Color swatch row — preserves visual identity dots + emoji */}
-            <div style={{ display: 'flex', gap: '5px', marginBottom: '0.25rem', alignItems: 'center' }}>
+            
+            {/* Color swatches + Lucide Icon */}
+            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                 {[cfg.palette['--primary'], cfg.palette['--secondary'], cfg.palette['--accent']].filter(Boolean).map((c, i) => (
                     <div key={i} style={{
-                        width: '13px', height: '13px', borderRadius: '50%', background: c,
+                        width: '11px', height: '11px', borderRadius: '50%', background: c,
                         border: '1px solid rgba(255,255,255,0.3)',
                         boxShadow: `0 0 6px ${c}88`,
                     }} />
                 ))}
-                <span style={{ marginLeft: '4px', fontSize: '0.85rem' }}>{cfg.emoji}</span>
+                <span style={{ marginLeft: '4px', color: primaryColor, display: 'flex', alignItems: 'center' }}>
+                    {IconComponent}
+                </span>
             </div>
-            {/* Title — modal-stable light color */}
+
+            {/* Catchy Title Only */}
             <div style={{
                 fontWeight: 800,
-                fontSize: '0.9rem',
+                fontSize: '0.92rem',
                 color: '#ffffff',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
             }}>
                 {cfg.label}
-            </div>
-            {/* Description — modal-stable light color */}
-            <div style={{
-                fontSize: '0.75rem',
-                color: selected ? '#f1f5f9' : 'rgba(226,232,240,0.78)',
-                lineHeight: 1.4,
-            }}>
-                {cfg.description}
             </div>
         </motion.button>
     );
