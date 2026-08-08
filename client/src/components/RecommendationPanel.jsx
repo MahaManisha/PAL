@@ -344,7 +344,7 @@ const RecommendationPanel = ({ userId }) => {
                                         borderRadius: '0.85rem',
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        justify: 'space-between',
+                                        justifyContent: 'space-between',
                                         gap: '0.75rem'
                                     }}
                                 >

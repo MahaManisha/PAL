@@ -433,7 +433,7 @@ const ProfilePage = () => {
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        justify: 'space-between',
+                                        justifyContent: 'space-between',
                                         padding: '0.65rem 0.85rem',
                                         borderRadius: '0.65rem',
                                         background: item.completed ? 'rgba(34,197,94,0.08)' : 'rgba(255,255,255,0.03)',

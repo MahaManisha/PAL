@@ -351,6 +351,8 @@ input:focus {
   text-decoration: none;
   font-size: 1rem;
   transition: color 0.3s;
+  user-select: none;
+  -webkit-user-select: none;
 }
 .nav-link:hover {
   color: var(--primary);
@@ -595,3 +597,34 @@ input:focus {
     justify-content: center;
   }
 }
+
+/* Dashboard Responsive Layout Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}
+

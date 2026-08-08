@@ -2,10 +2,9 @@ import React, { useContext, useState, useEffect, useCallback, useRef } from 'rea
 import { Link, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { Menu, X, Brain, Search, User, Palette } from 'lucide-react';
+import { Menu, X, Brain, Search, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProfileAvatarRing from './ProfileAvatarRing';
-import ThemeSelectModal from './ThemeSelectModal';
 
 // Search Modal
 const SearchModal = ({ onClose }) => (
@@ -75,10 +74,10 @@ const AUTH_NAV_LINKS = [
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
     const themeCtx = useTheme ? useTheme() : null;
+    const [activeSection, setActiveSection] = useState('home');
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
-    const [themeModalOpen, setThemeModalOpen] = useState(false);
     const location = useLocation();
     const isLandingPage = location.pathname === '/';
     const drawerRef = useRef(null);
@@ -230,46 +229,7 @@ const Navbar = () => {
                         <nav aria-label="App navigation" className="desktop-nav" style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '1.25rem', alignItems: 'center' }}>
                             <Link to="/dashboard" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>Dashboard</Link>
                             <Link to="/leaderboard" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>Leaderboard</Link>
-                            {themeCtx && (
-                                <button
-                                    onClick={() => setThemeModalOpen(true)}
-                                    title="Click to change theme/experience"
-                                    style={{
-                                        padding: '0.3rem 0.85rem', borderRadius: '9999px',
-                                        background: 'var(--surface)',
-                                        border: '1.5px solid var(--primary, #6366f1)',
-                                        fontSize: '0.8rem', fontWeight: 700,
-                                        color: 'var(--primary, #6366f1)',
-                                        display: 'flex', alignItems: 'center', gap: '0.4rem',
-                                        cursor: 'pointer',
-                                        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                                        transition: 'all 0.2s ease',
-                                    }}
-                                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.04)'}
-                                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-                                >
-                                    <Palette size={14} />
-                                    {themeCtx.themeConfig?.experienceCfg?.emoji}
-                                    {themeCtx.themeConfig?.subThemeCfg?.label || themeCtx.experience}
-                                </button>
-                            )}
                         </nav>
-                    )}
-
-                    {/* Theme Modal Triggered from Navbar */}
-                    {themeCtx && (
-                        <ThemeSelectModal
-                            isOpen={themeModalOpen}
-                            mode="edit"
-                            initialExp={themeCtx.experience}
-                            initialSub={themeCtx.subTheme}
-                            onSave={async (exp, sub) => {
-                                await themeCtx.savePreference(exp, sub);
-                                setThemeModalOpen(false);
-                            }}
-                            onDismiss={() => setThemeModalOpen(false)}
-                            isSaving={themeCtx.isChanging}
-                        />
                     )}
 
                     {/* ─── Right Section ─── */}

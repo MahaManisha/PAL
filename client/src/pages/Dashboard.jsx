@@ -16,6 +16,10 @@ import WeakAreaPanel from '../components/WeakAreaPanel';
 import AchievementShowcase from '../components/AchievementShowcase';
 import RewardStoreModal from '../components/RewardStoreModal';
 import LeaderboardPreview from '../components/LeaderboardPreview';
+import AiTutorWidget from '../components/AiTutorWidget';
+import FlashcardDeck from '../components/FlashcardDeck';
+import CertificateModal from '../components/CertificateModal';
+import MockTestGeneratorModal from '../components/MockTestGeneratorModal';
 import { getAvatarIcon, getFrameStyle, getAccentColor } from '../config/cosmeticsConfig';
 
 /* ─── Daily Quest Modal ─── */
@@ -158,6 +162,8 @@ const Dashboard = () => {
     const [questResult, setQuestResult] = useState(null);
     const [experienceModalOpen, setExperienceModalOpen] = useState(false);
     const [isStoreModalOpen, setIsStoreModalOpen] = useState(false);
+    const [isCertModalOpen, setIsCertModalOpen] = useState(false);
+    const [isMockTestModalOpen, setIsMockTestModalOpen] = useState(false);
 
     const rewardValue = user?.[reward.key] || 0;
     const passedTopics = progress.filter(p => p.status === 'pass').length;
@@ -302,6 +308,38 @@ const Dashboard = () => {
                         </motion.button>
                     </Link>
 
+                    {/* Mock Test Generator CTA */}
+                    <motion.button
+                        whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                        onClick={() => setIsMockTestModalOpen(true)}
+                        style={{
+                            padding: '0.6rem 1.2rem', borderRadius: '9999px',
+                            background: 'rgba(168,85,247,0.12)',
+                            border: '1px solid rgba(168,85,247,0.3)',
+                            color: '#a855f7', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', gap: '0.5rem',
+                            fontSize: '0.88rem', fontWeight: 600, transition: 'all 0.2s',
+                        }}
+                    >
+                        <Target size={15} /> Mock Test Practice
+                    </motion.button>
+
+                    {/* Certificate CTA */}
+                    <motion.button
+                        whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                        onClick={() => setIsCertModalOpen(true)}
+                        style={{
+                            padding: '0.6rem 1.2rem', borderRadius: '9999px',
+                            background: 'rgba(34,197,94,0.12)',
+                            border: '1px solid rgba(34,197,94,0.3)',
+                            color: '#22c55e', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', gap: '0.5rem',
+                            fontSize: '0.88rem', fontWeight: 600, transition: 'all 0.2s',
+                        }}
+                    >
+                        <Award size={15} /> View Certificate
+                    </motion.button>
+
                     {/* Change Experience button */}
                     <motion.button
                         whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
@@ -334,19 +372,27 @@ const Dashboard = () => {
             <motion.div
                 initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
                 style={{
-                    marginBottom: '2rem', padding: '0.9rem 1.25rem',
-                    borderRadius: '0.85rem',
-                    background: 'var(--input-bg)',
+                    marginBottom: '2rem', padding: '1rem 1.4rem',
+                    borderRadius: '1rem',
+                    background: 'var(--surface)',
                     border: '1px solid var(--card-border)',
-                    display: 'flex', alignItems: 'center', gap: '0.75rem',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+                    display: 'flex', alignItems: 'center', gap: '0.85rem',
                     flexWrap: 'wrap',
                 }}
             >
-                <span style={{ fontSize: '1.3rem' }}>{themeConfig.experienceCfg?.emoji}</span>
-                <span style={{ fontWeight: 700, color: 'var(--primary)', fontSize: '0.95rem' }}>
-                    {themeConfig.experienceCfg?.label} — {themeConfig.subThemeCfg?.label}
-                </span>
-                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginLeft: 'auto' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(99,102,241,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
+                    {themeConfig.experienceCfg?.emoji}
+                </div>
+                <div>
+                    <span style={{ fontWeight: 800, color: 'var(--text)', fontSize: '0.98rem' }}>
+                        {themeConfig.experienceCfg?.label}
+                    </span>
+                    <span style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '0.88rem', marginLeft: '0.5rem', background: 'rgba(99,102,241,0.1)', padding: '2px 10px', borderRadius: '99px' }}>
+                        {themeConfig.subThemeCfg?.label}
+                    </span>
+                </div>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginLeft: 'auto', fontWeight: 500 }}>
                     {terminology.chapter}s · {terminology.topic}s · {terminology.assessment}s
                 </span>
             </motion.div>
@@ -379,7 +425,7 @@ const Dashboard = () => {
             </div>
 
             {/* ─── Main Grid ─── */}
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem', alignItems: 'start' }}>
+            <div className="dashboard-grid">
 
                 {/* Analytics & Achievements & Subjects */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -471,6 +517,9 @@ const Dashboard = () => {
                             consecutive study days
                         </p>
                     </div>
+
+                    {/* Interactive Flashcards */}
+                    <FlashcardDeck topicName="Linear Algebra & Maths" />
                 </div>
 
                 {/* Reward Store Modal */}
@@ -479,6 +528,25 @@ const Dashboard = () => {
                     onClose={() => setIsStoreModalOpen(false)}
                     userId={user?.id || user?._id}
                 />
+
+                {/* Certificate Modal */}
+                <CertificateModal
+                    isOpen={isCertModalOpen}
+                    onClose={() => setIsCertModalOpen(false)}
+                    userName={user?.name || 'Learner'}
+                    subjectName="Linear Algebra & Engineering Mathematics"
+                    score={100}
+                />
+
+                {/* Mock Test Generator Modal */}
+                <MockTestGeneratorModal
+                    isOpen={isMockTestModalOpen}
+                    onClose={() => setIsMockTestModalOpen(false)}
+                    topicName="Linear Algebra"
+                />
+
+                {/* Floating AI Tutor Chat Assistant */}
+                <AiTutorWidget topicName="Linear Algebra & GATE Maths" />
             </div>
         </div>
     );

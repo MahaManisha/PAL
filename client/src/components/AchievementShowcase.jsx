@@ -145,7 +145,7 @@ const AchievementShowcase = ({ userId }) => {
                     border: '1px solid rgba(239,68,68,0.2)',
                     display: 'flex',
                     alignItems: 'center',
-                    justify: 'space-between',
+                    justifyContent: 'space-between',
                     flexWrap: 'wrap',
                     gap: '0.75rem'
                 }}>

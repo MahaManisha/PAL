@@ -433,7 +433,7 @@ const ChapterCard = ({
                                         </div>
 
                                         {/* Topic state pill tag */}
-                                        <div style={{ display: 'flex', justifyContent: 'flex-between', alignItems: 'center' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <span style={{
                                                 fontSize: '0.7rem', fontWeight: 600,
                                                 padding: '2px 8px', borderRadius: '4px',
