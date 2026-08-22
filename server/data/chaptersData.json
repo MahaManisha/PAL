@@ -1,0 +1,131 @@
+[
+  {
+    "_id": "math_ch_1",
+    "chapterName": "Chapter 1: Applications of Matrices and Determinants",
+    "order": 1,
+    "driveUrl": "https://drive.google.com/drive/folders/1QjnH08gcZ2GWzOULR3auArEHxMp1qCGn?usp=sharing",
+    "topics": [
+      { "_id": "topic_1_1", "topicName": "Row Echelon Form", "order": 1 },
+      { "_id": "topic_1_2", "topicName": "Rank of a Matrix", "order": 2 },
+      { "_id": "topic_1_3", "topicName": "Inverse of a Non-Singular Matrix", "order": 3 },
+      { "_id": "topic_1_4", "topicName": "Applications of Matrices - Solving Systems", "order": 4 },
+      { "_id": "topic_1_5", "topicName": "Gaussian Elimination Method", "order": 5 },
+      { "_id": "topic_1_6", "topicName": "Consistency of Non-Homogeneous Equations", "order": 6 },
+      { "_id": "topic_1_7", "topicName": "Homogeneous Linear Equations", "order": 7 }
+    ]
+  },
+  {
+    "_id": "math_ch_2",
+    "chapterName": "Chapter 2: Complex Numbers",
+    "order": 2,
+    "driveUrl": "https://drive.google.com/drive/folders/14Y8FJk005Pj-TZ0OiDfkqXsko0vLEwhI?usp=sharing",
+    "topics": [
+      { "_id": "topic_2_1", "topicName": "Basic Algebraic Properties of Complex Numbers", "order": 1 },
+      { "_id": "topic_2_2", "topicName": "Conjugates and Modulus of Complex Numbers", "order": 2 },
+      { "_id": "topic_2_3", "topicName": "Square Root of a Complex Number", "order": 3 },
+      { "_id": "topic_2_4", "topicName": "Polar Form and Euler Form", "order": 4 },
+      { "_id": "topic_2_5", "topicName": "De Moivre Theorem and Applications", "order": 5 }
+    ]
+  },
+  {
+    "_id": "math_ch_3",
+    "chapterName": "Chapter 3: Theory of Equations",
+    "order": 3,
+    "driveUrl": "https://drive.google.com/drive/folders/1LtMB2XherCulmHe3pKOKahmMVtFSr9MF?usp=sharing",
+    "topics": [
+      { "_id": "topic_3_1", "topicName": "Introduction to Theory of Equations", "order": 1 },
+      { "_id": "topic_3_2", "topicName": "Basics of Polynomial Equations", "order": 2 },
+      { "_id": "topic_3_3", "topicName": "Vieta's Formula for Polynomial Equations", "order": 3 }
+    ]
+  },
+  {
+    "_id": "math_ch_4",
+    "chapterName": "Chapter 4: Inverse Trigonometric Functions",
+    "order": 4,
+    "driveUrl": "https://drive.google.com/drive/folders/168Q8HTKfuFLGbYtwzD2xmcZ8wuO-4CaZ?usp=sharing",
+    "topics": [
+      { "_id": "topic_4_1", "topicName": "Introduction to Inverse Trigonometric Functions", "order": 1 },
+      { "_id": "topic_4_2", "topicName": "Properties of Inverse Trigonometric Functions", "order": 2 }
+    ]
+  },
+  {
+    "_id": "math_ch_5",
+    "chapterName": "Chapter 5: Two Dimensional Analytical Geometry-II",
+    "order": 5,
+    "driveUrl": "https://drive.google.com/drive/folders/12mqTW40dk_VhMbPih_tm_kWlhNYB_Llb?usp=sharing",
+    "topics": [
+      { "_id": "topic_5_1", "topicName": "Circle and Conic Sections", "order": 1 },
+      { "_id": "topic_5_2", "topicName": "Parabola, Ellipse and Hyperbola", "order": 2 }
+    ]
+  },
+  {
+    "_id": "math_ch_6",
+    "chapterName": "Chapter 6: Applications of Vector Algebra",
+    "order": 6,
+    "driveUrl": "https://drive.google.com/drive/folders/1U6UTSlQfBSSoKGoZhCgS1WQV3T8mwYXu?usp=sharing",
+    "topics": [
+      { "_id": "topic_6_1", "topicName": "Scalar and Vector Products Applications", "order": 1 },
+      { "_id": "topic_6_2", "topicName": "Equations of Planes and Lines in 3D", "order": 2 }
+    ]
+  },
+  {
+    "_id": "math_ch_7",
+    "chapterName": "Chapter 7: Applications of Differential Calculus",
+    "order": 7,
+    "driveUrl": "https://drive.google.com/drive/folders/1LMZ20UkE9VHs6U8uTa_lLCaZkFz1AbPh?usp=sharing",
+    "topics": [
+      { "_id": "topic_7_1", "topicName": "Tangents, Normals and Rate of Change", "order": 1 },
+      { "_id": "topic_7_2", "topicName": "Maxima, Minima and Concavity", "order": 2 }
+    ]
+  },
+  {
+    "_id": "math_ch_8",
+    "chapterName": "Chapter 8: Differentials and Partial Derivatives",
+    "order": 8,
+    "driveUrl": "https://drive.google.com/drive/folders/18Gm5tAjSQhbNaKW_eNPbd3b1ZiiLE01y?usp=sharing",
+    "topics": [
+      { "_id": "topic_8_1", "topicName": "Linear Approximation and Differentials", "order": 1 },
+      { "_id": "topic_8_2", "topicName": "Partial Derivatives and Euler Theorem", "order": 2 }
+    ]
+  },
+  {
+    "_id": "math_ch_9",
+    "chapterName": "Chapter 9: Applications of Integration",
+    "order": 9,
+    "driveUrl": "https://drive.google.com/drive/folders/1NkWZSU3MZACUFOgPnUhbVlCo0INVWO8u?usp=sharing",
+    "topics": [
+      { "_id": "topic_9_1", "topicName": "Definite Integrals and Reduction Formulas", "order": 1 },
+      { "_id": "topic_9_2", "topicName": "Area Bounded by Curves", "order": 2 }
+    ]
+  },
+  {
+    "_id": "math_ch_10",
+    "chapterName": "Chapter 10: Ordinary Differential Equations",
+    "order": 10,
+    "driveUrl": "https://drive.google.com/drive/folders/1G2bj4Uwi4bW3axU-QXI26EBqHgEeMDkU?usp=sharing",
+    "topics": [
+      { "_id": "topic_10_1", "topicName": "Formation and Order of Differential Equations", "order": 1 },
+      { "_id": "topic_10_2", "topicName": "First Order First Degree Differential Equations", "order": 2 }
+    ]
+  },
+  {
+    "_id": "math_ch_11",
+    "chapterName": "Chapter 11: Probability Distributions",
+    "order": 11,
+    "driveUrl": "https://drive.google.com/drive/folders/1LS8tArhY1B6An_sd7_4bb15Siybl9Dsw?usp=sharing",
+    "topics": [
+      { "_id": "topic_11_1", "topicName": "Random Variables and Probability Mass Function", "order": 1 },
+      { "_id": "topic_11_2", "topicName": "Theoretical Distributions (Binomial & Normal)", "order": 2 }
+    ]
+  },
+  {
+    "_id": "math_ch_12",
+    "chapterName": "Chapter 12: Discrete Mathematics",
+    "order": 12,
+    "driveUrl": "https://drive.google.com/drive/folders/1DR6-xa-fJjQa3CUtHt9vkrfgldG_Eu7k?usp=sharing",
+    "topics": [
+      { "_id": "topic_12_1", "topicName": "Binary Operations and Truth Tables", "order": 1 },
+      { "_id": "topic_12_2", "topicName": "Mathematical Logic and Boolean Algebra", "order": 2 }
+    ]
+  }
+]

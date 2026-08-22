@@ -1,2 +1,18 @@
+# Dependencies
 node_modules/
+client/node_modules/
+server/node_modules/
+
+# Production & Build outputs
+dist/
+client/dist/
+build/
+
+# Environment variables & secrets
 .env
+*.env
+
+# System & Nested repos
+.DS_Store
+Thumbs.db
+PAL/
