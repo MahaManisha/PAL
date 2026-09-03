@@ -39,13 +39,13 @@ const seedAdaptiveData = async () => {
             {
                 chapterId: mathCh2._id,
                 type: 'TRAILER',
-                driveLink: 'https://docs.google.com/presentation/d/1Xy_b5yD29jG-4zS9v_xXG-pGqCq1YmFh/preview', // Placeholder
+                driveLink: 'https://drive.google.com/file/d/1-JPwvWHTjt2OiJSl-mUU1CAIbi82DT96/preview',
                 title: 'Chapter 2 Trailer'
             },
             {
                 chapterId: mathCh2._id,
                 type: 'MAIN_PPT',
-                driveLink: 'https://docs.google.com/presentation/d/1rVb_n5yD29jG-4zS9v_xXG-pGqCq1YmFh/preview', // Placeholder
+                driveLink: 'https://drive.google.com/file/d/1YLOgf-Z6oYtzv1qAssKC9exWebl8DdRk/preview',
                 title: 'Chapter 2 Main Presentation'
             }
         ]);
