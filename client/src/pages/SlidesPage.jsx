@@ -6,6 +6,7 @@ import { FileText, ArrowLeft, Download, Globe, Video, BookOpen, CheckCircle, Che
 import { AuthContext } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useProgression } from '../hooks/useProgression';
+import { formatEmbedUrl, isVideoFile } from '../utils/mediaUtils';
 
 const SlidesPage = ({ type = 'TOPIC' }) => {
     const { subject, chapter, topic, chapterId } = useParams();
@@ -96,6 +97,10 @@ const SlidesPage = ({ type = 'TOPIC' }) => {
             const checkExists = async (url) => {
                 try {
                     const res = await fetch(url, { method: 'HEAD' });
+                    const contentType = res.headers.get('content-type');
+                    if (contentType && contentType.includes('text/html')) {
+                        return false;
+                    }
                     return res.status === 200;
                 } catch (e) {
                     return false;
@@ -356,14 +361,26 @@ const SlidesPage = ({ type = 'TOPIC' }) => {
                             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '1.5rem' }}>
                                 <div style={{ flex: 1, background: 'black', borderRadius: '0.5rem', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.8)' }}>
                                     {microVideoUrl ? (
-                                        <iframe 
-                                            src={microVideoUrl} 
-                                            width="100%" 
-                                            height="100%" 
-                                            allow="autoplay" 
-                                            style={{ border: 'none' }} 
-                                            title="Micro Topic Video"
-                                        ></iframe>
+                                        isVideoFile(microVideoUrl) ? (
+                                            <video 
+                                                src={microVideoUrl} 
+                                                controls 
+                                                autoPlay
+                                                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                            >
+                                                Your browser does not support HTML5 video playback.
+                                            </video>
+                                        ) : (
+                                            <iframe 
+                                                src={formatEmbedUrl(microVideoUrl)} 
+                                                width="100%" 
+                                                height="100%" 
+                                                allow="autoplay; encrypted-media; picture-in-picture" 
+                                                allowFullScreen
+                                                style={{ border: 'none' }} 
+                                                title="Micro Topic Video"
+                                            ></iframe>
+                                        )
                                     ) : (
                                         <video 
                                             src={videoUrl} 

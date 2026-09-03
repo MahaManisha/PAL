@@ -44,7 +44,7 @@ const TopicPage = () => {
     const [isSubmittingStage, setIsSubmittingStage] = useState(false);
 
     const subjectIdStr = topicDetail?.chapterId?.subjectId?._id ? String(topicDetail.chapterId.subjectId._id) : null;
-    const { getTopicState, loading: progressionLoading } = useProgression(user?.id);
+    const { getTopicState, loading: progressionLoading } = useProgression(subjectIdStr);
     const [isGateResolved, setIsGateResolved] = useState(false);
     const [isLocked, setIsLocked] = useState(false);
 

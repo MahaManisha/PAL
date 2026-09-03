@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "seed": "node scripts/seed.js"
+    "seed": "node scripts/seed.js",
+    "seed:all": "node scripts/seedAll.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
