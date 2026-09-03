@@ -131,16 +131,13 @@ const Navbar = () => {
     const navStyle = {
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 999,
         height: '80px',
-        transition: 'background 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease',
-        background: isScrolled ? 'rgba(255,255,255,0.88)' : 'transparent',
-        backdropFilter: isScrolled ? 'blur(16px)' : 'blur(0px)',
-        WebkitBackdropFilter: isScrolled ? 'blur(16px)' : 'blur(0px)',
-        boxShadow: isScrolled ? '0 2px 24px rgba(0,0,0,0.06)' : 'none',
-        borderBottom: isScrolled ? '1px solid rgba(226,232,240,0.7)' : '1px solid transparent',
+        background: '#ffffff',
+        boxShadow: '0 2px 24px rgba(0,0,0,0.06)',
+        borderBottom: '1px solid rgba(226,232,240,0.7)',
     };
 
-    const textColor = isScrolled || !isLandingPage ? '#0f172a' : '#0f172a';
-    const mutedColor = isScrolled || !isLandingPage ? '#64748b' : '#475569';
+    const textColor = '#0f172a';
+    const mutedColor = '#64748b';
 
     return (
         <>
@@ -191,7 +188,7 @@ const Navbar = () => {
                                         style={{
                                             background: 'none', border: 'none', cursor: 'pointer',
                                             padding: '0.45rem 0.75rem', borderRadius: '0.4rem',
-                                            fontSize: '0.875rem',
+                                            fontSize: '1rem',
                                             fontWeight: isActive ? 700 : 500,
                                             color: isActive ? '#2563eb' : textColor,
                                             fontFamily: 'inherit',
@@ -267,7 +264,7 @@ const Navbar = () => {
                                         background: 'transparent',
                                         color: textColor,
                                         fontWeight: 600,
-                                        fontSize: '0.875rem',
+                                        fontSize: '1rem',
                                         textDecoration: 'none',
                                         transition: 'all 0.2s ease',
                                         display: 'inline-flex', alignItems: 'center',
@@ -287,7 +284,7 @@ const Navbar = () => {
                                             background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 60%, #8b5cf6 100%)',
                                             color: 'white',
                                             fontWeight: 700,
-                                            fontSize: '0.875rem',
+                                            fontSize: '1rem',
                                             textDecoration: 'none',
                                             display: 'inline-flex', alignItems: 'center',
                                             boxShadow: '0 4px 15px rgba(59,130,246,0.4)',
