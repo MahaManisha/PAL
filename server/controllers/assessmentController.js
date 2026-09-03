@@ -22,27 +22,78 @@ exports.getAssessmentByTopic = async (req, res) => {
     }
 };
 
-exports.submitAssessment = async (req, res) => {
-    const { userId, topicId, answers } = req.body;
+exports.getAssessmentByChapter = async (req, res) => {
     try {
-        const assessment = await Assessment.findOne({ topicId });
+        const assessment = await Assessment.findOne({ chapterId: req.params.chapterId, type: req.params.type });
+        if (!assessment) return res.status(404).json({ msg: 'Assessment not found' });
+        res.json(assessment);
+    } catch (err) {
+        res.status(500).send('Server error');
+    }
+};
+
+exports.submitAssessment = async (req, res) => {
+    const { userId, topicId, chapterId, answers } = req.body;
+    try {
+        // Allow fetching assessment by either topicId or chapterId depending on type
+        const query = topicId ? { topicId } : { chapterId };
+        const assessment = await Assessment.findOne(query);
         if (!assessment) return res.status(404).json({ msg: 'Assessment not found' });
 
         let correctCount = 0;
         const mistakes = [];
         let fetchedTopicName = null;
         let didFetchTopic = false;
+        
+        // For tracking topic-level scores in INITIAL assessment
+        const topicCorrectCounts = {};
+        const topicTotalCounts = {};
 
-        for (let index = 0; index < assessment.questions.length; index++) {
-            const q = assessment.questions[index];
-            if (q.correctAnswer === answers[index]) {
-                correctCount++;
+        for (let index = 0; index < answers.length; index++) {
+            const answerData = answers[index];
+            let isCorrect = false;
+            let q = null;
+            let selectedOpt = null;
+
+            if (typeof answerData === 'object' && answerData !== null) {
+                q = assessment.questions.find(quest => quest._id.toString() === answerData.questionId);
+                if (q) {
+                    selectedOpt = answerData.selectedOption;
+                    isCorrect = q.correctAnswer === selectedOpt;
+                }
             } else {
+                q = assessment.questions[index];
+                if (q) {
+                    selectedOpt = answerData;
+                    isCorrect = q.correctAnswer === selectedOpt;
+                }
+            }
+
+            if (!q) continue;
+
+            if (isCorrect) {
+                correctCount++;
+            }
+            
+            // Track topic-level stats if q.topicId exists
+            if (q.topicId) {
+                const tId = q.topicId.toString();
+                if (!topicTotalCounts[tId]) {
+                    topicTotalCounts[tId] = 0;
+                    topicCorrectCounts[tId] = 0;
+                }
+                topicTotalCounts[tId]++;
+                if (isCorrect) {
+                    topicCorrectCounts[tId]++;
+                }
+            }
+
+            if (!isCorrect) {
                 let effectiveTag = (q.conceptTag && typeof q.conceptTag === 'string' && q.conceptTag.trim() !== '') 
                     ? q.conceptTag.trim() 
                     : null;
                 
-                if (!effectiveTag) {
+                if (!effectiveTag && topicId) {
                     if (!didFetchTopic) {
                         try {
                             const parentTopic = await Topic.findById(assessment.topicId);
@@ -59,16 +110,22 @@ exports.submitAssessment = async (req, res) => {
 
                 mistakes.push({
                     questionId: q._id ? q._id.toString() : null,
-                    selectedOption: answers[index],
+                    selectedOption: selectedOpt,
                     correctOption: q.correctAnswer,
                     conceptTag: effectiveTag
                 });
             }
         }
 
-        const currentScore = (correctCount / assessment.questions.length) * 100;
+        const totalQuestions = answers.length > 0 ? answers.length : assessment.questions.length;
+        const currentScore = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
         
-        let progress = await Progress.findOne({ userId, topicId });
+        // Find existing progress by topicId or chapterId
+        const progressQuery = { userId };
+        if (topicId) progressQuery.topicId = topicId;
+        if (chapterId && !topicId) progressQuery.chapterId = chapterId;
+        
+        let progress = await Progress.findOne(progressQuery);
         let legacyWasPassed = false;
         let effectiveBestScore = currentScore;
         
@@ -80,13 +137,38 @@ exports.submitAssessment = async (req, res) => {
                 effectiveBestScore = progress.score;
             }
         } else {
-            progress = new Progress({ userId, topicId });
+            progress = new Progress(progressQuery);
         }
 
         progress.latestScore = currentScore;
         progress.bestScore = Math.max(effectiveBestScore, currentScore);
         progress.score = progress.bestScore;
         progress.status = progress.bestScore >= assessment.passScore ? 'pass' : 'fail';
+        
+        // Handle adaptive logic for INITIAL assessment
+        if (assessment.type === 'INITIAL') {
+            progress.initialAssessmentScore = currentScore;
+            
+            // Calculate Level and Path Type
+            if (currentScore < 40) {
+                progress.currentLevel = 'LOW';
+                progress.pathType = 'GUIDED';
+            } else if (currentScore < 70) {
+                progress.currentLevel = 'MEDIUM';
+                progress.pathType = 'GUIDED';
+            } else {
+                progress.currentLevel = 'HIGH';
+                progress.pathType = 'DIRECT_MAIN_CONTENT';
+            }
+            
+            // Populate topic scores based on questions answered
+            progress.topicScores = Object.keys(topicTotalCounts).map(tId => ({
+                topicId: tId,
+                score: (topicCorrectCounts[tId] / topicTotalCounts[tId]) * 100
+            }));
+        } else if (assessment.type === 'FINAL') {
+            progress.finalAssessmentScore = currentScore;
+        }
 
         const currentAttemptPasses = currentScore >= assessment.passScore;
         const isFirstPassAndEligible = currentAttemptPasses && !progress.rewardClaimed && !legacyWasPassed;
@@ -147,7 +229,13 @@ exports.submitAssessment = async (req, res) => {
             console.error('submitAssessment: Secondary achievement evaluation error ignored:', achErr);
         }
 
-        res.json({ score: progress.score, status: progress.status, user: updatedUser });
+        res.json({ 
+            score: progress.score, 
+            status: progress.status, 
+            user: updatedUser,
+            currentLevel: progress.currentLevel,
+            topicScores: progress.topicScores
+        });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
     Lock, CheckCircle, PlayCircle, BookOpen,
-    Zap, Target, AlertCircle, Clock, ChevronRight, ShieldAlert, Award, Star, Flame, Sparkles
+    Zap, Target, AlertCircle, Clock, ChevronRight, ShieldAlert, Award, Star, Flame, Sparkles, Film
 } from 'lucide-react';
 import { normalizeId } from '../utils/progressionEngine';
 
@@ -40,6 +40,7 @@ const ACTION_LABELS = {
         cinematic:    'Begin Next Act',
         default:      'Start Next Chapter',
     },
+    START_INITIAL_ASSESSMENT: { default: 'Start Initial Assessment', gamified: 'Take Placement Test', cinematic: 'Enter Placement' }
 };
 
 function getCtaLabel(actionType, experience) {
@@ -57,6 +58,14 @@ function getTopicStateConfig(state, terminology = {}) {
                 color: '#10b981',
                 badgeBg: 'rgba(16,185,129,0.12)',
                 label: terminology.complete || 'Passed',
+                borderColor: '#10b981'
+            };
+        case 'SKIPPED':
+            return {
+                Icon: CheckCircle,
+                color: '#10b981',
+                badgeBg: 'rgba(16,185,129,0.12)',
+                label: 'Mastered',
                 borderColor: '#10b981'
             };
         case 'NEEDS_REVISION':
@@ -355,6 +364,13 @@ const ChapterCard = ({
                         <h3 style={{ fontSize: '1.5rem', margin: 0, color: 'var(--text)' }}>
                             {chapter.chapterName}
                         </h3>
+                        {!isLocked && (
+                            <div style={{ marginTop: '0.5rem' }}>
+                                <Link to={`/chapter/${chapterIdStr}/trailer`} style={{ fontSize: '0.85rem', color: 'var(--primary)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
+                                    <Film size={14} /> Watch Chapter Trailer
+                                </Link>
+                            </div>
+                        )}
                     </div>
 
                     <div style={{ textAlign: 'right' }}>

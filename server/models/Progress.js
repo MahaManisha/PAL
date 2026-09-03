@@ -15,7 +15,8 @@ const AttemptSchema = new mongoose.Schema({
 
 const ProgressSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    topicId: { type: mongoose.Schema.Types.ObjectId, ref: 'Topic', required: true },
+    topicId: { type: mongoose.Schema.Types.ObjectId, ref: 'Topic' }, // Optional for chapter-level progress
+    chapterId: { type: mongoose.Schema.Types.ObjectId, ref: 'Chapter' }, // Added for chapter progress
     score: { type: Number, default: 0 },
     bestScore: { type: Number },
     latestScore: { type: Number },
@@ -23,7 +24,16 @@ const ProgressSchema = new mongoose.Schema({
     practiceCompleted: { type: Boolean, default: false },
     rewardClaimed: { type: Boolean, default: false },
     attempts: [AttemptSchema],
-    status: { type: String, enum: ['in_progress', 'pass', 'fail'], required: true }
+    status: { type: String, enum: ['in_progress', 'pass', 'fail'], required: true },
+    // Adaptive Learning additions
+    currentLevel: { type: String, enum: ['LOW', 'MEDIUM', 'HIGH', 'PENDING'], default: 'PENDING' },
+    pathType: { type: String, enum: ['DIRECT_MAIN_CONTENT', 'GUIDED', 'PENDING'], default: 'PENDING' },
+    initialAssessmentScore: { type: Number },
+    finalAssessmentScore: { type: Number },
+    topicScores: [{
+        topicId: { type: mongoose.Schema.Types.ObjectId, ref: 'Topic' },
+        score: Number
+    }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Progress', ProgressSchema);

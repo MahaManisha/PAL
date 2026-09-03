@@ -7,8 +7,8 @@ import { AuthContext } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useProgression } from '../hooks/useProgression';
 
-const SlidesPage = () => {
-    const { subject, chapter, topic } = useParams();
+const SlidesPage = ({ type = 'TOPIC' }) => {
+    const { subject, chapter, topic, chapterId } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
@@ -45,8 +45,54 @@ const SlidesPage = () => {
     const tamilUrl = `/slides/${encodeURIComponent(decodedSubject)}/${encodeURIComponent(folderChapter)}/${encodeURIComponent(decodedTopic)}_Tamil.pdf`;
     const videoUrl = `/videos/${encodeURIComponent(decodedSubject)}/${encodeURIComponent(folderChapter)}/${encodeURIComponent(decodedTopic)}.mp4`;
 
+    const [mainPptUrl, setMainPptUrl] = useState('');
+    const [microVideoUrl, setMicroVideoUrl] = useState('');
+    const [microPptUrl, setMicroPptUrl] = useState('');
+
     useEffect(() => {
         const checkAssets = async () => {
+            if (type === 'MAIN' && chapterId) {
+                try {
+                    const res = await fetch(`/api/learning-content/chapter/${chapterId}`, {
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                    });
+                    const data = await res.json();
+                    const mainPpt = data.find(c => c.type === 'MAIN_PPT');
+                    if (mainPpt && mainPpt.driveLink) {
+                        setMainPptUrl(mainPpt.driveLink);
+                        setHasPptx(true);
+                    }
+                } catch (e) {
+                    console.error('Failed to load main PPT', e);
+                }
+                setLoadingAssets(false);
+                return;
+            }
+
+            // Fetch dynamic micro content
+            if (topicId) {
+                try {
+                    const res = await fetch(`/api/learning-content/topic/${topicId}`, {
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                    });
+                    const data = await res.json();
+                    
+                    const microVid = data.find(c => c.type === 'MICRO_VIDEO');
+                    if (microVid && microVid.driveLink) {
+                        setMicroVideoUrl(microVid.driveLink);
+                        setHasVideo(true);
+                    }
+                    
+                    const microPpt = data.find(c => c.type === 'MICRO_PPT');
+                    if (microPpt && microPpt.driveLink) {
+                        setMicroPptUrl(microPpt.driveLink);
+                        setHasPptx(true);
+                    }
+                } catch (e) {
+                    console.error('Failed to load dynamic topic content', e);
+                }
+            }
+
             const checkExists = async (url) => {
                 try {
                     const res = await fetch(url, { method: 'HEAD' });
@@ -64,14 +110,15 @@ const SlidesPage = () => {
             ]);
 
             setHasPdf(pdfExists);
-            setHasPptx(pptxExists);
+            // Fallbacks for static content
+            setHasPptx(prev => prev || pptxExists);
             setHasTamil(tamilExists);
-            setHasVideo(videoExists);
+            setHasVideo(prev => prev || videoExists);
             setLoadingAssets(false);
         };
 
         checkAssets();
-    }, [pdfUrl, pptxUrl, tamilUrl, videoUrl]);
+    }, [pdfUrl, pptxUrl, tamilUrl, videoUrl, type, chapterId, topicId]);
 
     // Phase 1: Resolve topic identity
     useEffect(() => {
@@ -100,6 +147,11 @@ const SlidesPage = () => {
 
     // Phase 2: Evaluate lock
     useEffect(() => {
+        if (type === 'MAIN') {
+            setIsGateResolved(true);
+            return;
+        }
+
         if (!topicDetail || progressionLoading) return;
 
         const state = getTopicState(topicDetail, topicDetail.chapterId);
@@ -110,11 +162,16 @@ const SlidesPage = () => {
         }
         
         setIsGateResolved(true);
-    }, [topicDetail, progressionLoading, getTopicState, progressRecords, topicId]);
+    }, [topicDetail, progressionLoading, getTopicState, progressRecords, topicId, type]);
 
     const activeSlideUrl = language === 'ta' && hasTamil ? tamilUrl : pdfUrl;
 
     const handleCompleteLearning = async () => {
+        if (type === 'MAIN') {
+            navigate(`/chapter/${chapterId}/final-assessment`);
+            return;
+        }
+
         if (!topicId || !user?.id) {
             // Fallback navigation if no topicId
             navigate('/dashboard');
@@ -239,16 +296,36 @@ const SlidesPage = () => {
                                     </div>
                                 </object>
                             ) : hasPptx ? (
-                                <div style={{ padding: '3rem', textAlign: 'center', maxWidth: '450px' }}>
-                                    <FileText size={70} color="var(--primary)" style={{ marginBottom: '1.5rem', opacity: 0.8 }} />
-                                    <h4 style={{ marginBottom: '1rem', fontSize: '1.25rem' }}>PowerPoint Presentation</h4>
-                                    <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '0.95rem', lineHeight: '1.5' }}>
-                                        This topic slide is formatted as a PowerPoint presentation (PPTX). Download it to study.
-                                    </p>
-                                    <a href={pptxUrl} download className="btn btn-primary" style={{ padding: '0.8rem 2rem' }}>
-                                        <Download size={18} /> Download Presentation (.pptx)
-                                    </a>
-                                </div>
+                                type === 'MAIN' && mainPptUrl ? (
+                                    <iframe 
+                                        src={mainPptUrl} 
+                                        width="100%" 
+                                        height="100%" 
+                                        allow="autoplay" 
+                                        style={{ border: 'none' }} 
+                                        title="Main Chapter Slides"
+                                    ></iframe>
+                                ) : type === 'TOPIC' && microPptUrl ? (
+                                    <iframe 
+                                        src={microPptUrl} 
+                                        width="100%" 
+                                        height="100%" 
+                                        allow="autoplay" 
+                                        style={{ border: 'none' }} 
+                                        title="Micro Topic Slides"
+                                    ></iframe>
+                                ) : (
+                                    <div style={{ padding: '3rem', textAlign: 'center', maxWidth: '450px' }}>
+                                        <FileText size={70} color="var(--primary)" style={{ marginBottom: '1.5rem', opacity: 0.8 }} />
+                                        <h4 style={{ marginBottom: '1rem', fontSize: '1.25rem' }}>PowerPoint Presentation</h4>
+                                        <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '0.95rem', lineHeight: '1.5' }}>
+                                            This topic slide is formatted as a PowerPoint presentation (PPTX). Download it to study.
+                                        </p>
+                                        <a href={pptxUrl} download className="btn btn-primary" style={{ padding: '0.8rem 2rem' }}>
+                                            <Download size={18} /> Download Presentation (.pptx)
+                                        </a>
+                                    </div>
+                                )
                             ) : (
                                 <div style={{ padding: '2rem', textAlign: 'center' }}>
                                     <FileText size={60} color="var(--text-muted)" style={{ marginBottom: '1rem', opacity: 0.4 }} />
@@ -278,13 +355,24 @@ const SlidesPage = () => {
 
                             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '1.5rem' }}>
                                 <div style={{ flex: 1, background: 'black', borderRadius: '0.5rem', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.8)' }}>
-                                    <video 
-                                        src={videoUrl} 
-                                        controls 
-                                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                                    >
-                                        Your browser does not support HTML5 video playback.
-                                    </video>
+                                    {microVideoUrl ? (
+                                        <iframe 
+                                            src={microVideoUrl} 
+                                            width="100%" 
+                                            height="100%" 
+                                            allow="autoplay" 
+                                            style={{ border: 'none' }} 
+                                            title="Micro Topic Video"
+                                        ></iframe>
+                                    ) : (
+                                        <video 
+                                            src={videoUrl} 
+                                            controls 
+                                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                        >
+                                            Your browser does not support HTML5 video playback.
+                                        </video>
+                                    )}
                                 </div>
 
                                 <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '0.5rem', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -316,7 +404,7 @@ const SlidesPage = () => {
                     }}
                 >
                     <CheckCircle size={20} />
-                    {isCompleting ? 'Saving Progress...' : 'Complete Learning & Continue to Practice'}
+                    {isCompleting ? 'Saving Progress...' : type === 'MAIN' ? 'Continue to Final Assessment' : 'Complete Learning & Continue to Practice'}
                     <ChevronRight size={20} />
                 </button>
             </div>

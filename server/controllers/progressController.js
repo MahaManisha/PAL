@@ -2,8 +2,18 @@ const Progress = require('../models/Progress');
 
 exports.getProgressByUser = async (req, res) => {
     try {
-        const progress = await Progress.find({ userId: req.params.userId }).populate('topicId');
+        const progress = await Progress.find({ userId: req.params.userId }).populate('topicId').populate('chapterId');
         res.json(progress);
+    } catch (err) {
+        res.status(500).send('Server error');
+    }
+};
+
+exports.getProgressByChapter = async (req, res) => {
+    try {
+        const { userId, chapterId } = req.params;
+        const progress = await Progress.findOne({ userId, chapterId });
+        res.json(progress || {});
     } catch (err) {
         res.status(500).send('Server error');
     }

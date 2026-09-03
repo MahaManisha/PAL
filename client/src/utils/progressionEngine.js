@@ -7,6 +7,30 @@ export const normalizeId = (id) => {
     return String(id);
 };
 
+export const ADAPTIVE_THRESHOLDS = {
+    LOW_MAX: 39,
+    MEDIUM_MAX: 69,
+    HIGH_MIN: 70
+};
+
+export const TOPIC_THRESHOLDS = {
+    WEAK_MAX: 39,
+    MODERATE_MAX: 69,
+    STRONG_MIN: 70
+};
+
+export const determineOverallLevel = (score) => {
+    if (score <= ADAPTIVE_THRESHOLDS.LOW_MAX) return 'LOW';
+    if (score <= ADAPTIVE_THRESHOLDS.MEDIUM_MAX) return 'MEDIUM';
+    return 'HIGH';
+};
+
+export const determineTopicStatus = (topicScore) => {
+    if (topicScore <= TOPIC_THRESHOLDS.WEAK_MAX) return 'WEAK';
+    if (topicScore <= TOPIC_THRESHOLDS.MODERATE_MAX) return 'MODERATE';
+    return 'STRONG';
+};
+
 export const getEffectiveBestScore = (progress) => {
     if (!progress) return null;
     if (typeof progress.bestScore === 'number') {
@@ -18,7 +42,7 @@ export const getEffectiveBestScore = (progress) => {
     return null;
 };
 
-export const normalizeProgress = (progressRecords, topicId) => {
+export const normalizeProgress = (progressRecords, topicId, chapterProgress) => {
     if (!progressRecords || !Array.isArray(progressRecords)) return null;
 
     const targetTopicIdStr = normalizeId(topicId);
@@ -29,15 +53,25 @@ export const normalizeProgress = (progressRecords, topicId) => {
         return normalizeId(p.topicId) === targetTopicIdStr;
     });
 
-    if (topicRecords.length === 0) return null;
-
     const merged = {
         topicId: targetTopicIdStr,
         status: undefined,
         learningCompleted: false,
         practiceCompleted: false,
-        effectiveBestScore: null
+        effectiveBestScore: null,
+        initialScore: null,
+        topicStatus: null
     };
+
+    if (chapterProgress && chapterProgress.topicScores) {
+        const ts = chapterProgress.topicScores.find(t => normalizeId(t.topicId) === targetTopicIdStr);
+        if (ts) {
+            merged.initialScore = ts.score;
+            merged.topicStatus = determineTopicStatus(ts.score);
+        }
+    }
+
+    if (topicRecords.length === 0 && merged.initialScore === null) return null;
 
     let hasInProgress = false;
     let hasFail = false;
@@ -77,9 +111,21 @@ export const normalizeProgress = (progressRecords, topicId) => {
     return merged;
 };
 
-export const calculateTopicState = (topic, normalizedProgress, isParentChapterLocked) => {
+export const calculateTopicState = (topic, normalizedProgress, isParentChapterLocked, chapterProgress) => {
     if (isParentChapterLocked) return 'LOCKED';
-    if (!normalizedProgress) return 'NOT_STARTED';
+    
+    if (chapterProgress && chapterProgress.pathType) {
+        if (chapterProgress.pathType === 'DIRECT_MAIN_CONTENT') {
+            return 'SKIPPED';
+        }
+        if (chapterProgress.pathType === 'GUIDED' && normalizedProgress?.topicStatus === 'STRONG') {
+            return 'SKIPPED';
+        }
+    }
+    
+    if (!normalizedProgress || (normalizedProgress.status === undefined && normalizedProgress.initialScore !== null)) {
+        return 'NOT_STARTED';
+    }
     
     if (normalizedProgress.status === 'pass') return 'PASSED';
     if (normalizedProgress.status === 'fail') return 'NEEDS_REVISION';
@@ -90,29 +136,44 @@ export const calculateTopicState = (topic, normalizedProgress, isParentChapterLo
 };
 
 export const calculateChapterState = (chapter, progressRecords, isPreviousChapterCompleted) => {
-    if (!isPreviousChapterCompleted) return 'LOCKED';
+    const chapterIdStr = normalizeId(chapter._id || chapter.id);
+    const chapterProgress = progressRecords.find(p => p.chapterId && normalizeId(p.chapterId._id || p.chapterId) === chapterIdStr);
+    
+    const hasPassedInitial = chapterProgress && chapterProgress.initialAssessmentScore !== undefined && chapterProgress.currentLevel !== 'PENDING';
     
     const topics = chapter?.topics || [];
-    if (topics.length === 0) return 'NOT_STARTED'; // Empty chapters don't complete themselves
+    if (topics.length === 0) {
+        if (!hasPassedInitial) return 'NOT_STARTED';
+        if (chapterProgress && chapterProgress.finalAssessmentScore !== undefined) return 'COMPLETED';
+        return 'IN_PROGRESS';
+    }
 
-    let allPassed = true;
+    if (chapterProgress && chapterProgress.pathType === 'DIRECT_MAIN_CONTENT') {
+        if (chapterProgress.finalAssessmentScore !== undefined) return 'COMPLETED';
+        return 'IN_PROGRESS';
+    }
+
+    let allRequiredPassed = true;
     let anyProgress = false;
 
     for (const topic of topics) {
         const topicIdStr = normalizeId(topic._id || topic.id);
-        const normalized = normalizeProgress(progressRecords, topicIdStr);
-        const state = calculateTopicState(topic, normalized, false);
+        const normalized = normalizeProgress(progressRecords, topicIdStr, chapterProgress);
+        const state = calculateTopicState(topic, normalized, !hasPassedInitial, chapterProgress);
         
-        if (state !== 'PASSED') {
-            allPassed = false;
+        if (state !== 'PASSED' && state !== 'SKIPPED') {
+            allRequiredPassed = false;
         }
-        if (state !== 'NOT_STARTED') {
+        if (state !== 'NOT_STARTED' && state !== 'LOCKED' && state !== 'SKIPPED') {
             anyProgress = true;
         }
     }
 
-    if (allPassed) return 'COMPLETED';
-    if (!anyProgress) return 'NOT_STARTED';
+    if (allRequiredPassed) {
+        if (chapterProgress && chapterProgress.finalAssessmentScore !== undefined) return 'COMPLETED';
+        return 'IN_PROGRESS'; 
+    }
+    if (!anyProgress && !hasPassedInitial) return 'NOT_STARTED';
     return 'IN_PROGRESS';
 };
 
@@ -124,11 +185,15 @@ export const calculateChapterProgress = (chapter, progressRecords) => {
         return { topicCount: 0, completedTopics: 0, progressPercentage: 0 };
     }
 
+    const chapterIdStr = normalizeId(chapter._id || chapter.id);
+    const chapterProgress = progressRecords.find(p => p.chapterId && normalizeId(p.chapterId._id || p.chapterId) === chapterIdStr);
+
     let completedTopics = 0;
     for (const topic of topics) {
         const topicIdStr = normalizeId(topic._id || topic.id);
-        const normalized = normalizeProgress(progressRecords, topicIdStr);
-        if (normalized && normalized.status === 'pass') {
+        const normalized = normalizeProgress(progressRecords, topicIdStr, chapterProgress);
+        const state = calculateTopicState(topic, normalized, false, chapterProgress);
+        if (state === 'PASSED' || state === 'SKIPPED') {
             completedTopics++;
         }
     }
@@ -183,89 +248,139 @@ export const determineNextAction = (subjectId, chapters, progressRecords) => {
     for (let i = 0; i < chapters.length; i++) {
         const chapter = chapters[i];
         const chapterState = calculateChapterState(chapter, progressRecords, previousChapterCompleted);
+        const chapterIdStr = normalizeId(chapter._id || chapter.id);
+        const chapterProgress = progressRecords.find(p => p.chapterId && normalizeId(p.chapterId._id || p.chapterId) === chapterIdStr);
 
         if (chapterState === 'LOCKED') break;
 
         if (chapterState === 'IN_PROGRESS' || chapterState === 'NOT_STARTED') {
-            const topics = chapter.topics || [];
+            const hasPassedInitial = chapterProgress && chapterProgress.initialAssessmentScore !== undefined && chapterProgress.currentLevel !== 'PENDING';
             
-            // Priority 1: Check for failed assessment / NEEDS_REVISION in the current chapter
-            for (let j = 0; j < topics.length; j++) {
-                const topic = topics[j];
-                const topicIdStr = normalizeId(topic._id || topic.id);
-                const normalized = normalizeProgress(progressRecords, topicIdStr);
-                const state = calculateTopicState(topic, normalized, false);
-                
-                if (state === 'NEEDS_REVISION') {
+            if (!hasPassedInitial) {
+                return {
+                    type: 'START_INITIAL_ASSESSMENT',
+                    subjectId,
+                    chapterId: chapterIdStr,
+                    topicId: null,
+                    route: `/chapter/${chapterIdStr}/trailer`,
+                    title: 'Initial Assessment',
+                    description: 'Take the initial assessment to unlock your personalized learning path.',
+                    reason: 'Required for adaptive path',
+                    priority: 'primary',
+                    progressState: 'NOT_STARTED'
+                };
+            }
+
+            if (chapterProgress.pathType === 'DIRECT_MAIN_CONTENT') {
+                if (chapterProgress.finalAssessmentScore === undefined) {
                     return {
-                        type: 'REVIEW_TOPIC',
+                        type: 'CONTINUE_LEARNING',
                         subjectId,
-                        chapterId: normalizeId(chapter._id || chapter.id),
-                        topicId: topicIdStr,
-                        route: `/topic/${topicIdStr}`,
-                        title: topic.topicName || topic.title || 'Topic',
-                        description: 'Review the material before retaking the assessment.',
-                        reason: 'Assessment failed',
+                        chapterId: chapterIdStr,
+                        topicId: null,
+                        route: `/slides/${chapterIdStr}/main`,
+                        title: 'Main Chapter Content',
+                        description: 'View the main presentation for this chapter.',
+                        reason: 'HIGH path',
                         priority: 'primary',
-                        progressState: state
+                        progressState: 'NOT_STARTED'
                     };
+                }
+            } else {
+                const topics = chapter.topics || [];
+                
+                // Priority 1: NEEDS_REVISION
+                for (let j = 0; j < topics.length; j++) {
+                    const topic = topics[j];
+                    const topicIdStr = normalizeId(topic._id || topic.id);
+                    const normalized = normalizeProgress(progressRecords, topicIdStr, chapterProgress);
+                    const state = calculateTopicState(topic, normalized, false, chapterProgress);
+                    
+                    if (state === 'NEEDS_REVISION') {
+                        return {
+                            type: 'REVIEW_TOPIC',
+                            subjectId,
+                            chapterId: chapterIdStr,
+                            topicId: topicIdStr,
+                            route: `/topic/${topicIdStr}`,
+                            title: topic.topicName || topic.title || 'Topic',
+                            description: 'Review the material before retaking the assessment.',
+                            reason: 'Assessment failed',
+                            priority: 'primary',
+                            progressState: state
+                        };
+                    }
+                }
+
+                // Priority 2: Next incomplete required topic
+                let previousTopicPassed = false;
+                let foundAction = false;
+                
+                for (let j = 0; j < topics.length; j++) {
+                    const topic = topics[j];
+                    const topicIdStr = normalizeId(topic._id || topic.id);
+                    const normalized = normalizeProgress(progressRecords, topicIdStr, chapterProgress);
+                    const state = calculateTopicState(topic, normalized, false, chapterProgress);
+
+                    if (state !== 'PASSED' && state !== 'SKIPPED') {
+                        let actionType = 'START_TOPIC';
+                        
+                        if (state === 'NOT_STARTED') {
+                            if (previousTopicPassed) {
+                                actionType = 'START_NEXT_TOPIC';
+                            } else {
+                                actionType = 'START_TOPIC';
+                            }
+                        } else if (state === 'LEARNING') {
+                            actionType = 'CONTINUE_LEARNING';
+                        } else if (state === 'PRACTICING') {
+                            actionType = 'START_PRACTICE';
+                        } else if (state === 'ASSESSMENT_READY') {
+                            actionType = 'TAKE_ASSESSMENT';
+                        }
+
+                        const route = (actionType === 'TAKE_ASSESSMENT') 
+                            ? `/assessment/${topicIdStr}`
+                            : `/topic/${topicIdStr}`;
+
+                        return {
+                            type: actionType,
+                            subjectId,
+                            chapterId: chapterIdStr,
+                            topicId: topicIdStr,
+                            route,
+                            title: topic.topicName || topic.title || 'Topic',
+                            description: 'Continue your personalized learning journey.',
+                            reason: 'Required topic based on assessment',
+                            priority: 'primary',
+                            progressState: state
+                        };
+                    }
+                    
+                    previousTopicPassed = (state === 'PASSED' || state === 'SKIPPED');
                 }
             }
 
-            // Priority 2: Find the first incomplete topic in the normal flow
-            let previousTopicPassed = false;
-            
-            for (let j = 0; j < topics.length; j++) {
-                const topic = topics[j];
-                const topicIdStr = normalizeId(topic._id || topic.id);
-                const normalized = normalizeProgress(progressRecords, topicIdStr);
-                const state = calculateTopicState(topic, normalized, false);
-
-                if (state !== 'PASSED') {
-                    let actionType = 'START_TOPIC'; // default for NOT_STARTED
-                    
-                    if (state === 'NOT_STARTED') {
-                        if (previousTopicPassed) {
-                            actionType = 'START_NEXT_TOPIC';
-                        } else if (j === 0 && previousChapterCompleted && i > 0) {
-                            actionType = 'START_NEXT_CHAPTER';
-                        } else {
-                            actionType = 'START_TOPIC';
-                        }
-                    } else if (state === 'LEARNING') {
-                        actionType = 'CONTINUE_LEARNING';
-                    } else if (state === 'PRACTICING') {
-                        actionType = 'START_PRACTICE';
-                    } else if (state === 'ASSESSMENT_READY') {
-                        actionType = 'TAKE_ASSESSMENT';
-                    }
-
-                    const route = (actionType === 'TAKE_ASSESSMENT') 
-                        ? `/assessment/${topicIdStr}`
-                        : `/topic/${topicIdStr}`;
-
-                    return {
-                        type: actionType,
-                        subjectId,
-                        chapterId: normalizeId(chapter._id || chapter.id),
-                        topicId: topicIdStr,
-                        route,
-                        title: topic.topicName || topic.title || 'Topic',
-                        description: 'Continue your learning journey.',
-                        reason: 'Next in path',
-                        priority: 'primary',
-                        progressState: state
-                    };
-                }
-                
-                previousTopicPassed = state === 'PASSED';
+            // Priority 3: Final Assessment if all learning is done
+            if (chapterProgress.finalAssessmentScore === undefined) {
+                return {
+                    type: 'TAKE_ASSESSMENT',
+                    subjectId,
+                    chapterId: chapterIdStr,
+                    topicId: null,
+                    route: `/chapter/${chapterIdStr}/final-assessment`,
+                    title: 'Final Assessment',
+                    description: 'Take the final assessment for this chapter.',
+                    reason: 'All learning completed',
+                    priority: 'primary',
+                    progressState: 'ASSESSMENT_READY'
+                };
             }
         }
 
         previousChapterCompleted = chapterState === 'COMPLETED';
     }
 
-    // If all chapters are COMPLETED
     if (previousChapterCompleted && chapters.length > 0) {
         return {
             type: 'SUBJECT_COMPLETE',

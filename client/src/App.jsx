@@ -13,6 +13,8 @@ import AssessmentPage from './pages/AssessmentPage';
 import SlidesPage from './pages/SlidesPage';
 import Leaderboard from './pages/Leaderboard';
 import ProfilePage from './pages/ProfilePage';
+import ChapterTrailerPage from './pages/ChapterTrailerPage';
+import AdaptivePathResultPage from './pages/AdaptivePathResultPage';
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -67,8 +69,13 @@ const AppContent = () => {
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
             <Route path="/subject/:id" element={<ProtectedRoute><SubjectPage /></ProtectedRoute>} />
             <Route path="/topic/:id" element={<ProtectedRoute><TopicPage /></ProtectedRoute>} />
-            <Route path="/assessment/:topicId" element={<ProtectedRoute><AssessmentPage /></ProtectedRoute>} />
+            <Route path="/chapter/:chapterId/trailer" element={<ProtectedRoute><ChapterTrailerPage /></ProtectedRoute>} />
+            <Route path="/chapter/:chapterId/initial-assessment" element={<ProtectedRoute><AssessmentPage type="INITIAL" /></ProtectedRoute>} />
+            <Route path="/chapter/:chapterId/learning-path" element={<ProtectedRoute><AdaptivePathResultPage /></ProtectedRoute>} />
+            <Route path="/chapter/:chapterId/final-assessment" element={<ProtectedRoute><AssessmentPage type="FINAL" /></ProtectedRoute>} />
+            <Route path="/assessment/:topicId" element={<ProtectedRoute><AssessmentPage type="TOPIC" /></ProtectedRoute>} />
             <Route path="/slides/:subject/:chapter/:topic" element={<ProtectedRoute><SlidesPage /></ProtectedRoute>} />
+            <Route path="/slides/:chapterId/main" element={<ProtectedRoute><SlidesPage type="MAIN" /></ProtectedRoute>} />
           </Routes>
         </div>
         {!user && <Footer />}
