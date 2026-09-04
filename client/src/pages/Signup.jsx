@@ -168,11 +168,11 @@ const Signup = () => {
                                     onClick={() => handleExpSelect(exp.id)}
                                     style={{
                                         cursor: 'pointer', borderRadius: '1.25rem', padding: '1.5rem', textAlign: 'center',
-                                        border: formData.interest === exp.id ? '2px solid white' : '2px solid rgba(255,255,255,0.08)',
-                                        background: formData.interest === exp.id ? exp.gradient : 'rgba(255,255,255,0.03)',
+                                        border: formData.interest === exp.id ? '2px solid var(--primary)' : '2px solid var(--card-border)',
+                                        background: formData.interest === exp.id ? exp.gradient : 'var(--surface)',
                                         position: 'relative', transition: 'all 0.2s ease',
                                         boxShadow: formData.interest === exp.id ? '0 10px 25px rgba(0,0,0,0.2)' : 'none',
-                                        color: '#fff',
+                                        color: formData.interest === exp.id ? '#fff' : 'var(--text)',
                                     }}
                                 >
                                     {formData.interest === exp.id && (
@@ -240,8 +240,8 @@ const Signup = () => {
                                             cursor: 'pointer',
                                             borderRadius: '0.85rem',
                                             padding: '0.85rem 1rem', textAlign: 'left',
-                                            border: isSelected ? `2px solid ${primaryColor}` : '1.5px solid rgba(255,255,255,0.12)',
-                                            background: isSelected ? `linear-gradient(135deg, rgba(30,41,59,0.95), ${primaryColor}44)` : 'rgba(255,255,255,0.06)',
+                                            border: isSelected ? `2px solid ${primaryColor}` : '1.5px solid var(--card-border)',
+                                            background: isSelected ? `linear-gradient(135deg, rgba(30,41,59,0.95), ${primaryColor}44)` : 'var(--surface)',
                                             position: 'relative', transition: 'all 0.2s ease',
                                             boxShadow: isSelected ? `0 0 16px ${primaryColor}66, 0 4px 12px rgba(0,0,0,0.5)` : 'none',
                                             height: '82px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
@@ -257,7 +257,7 @@ const Signup = () => {
                                                 <div key={i} style={{ width: '11px', height: '11px', borderRadius: '50%', background: c, border: '1px solid rgba(255,255,255,0.3)', boxShadow: `0 0 6px ${c}88` }} />
                                             ))}
                                         </div>
-                                        <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{cfg.label}</div>
+                                        <div style={{ fontWeight: 800, fontSize: '0.92rem', color: isSelected ? '#ffffff' : 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{cfg.label}</div>
                                     </motion.button>
                                 );
                             })}

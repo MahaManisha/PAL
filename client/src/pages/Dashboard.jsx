@@ -429,10 +429,6 @@ const Dashboard = () => {
 
                 {/* Analytics & Achievements & Subjects */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                    <RecommendationPanel userId={user?.id || user?._id} />
-                    <StudyPlanWidget userId={user?.id || user?._id} />
-                    <WeakAreaPanel userId={user?.id || user?._id} />
-                    <AchievementShowcase userId={user?.id || user?._id} />
                     <div>
                         <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>Your {terminology.chapter}s</h3>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
@@ -457,6 +453,10 @@ const Dashboard = () => {
                             ))}
                         </div>
                     </div>
+                    <RecommendationPanel userId={user?.id || user?._id} />
+                    <StudyPlanWidget userId={user?.id || user?._id} />
+                    <WeakAreaPanel userId={user?.id || user?._id} />
+                    <AchievementShowcase userId={user?.id || user?._id} />
                 </div>
 
                 {/* Sidebar */}
