@@ -4,6 +4,7 @@ const User = require('../models/User');
 const Topic = require('../models/Topic');
 const achievementService = require('../services/achievementService');
 const dailyQuestService = require('../services/dailyQuestService');
+const notificationService = require('../services/notificationService');
 
 const getToday = () => new Date().toISOString().split('T')[0];
 const getYesterday = () => {
@@ -222,9 +223,10 @@ exports.submitAssessment = async (req, res) => {
 
         await progress.save();
 
+        let newlyUnlockedAchievements = [];
         // Secondary achievement evaluation (isolated with try/catch)
         try {
-            await achievementService.evaluateUserAchievements(userId, currentScore);
+            newlyUnlockedAchievements = await achievementService.evaluateUserAchievements(userId, currentScore);
         } catch (achErr) {
             console.error('submitAssessment: Secondary achievement evaluation error ignored:', achErr);
         }
@@ -234,7 +236,8 @@ exports.submitAssessment = async (req, res) => {
             status: progress.status, 
             user: updatedUser,
             currentLevel: progress.currentLevel,
-            topicScores: progress.topicScores
+            topicScores: progress.topicScores,
+            newlyUnlockedAchievements
         });
     } catch (err) {
         console.error(err.message);
@@ -328,6 +331,7 @@ exports.submitDailyQuest = async (req, res) => {
 
         const isCorrect = (answer === todaysQuest.correctAnswer);
 
+        let newlyUnlockedAchievements = [];
         if (isCorrect) {
             const yesterday = dailyQuestService.getYesterday();
             let newStreak = 1;
@@ -361,10 +365,13 @@ exports.submitDailyQuest = async (req, res) => {
 
             // Secondary achievement evaluation (isolated with try/catch)
             try {
-                await achievementService.evaluateUserAchievements(userId);
+                newlyUnlockedAchievements = await achievementService.evaluateUserAchievements(userId);
             } catch (achErr) {
                 console.error('submitDailyQuest: Secondary achievement evaluation error ignored:', achErr);
             }
+
+            // Notify mission complete
+            await notificationService.notifyMissionComplete(userId);
         }
 
         const updatedUser = await User.findById(userId);
@@ -372,7 +379,8 @@ exports.submitDailyQuest = async (req, res) => {
         res.json({
             isCorrect,
             correctAnswer: todaysQuest.correctAnswer,
-            userStats: { points: updatedUser.points || 0, streak: updatedUser.streak || 0, tokens: updatedUser.tokens || 0 }
+            userStats: { points: updatedUser.points || 0, streak: updatedUser.streak || 0, tokens: updatedUser.tokens || 0 },
+            newlyUnlockedAchievements
         });
     } catch (err) {
         console.error('submitDailyQuest error:', err);

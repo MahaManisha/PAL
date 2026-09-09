@@ -15,6 +15,7 @@ import {
     getMasteryBand,
     determineNextAction
 } from '../utils/progressionEngine';
+import AchievementUnlockModal from '../components/AchievementUnlockModal';
 
 // ─── Themed result copy ────────────────────────────────────────────────────────
 function getResultCopy(masteryBand, experience, terminology) {
@@ -120,6 +121,7 @@ const AssessmentPage = ({ type = 'TOPIC' }) => {
     const [resultLoading, setResultLoading] = useState(false); // while resolving next action
     const [rewardEarned, setRewardEarned] = useState(false);
     const [isPreviouslyPassedLowerRetake, setIsPreviouslyPassedLowerRetake] = useState(false);
+    const [newlyUnlocked, setNewlyUnlocked] = useState([]);
 
     // ── subjectId resolution ────────────────────────────────────────────────────
     // Priority 1: location.state (set by TopicPage)
@@ -276,6 +278,10 @@ const AssessmentPage = ({ type = 'TOPIC' }) => {
             setMasteryBand(band);
             setResult(res.data);
 
+            if (res.data.newlyUnlockedAchievements?.length > 0) {
+                setNewlyUnlocked(res.data.newlyUnlockedAchievements);
+            }
+
             // Detect previously-passed + lower-retake scenario
             const isLowerRetake = wasPreviouslyPassed && thisAttemptScore < bestScore;
             setIsPreviouslyPassedLowerRetake(isLowerRetake);
@@ -398,6 +404,8 @@ const AssessmentPage = ({ type = 'TOPIC' }) => {
             : <XCircle size={72} color="#f43f5e" />;
 
         return (
+            <>
+            <AchievementUnlockModal achievements={newlyUnlocked} onClose={() => setNewlyUnlocked([])} />
             <div className="container" style={{ paddingTop: '5rem', maxWidth: '720px', textAlign: 'center', paddingBottom: '5rem' }}>
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -593,6 +601,7 @@ const AssessmentPage = ({ type = 'TOPIC' }) => {
                     )}
                 </motion.div>
             </div>
+            </>
         );
     }
 

@@ -5,6 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 import { Menu, X, Brain, Search, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProfileAvatarRing from './ProfileAvatarRing';
+import NotificationBell from './NotificationBell';
 
 // Search Modal
 const SearchModal = ({ onClose }) => (
@@ -225,6 +226,13 @@ const Navbar = () => {
                     {user && (
                         <nav aria-label="App navigation" className="desktop-nav" style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '1.25rem', alignItems: 'center' }}>
                             <Link to="/dashboard" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>Dashboard</Link>
+                            <Link to="/analytics" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>My Progress</Link>
+                            <Link to="/learning-sessions" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>Sessions</Link>
+                            <Link to="/practice" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>Practice</Link>
+                            <Link to="/revision" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>Revision Center</Link>
+                            <Link to="/roadmap" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>Roadmap</Link>
+                            <Link to="/study-groups" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>Study Groups</Link>
+                            <Link to="/achievements" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>Achievements</Link>
                             <Link to="/leaderboard" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>Leaderboard</Link>
                         </nav>
                     )}
@@ -298,6 +306,7 @@ const Navbar = () => {
                             </>
                         ) : (
                             <>
+                                <NotificationBell />
                                 <Link to="/profile" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                                     Profile
                                 </Link>
@@ -407,6 +416,13 @@ const Navbar = () => {
                                 {user && (
                                     <>
                                         <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-link">Dashboard</Link>
+                                        <Link to="/analytics" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-link">My Progress</Link>
+                                        <Link to="/learning-sessions" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-link">Sessions</Link>
+                                        <Link to="/practice" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-link">Practice</Link>
+                                        <Link to="/revision" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-link">Revision Center</Link>
+                                        <Link to="/roadmap" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-link">Roadmap</Link>
+                                        <Link to="/study-groups" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-link">Study Groups</Link>
+                                        <Link to="/achievements" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-link">Achievements</Link>
                                         <Link to="/leaderboard" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-link">Leaderboard</Link>
                                         <button onClick={() => { logout(); setMobileMenuOpen(false); }} className="mobile-nav-link">Logout</button>
                                     </>

@@ -10,6 +10,7 @@ import apiClient from '../api/apiClient';
 import { useTheme } from '../context/ThemeContext';
 import { normalizeId } from '../utils/progressionEngine';
 import { useProgression } from '../hooks/useProgression';
+import AiTutorWidget from '../components/AiTutorWidget';
 
 const TopicPage = () => {
     const { id } = useParams(); // topicId
@@ -571,6 +572,22 @@ const TopicPage = () => {
 
             </AnimatePresence>
 
+            {/* AI Tutor Widget with Full Context */}
+            {topicDetail && (
+                <AiTutorWidget 
+                    contextData={{
+                        subjectName: topicDetail.chapterId?.subjectId?.name || topicDetail.chapterId?.subjectId?.subjectName,
+                        chapterName: topicDetail.chapterId?.chapterName,
+                        topicName: topicDetail.topicName,
+                        status: progressRecord?.status || 'unstarted',
+                        currentScore: progressRecord?.bestScore || 0,
+                        weakAreas: (progressRecord?.attempts || [])
+                            .flatMap(a => a.mistakes)
+                            .filter(m => m?.conceptTag)
+                            .map(m => m.conceptTag)
+                    }} 
+                />
+            )}
         </div>
     );
 };

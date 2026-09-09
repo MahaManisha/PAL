@@ -15,6 +15,16 @@ import Leaderboard from './pages/Leaderboard';
 import ProfilePage from './pages/ProfilePage';
 import ChapterTrailerPage from './pages/ChapterTrailerPage';
 import AdaptivePathResultPage from './pages/AdaptivePathResultPage';
+import SkillTreePage from './pages/SkillTreePage';
+import RevisionCenter from './pages/RevisionCenter';
+import ProgressAnalytics from './pages/ProgressAnalytics';
+import AchievementsPage from './pages/AchievementsPage';
+import AdaptivePracticePage from './pages/AdaptivePracticePage';
+import StudyGroupsPage from './pages/StudyGroupsPage';
+import StudyGroupDetails from './pages/StudyGroupDetails';
+import DuelDetails from './pages/DuelDetails';
+import FocusSession from './pages/FocusSession';
+import LearningSessions from './pages/LearningSessions';
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -65,7 +75,17 @@ const AppContent = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/analytics" element={<ProtectedRoute><ProgressAnalytics /></ProtectedRoute>} />
+            <Route path="/revision" element={<ProtectedRoute><RevisionCenter /></ProtectedRoute>} />
+            <Route path="/learning-sessions" element={<ProtectedRoute><LearningSessions /></ProtectedRoute>} />
+            <Route path="/focus-session" element={<ProtectedRoute><FocusSession /></ProtectedRoute>} />
+            <Route path="/practice" element={<ProtectedRoute><AdaptivePracticePage /></ProtectedRoute>} />
+            <Route path="/roadmap" element={<ProtectedRoute><SkillTreePage /></ProtectedRoute>} />
             <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
+            <Route path="/achievements" element={<ProtectedRoute><AchievementsPage /></ProtectedRoute>} />
+            <Route path="/study-groups" element={<ProtectedRoute><StudyGroupsPage /></ProtectedRoute>} />
+            <Route path="/study-groups/:id" element={<ProtectedRoute><StudyGroupDetails /></ProtectedRoute>} />
+            <Route path="/duel/:id" element={<ProtectedRoute><DuelDetails /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
             <Route path="/subject/:id" element={<ProtectedRoute><SubjectPage /></ProtectedRoute>} />
             <Route path="/topic/:id" element={<ProtectedRoute><TopicPage /></ProtectedRoute>} />

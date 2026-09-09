@@ -23,6 +23,12 @@ app.use('/api/study-plan', require('./routes/studyPlan'));
 app.use('/api/leaderboard', require('./routes/leaderboard'));
 app.use('/api/ai', require('./routes/ai'));
 app.use('/api/learning-content', require('./routes/learningContent'));
+app.use('/api/practice', require('./routes/practiceRoutes'));
+app.use('/api/study-groups', require('./routes/studyGroups'));
+app.use('/api/duels', require('./routes/duels'));
+app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/coach', require('./routes/coach'));
+app.use('/api/sessions', require('./routes/sessionHistory'));
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 

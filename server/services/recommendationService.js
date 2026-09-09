@@ -293,10 +293,12 @@ const getRecommendationsForUser = async (userId) => {
             subjectId: w.subjectId,
             subjectName: w.subjectName,
             conceptTag: w.conceptTag,
-            reason: `You made ${w.mistakeCount} recent mistakes in ${w.conceptTag}. Reviewing this topic can strengthen this weak area.`,
+            reason: `You made ${w.mistakeCount} recent mistakes in ${w.conceptTag}. Practicing this topic can strengthen your weak area.`,
             urgency: 'HIGH',
-            actionTab: 'learn',
-            actionUrl: `/topic/${w.topicId}?tab=learn`,
+            actionTab: 'practice',
+            actionUrl: `/practice?topicId=${w.topicId}`,
+            destination: `/practice?topicId=${w.topicId}`,
+            ctaLabel: 'Start Adaptive Practice',
             isMastered: false
         });
         recommendedTopicIds.add(w.topicId);
@@ -323,15 +325,20 @@ const getRecommendationsForUser = async (userId) => {
                     let actionTab = 'learn';
                     let reason = 'Continue learning this topic before moving to practice.';
 
+                    let ctaLabel = 'Continue Learning';
+                    
                     if (!normProg.learningCompleted) {
                         actionTab = 'learn';
                         reason = 'Continue learning this topic before moving to practice.';
+                        ctaLabel = 'Continue Learning';
                     } else if (!normProg.practiceCompleted) {
                         actionTab = 'practice';
                         reason = 'You completed the learning material. Continue with practice.';
+                        ctaLabel = 'Start Practice';
                     } else {
                         actionTab = 'assessment';
                         reason = 'You completed learning and practice. Take the assessment to continue toward mastery.';
+                        ctaLabel = 'Take Assessment';
                     }
 
                     finalRecommendations.push({
@@ -347,6 +354,8 @@ const getRecommendationsForUser = async (userId) => {
                         urgency: 'MEDIUM',
                         actionTab,
                         actionUrl: `/topic/${topicIdStr}?tab=${actionTab}`,
+                        destination: `/topic/${topicIdStr}?tab=${actionTab}`,
+                        ctaLabel,
                         isMastered: false
                     });
                     recommendedTopicIds.add(topicIdStr);
@@ -392,6 +401,8 @@ const getRecommendationsForUser = async (userId) => {
                         urgency: 'MEDIUM',
                         actionTab: 'learn',
                         actionUrl: `/topic/${topicIdStr}?tab=learn`,
+                        destination: `/topic/${topicIdStr}?tab=learn`,
+                        ctaLabel: 'Start Learning',
                         isMastered: false
                     });
                     recommendedTopicIds.add(topicIdStr);
@@ -419,15 +430,15 @@ const getRecommendationsForUser = async (userId) => {
             urgency: 'LOW',
             actionTab: 'learn',
             actionUrl: `/topic/${w.topicId}?tab=learn`,
+            destination: `/topic/${w.topicId}?tab=learn`,
+            ctaLabel: 'Review Topic',
             isMastered: true
         });
         recommendedTopicIds.add(w.topicId);
     });
-
     // 8. Truncate to Max 5 Recommendations
     const topRecommendations = finalRecommendations.slice(0, 5);
     const primaryRecommendation = topRecommendations.length > 0 ? topRecommendations[0] : null;
-
     return {
         userId,
         generatedAt: new Date().toISOString(),
@@ -435,7 +446,6 @@ const getRecommendationsForUser = async (userId) => {
         recommendations: topRecommendations
     };
 };
-
 module.exports = {
     getRecommendationsForUser
 };

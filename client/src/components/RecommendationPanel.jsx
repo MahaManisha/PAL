@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
-import apiClient from '../api/apiClient';
+import { useNextAction } from '../hooks/useNextAction';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
@@ -61,38 +61,14 @@ const getPanelTitle = (experience) => {
 
 const RecommendationPanel = ({ userId }) => {
     const { experience, themeConfig } = useTheme();
-    const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    const fetchRecommendations = useCallback(async () => {
-        if (!userId) {
-            setLoading(false);
-            return;
-        }
-
-        setLoading(true);
-        setError(null);
-        try {
-            const res = await apiClient.get(`/api/recommendations/${userId}`);
-            setData(res.data);
-        } catch (err) {
-            console.error('RecommendationPanel fetch error:', err);
-            setError(err.response?.data?.msg || 'Unable to load your next recommendation.');
-        } finally {
-            setLoading(false);
-        }
-    }, [userId]);
-
-    useEffect(() => {
-        fetchRecommendations();
-    }, [fetchRecommendations]);
+    
+    const { nextAction, allRecommendations, isLoading, error, refreshAction } = useNextAction();
 
     const panelTitle = getPanelTitle(experience);
-    const primary = data?.primaryRecommendation;
+    const primary = nextAction;
 
     // Filter secondary recommendations to avoid duplicating the primary recommendation
-    const secondaryList = (data?.recommendations || []).filter(rec => {
+    const secondaryList = allRecommendations.filter(rec => {
         if (!primary) return true;
         return !(rec.type === primary.type && rec.topicId === primary.topicId && rec.actionUrl === primary.actionUrl);
     });
@@ -110,8 +86,8 @@ const RecommendationPanel = ({ userId }) => {
                     </h3>
                 </div>
                 <button
-                    onClick={fetchRecommendations}
-                    disabled={loading}
+                    onClick={refreshAction}
+                    disabled={isLoading}
                     aria-label="Refresh recommendations"
                     style={{
                         background: 'rgba(255,255,255,0.05)',
