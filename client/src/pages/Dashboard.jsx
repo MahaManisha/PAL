@@ -5,7 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Book, BarChart2, Flame, Award, Ticket, Star, Zap, X, Check,
+    Book, BarChart2, Flame, Award, Ticket, Star, Zap, X, Check, AlertCircle,
     HelpCircle, Brain, Target, Clock, TrendingUp, Palette, RefreshCw, ShoppingBag, Trophy, ChevronRight, BookOpen, Play
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -53,6 +53,43 @@ const RecentSessionsWidget = ({ userId }) => {
                     </div>
                 ))}
             </div>
+        </div>
+    );
+};
+
+/* ─── Ready For Revision Widget ─── */
+const ReadyForRevisionWidget = ({ userId }) => {
+    const [dueNow, setDueNow] = useState([]);
+    useEffect(() => {
+        if(!userId) return;
+        apiClient.get(`/api/progress/revision-queue/${userId}`)
+            .then(res => setDueNow((res.data.dueNow || []).slice(0, 3)))
+            .catch(console.error);
+    }, [userId]);
+
+    if(dueNow.length === 0) return null;
+    return (
+        <div className="glass-card" style={{ padding: '1.5rem', borderLeft: '4px solid #ef4444' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <h3 style={{ fontSize: '1rem', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><AlertCircle size={16} color="#ef4444"/> Ready for Revision</h3>
+                <Link to="/revision" style={{ fontSize: '0.8rem', color: '#ef4444', fontWeight: 700, textDecoration: 'none' }}>View Plan</Link>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {dueNow.map(r => (
+                    <div key={r._id} style={{ padding: '0.75rem', background: 'var(--input-bg)', borderRadius: '0.5rem', border: '1px solid var(--card-border)' }}>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.25rem' }}>{r.topicId?.topicName || r.topicId?.title}</div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                            <span style={{ color: '#ef4444', fontWeight: 600 }}>Due Now</span>
+                            <span>Mastery: {Math.round(r.bestScore !== undefined ? r.bestScore : (r.score || 0))}%</span>
+                        </div>
+                    </div>
+                ))}
+            </div>
+            <Link to="/revision" style={{ textDecoration: 'none' }}>
+                <button className="btn" style={{ width: '100%', marginTop: '1rem', padding: '0.6rem', fontSize: '0.85rem', fontWeight: 600, border: '1px solid #ef4444', color: '#ef4444', background: 'rgba(239,68,68,0.05)', cursor: 'pointer', borderRadius: '0.5rem' }}>
+                    Start Revision
+                </button>
+            </Link>
         </div>
     );
 };
@@ -566,6 +603,9 @@ const Dashboard = () => {
 
                     {/* Recent Sessions Widget */}
                     <RecentSessionsWidget userId={user?.id || user?._id} />
+
+                    {/* Ready For Revision Widget */}
+                    <ReadyForRevisionWidget userId={user?.id || user?._id} />
 
                     {/* Daily Quest */}
                     <motion.div className="glass-card" style={{ padding: '1.5rem' }} whileHover={{ scale: 1.01 }}>

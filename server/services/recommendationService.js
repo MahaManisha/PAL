@@ -4,6 +4,7 @@ const Progress = require('../models/Progress');
 const Subject = require('../models/Subject');
 const Chapter = require('../models/Chapter');
 const Topic = require('../models/Topic');
+const revisionService = require('./revisionService');
 
 /**
  * Normalizes an ID to a string safely.
@@ -278,6 +279,54 @@ const getRecommendationsForUser = async (userId) => {
     // 7. Construct Priority Recommendations
     const finalRecommendations = [];
     const recommendedTopicIds = new Set();
+
+    // Fetch revision queue to prioritize due items
+    let dueNow = [];
+    try {
+        const queue = await revisionService.getRevisionQueue(userId);
+        dueNow = queue.dueNow;
+    } catch (err) {
+        console.error('Failed to fetch revision queue for recommendations', err);
+    }
+
+    // CATEGORY 0: DUE REVISIONS (Priority 0)
+    dueNow.forEach(r => {
+        const topicIdStr = String(r.topicId._id || r.topicId);
+        if (recommendedTopicIds.has(topicIdStr)) return;
+        
+        // Find subject and chapter names safely
+        let subjectName = 'Study';
+        let chapterName = 'Review';
+        if (r.topicId.chapterId && r.topicId.chapterId.subjectId) {
+            subjectName = r.topicId.chapterId.subjectId.name || r.topicId.chapterId.subjectId.subjectName || subjectName;
+            chapterName = r.topicId.chapterId.chapterName || chapterName;
+        } else {
+            const meta = topicMetadataMap.get(topicIdStr);
+            if (meta) {
+                subjectName = meta.subject.name || meta.subject.subjectName;
+                chapterName = meta.chapter.chapterName;
+            }
+        }
+
+        finalRecommendations.push({
+            type: 'REVISION',
+            topicId: topicIdStr,
+            topicName: r.topicId.topicName || r.topicId.title || 'Revision Topic',
+            chapterId: String(r.topicId.chapterId || (topicMetadataMap.get(topicIdStr)?.chapter._id)),
+            chapterName,
+            subjectId: String(topicMetadataMap.get(topicIdStr)?.subject._id || 'Unknown'),
+            subjectName,
+            conceptTag: 'Spaced Repetition',
+            reason: `This topic is due for scheduled revision to strengthen your long-term memory.`,
+            urgency: 'HIGH',
+            actionTab: 'practice',
+            actionUrl: `/practice?topicId=${topicIdStr}`,
+            destination: `/practice?topicId=${topicIdStr}`,
+            ctaLabel: 'Start Revision',
+            isMastered: r.status === 'pass'
+        });
+        recommendedTopicIds.add(topicIdStr);
+    });
 
     // CATEGORY 1: REMEDIATION (Priority 1)
     const remediationItems = qualifyingWeakAreas.filter(w => !w.isMastered && w.isAccessible);

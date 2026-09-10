@@ -4,6 +4,7 @@ const User = require('../models/User');
 const Topic = require('../models/Topic');
 const Subject = require('../models/Subject');
 const achievementService = require('../services/achievementService');
+const revisionService = require('../services/revisionService');
 
 
 
@@ -85,6 +86,9 @@ exports.submitPracticeSession = async (req, res) => {
         if (progress.attempts.length > 5) {
             progress.attempts = progress.attempts.slice(-5);
         }
+
+        // Update Spaced Revision Schedule
+        progress = revisionService.updateRevisionSchedule(progress, score);
 
         let updatedUser = null;
 

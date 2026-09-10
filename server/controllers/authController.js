@@ -2,6 +2,7 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
 const getJwtSecret = require('../config/jwtSecret');
+const revisionService = require('../services/revisionService');
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -56,6 +57,10 @@ exports.login = async (req, res) => {
         const payload = { user: { id: user.id } };
         jwt.sign(payload, getJwtSecret(), { expiresIn: '1h' }, (err, token) => {
             if (err) throw err;
+            
+            // Trigger revision notification asynchronously
+            revisionService.triggerRevisionNotification(user.id).catch(console.error);
+            
             res.json({ token, user: buildUserPayload(user) });
         });
     } catch (err) {
@@ -87,6 +92,10 @@ exports.googleLogin = async (req, res) => {
         const jwtPayload = { user: { id: user.id } };
         jwt.sign(jwtPayload, getJwtSecret(), { expiresIn: '7d' }, (err, token) => {
             if (err) throw err;
+
+            // Trigger revision notification asynchronously
+            revisionService.triggerRevisionNotification(user.id).catch(console.error);
+
             res.json({ token, user: buildUserPayload(user) });
         });
     } catch (err) {

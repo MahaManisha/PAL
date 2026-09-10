@@ -1,9 +1,20 @@
 const Progress = require('../models/Progress');
 
+const revisionService = require('../services/revisionService');
+
 exports.getProgressByUser = async (req, res) => {
     try {
         const progress = await Progress.find({ userId: req.params.userId }).populate('topicId').populate('chapterId');
         res.json(progress);
+    } catch (err) {
+        res.status(500).send('Server error');
+    }
+};
+
+exports.getRevisionQueue = async (req, res) => {
+    try {
+        const queue = await revisionService.getRevisionQueue(req.params.userId);
+        res.json(queue);
     } catch (err) {
         res.status(500).send('Server error');
     }

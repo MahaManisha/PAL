@@ -25,6 +25,13 @@ const ProgressSchema = new mongoose.Schema({
     rewardClaimed: { type: Boolean, default: false },
     attempts: [AttemptSchema],
     status: { type: String, enum: ['in_progress', 'pass', 'fail'], required: true },
+    
+    // Spaced Revision fields
+    nextRevisionDate: { type: Date, default: null },
+    lastRevisionDate: { type: Date, default: null },
+    revisionInterval: { type: Number, default: 0 },
+    revisionCount: { type: Number, default: 0 },
+
     // Adaptive Learning additions
     currentLevel: { type: String, enum: ['LOW', 'MEDIUM', 'HIGH', 'PENDING'], default: 'PENDING' },
     pathType: { type: String, enum: ['DIRECT_MAIN_CONTENT', 'GUIDED', 'PENDING'], default: 'PENDING' },
