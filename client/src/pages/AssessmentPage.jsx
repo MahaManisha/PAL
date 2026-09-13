@@ -191,15 +191,54 @@ const AssessmentPage = ({ type = 'TOPIC' }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [topicId, chapterId, type, user?.id]);
 
+    const getCorrectAnswerIndex = (q) => {
+        if (!q || q.correctAnswer === undefined || q.correctAnswer === null) return 0;
+        const c = q.correctAnswer;
+        if (typeof c === 'number' && !isNaN(c)) return c;
+        if (!isNaN(Number(c))) return Number(c);
+        if (typeof c === 'string' && c.trim().length === 1) {
+            const charCode = c.trim().toUpperCase().charCodeAt(0) - 65;
+            if (charCode >= 0 && charCode < 10) return charCode;
+        }
+        if (typeof c === 'string' && Array.isArray(q.options)) {
+            const foundIdx = q.options.findIndex(opt => String(opt).trim().toLowerCase() === c.trim().toLowerCase());
+            if (foundIdx !== -1) return foundIdx;
+        }
+        return 0;
+    };
+
+    const checkIsAnswerCorrect = (q, selectedOption) => {
+        if (!q || selectedOption === undefined || selectedOption === null) return false;
+        const correctIdx = getCorrectAnswerIndex(q);
+        
+        if (typeof selectedOption === 'number') {
+            return selectedOption === correctIdx;
+        }
+        if (!isNaN(Number(selectedOption))) {
+            return Number(selectedOption) === correctIdx;
+        }
+        if (typeof selectedOption === 'string' && Array.isArray(q.options)) {
+            if (selectedOption.trim().length === 1) {
+                const charCode = selectedOption.trim().toUpperCase().charCodeAt(0) - 65;
+                if (charCode >= 0 && charCode < 10) return charCode === correctIdx;
+            }
+            const optVal = q.options[correctIdx];
+            if (optVal && String(optVal).trim().toLowerCase() === selectedOption.trim().toLowerCase()) {
+                return true;
+            }
+        }
+        return false;
+    };
+
     // ── Compute client-side latest score before submission ──────────────────────
-    // Same algorithm the server uses: count matching correctAnswer indices.
-    // This avoids a second scoring implementation — we just mirror the server's logic.
     const computeLocalScore = useCallback(() => {
         if (!assessment?.questions?.length) return 0;
-        const submittedAnswers = Object.values(answers);
         let correct = 0;
         assessment.questions.forEach((q, i) => {
-            if (q.correctAnswer === submittedAnswers[i]) correct++;
+            const userAns = answers[i];
+            if (userAns !== undefined && userAns !== null && checkIsAnswerCorrect(q, userAns)) {
+                correct++;
+            }
         });
         return (correct / assessment.questions.length) * 100;
     }, [assessment, answers]);
@@ -257,8 +296,8 @@ const AssessmentPage = ({ type = 'TOPIC' }) => {
 
         try {
             const formattedAnswers = assessment.questions.map((q, i) => ({
-                questionId: q._id || q.id,
-                selectedOption: answers[i]
+                questionId: q._id ? String(q._id) : (q.id ? String(q.id) : null),
+                selectedOption: answers[i] !== undefined && answers[i] !== null ? answers[i] : null
             }));
 
             const res = await apiClient.post('/api/assessment/submit', {
@@ -271,6 +310,10 @@ const AssessmentPage = ({ type = 'TOPIC' }) => {
             if (res.data.user) {
                 updateUserStats(res.data.user);
                 setRewardEarned(true);
+            }
+
+            if (res.data.latestScore !== undefined) {
+                setLatestScore(res.data.latestScore);
             }
 
             const bestScore = res.data.score; // backend always returns bestScore
@@ -490,29 +533,37 @@ const AssessmentPage = ({ type = 'TOPIC' }) => {
                             transition={{ delay: 0.2 }}
                             style={{ display: 'flex', gap: '0.85rem', justifyContent: 'center', flexWrap: 'wrap', marginTop: '2rem' }}
                         >
-                            {/* ─── PASSED BRANCH ───────────────────────────────────────────── */}
-                            {passed && !isSubjectComplete && nextAction && nextAction.route && (
+                            {/* ─── PASSED & ABOVE AVERAGE BRANCH ───────────────────────────────────────────── */}
+                            {passed && (
                                 <>
-                                    {/* Primary: Continue forward */}
-                                    <button
-                                        onClick={() => navigate(nextAction.route)}
-                                        className="btn btn-primary"
-                                        style={{ padding: '0.9rem 1.75rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                                    <Link
+                                        to={`/topic/${topicId || '6a998c8a8d48f24fd34556e1'}?tab=learn`}
+                                        className="btn"
+                                        style={{ padding: '0.9rem 1.5rem', border: '1px solid var(--card-border)', background: 'transparent', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
                                     >
-                                        Continue → {nextAction.title || 'Next'}
-                                        <ChevronRight size={18} />
-                                    </button>
-                                    {/* Secondary (STANDARD): Review topic */}
-                                    {masteryBand === 'STANDARD' && (
-                                        <Link
-                                            to={`/topic/${topicId}`}
-                                            className="btn"
-                                            style={{ padding: '0.9rem 1.5rem', border: '1px solid var(--card-border)', background: 'transparent', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                                        <BookOpen size={18} /> Review Presentation (PPT)
+                                    </Link>
+                                    
+                                    {nextAction && nextAction.route && (
+                                        <button
+                                            onClick={() => {
+                                                let targetRoute = nextAction.route;
+                                                if (targetRoute && targetRoute.startsWith('/topic/') && !targetRoute.includes('?tab=')) {
+                                                    targetRoute += '?tab=learn';
+                                                }
+                                                navigate(targetRoute);
+                                            }}
+                                            className="btn btn-primary"
+                                            style={{
+                                                padding: '0.9rem 1.75rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                                                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                                                boxShadow: '0 4px 15px rgba(99,102,241,0.4)'
+                                            }}
                                         >
-                                            <BookOpen size={16} /> Review {terminology.topic || 'Topic'}
-                                        </Link>
+                                            Proceed to {nextAction.title || 'Next Topic'} Presentation (PPT) →
+                                        </button>
                                     )}
-                                    {/* Dashboard always available */}
+
                                     <Link
                                         to="/dashboard"
                                         className="btn"

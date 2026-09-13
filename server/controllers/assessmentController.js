@@ -33,6 +33,45 @@ exports.getAssessmentByChapter = async (req, res) => {
     }
 };
 
+function getCorrectAnswerIndex(q) {
+    if (!q || q.correctAnswer === undefined || q.correctAnswer === null) return 0;
+    const c = q.correctAnswer;
+    if (typeof c === 'number' && !isNaN(c)) return c;
+    if (!isNaN(Number(c))) return Number(c);
+    if (typeof c === 'string' && c.trim().length === 1) {
+        const charCode = c.trim().toUpperCase().charCodeAt(0) - 65;
+        if (charCode >= 0 && charCode < 10) return charCode;
+    }
+    if (typeof c === 'string' && Array.isArray(q.options)) {
+        const foundIdx = q.options.findIndex(opt => String(opt).trim().toLowerCase() === c.trim().toLowerCase());
+        if (foundIdx !== -1) return foundIdx;
+    }
+    return 0;
+}
+
+function checkIsAnswerCorrect(q, selectedOption) {
+    if (!q || selectedOption === undefined || selectedOption === null) return false;
+    const correctIdx = getCorrectAnswerIndex(q);
+    
+    if (typeof selectedOption === 'number') {
+        return selectedOption === correctIdx;
+    }
+    if (!isNaN(Number(selectedOption))) {
+        return Number(selectedOption) === correctIdx;
+    }
+    if (typeof selectedOption === 'string' && Array.isArray(q.options)) {
+        if (selectedOption.trim().length === 1) {
+            const charCode = selectedOption.trim().toUpperCase().charCodeAt(0) - 65;
+            if (charCode >= 0 && charCode < 10) return charCode === correctIdx;
+        }
+        const optVal = q.options[correctIdx];
+        if (optVal && String(optVal).trim().toLowerCase() === selectedOption.trim().toLowerCase()) {
+            return true;
+        }
+    }
+    return false;
+}
+
 exports.submitAssessment = async (req, res) => {
     const { userId, topicId, chapterId, answers } = req.body;
     try {
@@ -57,19 +96,28 @@ exports.submitAssessment = async (req, res) => {
             let selectedOpt = null;
 
             if (typeof answerData === 'object' && answerData !== null) {
-                q = assessment.questions.find(quest => quest._id.toString() === answerData.questionId);
+                const targetQId = answerData.questionId ? String(answerData.questionId) : null;
+                if (targetQId) {
+                    q = assessment.questions.find(quest => quest._id && quest._id.toString() === targetQId);
+                }
+                if (!q && typeof index === 'number' && index < assessment.questions.length) {
+                    q = assessment.questions[index];
+                }
                 if (q) {
                     selectedOpt = answerData.selectedOption;
-                    isCorrect = q.correctAnswer === selectedOpt;
+                    if (selectedOpt !== undefined && selectedOpt !== null) {
+                        isCorrect = checkIsAnswerCorrect(q, selectedOpt);
+                    }
                 }
             } else {
                 q = assessment.questions[index];
                 if (q) {
                     selectedOpt = answerData;
-                    isCorrect = q.correctAnswer === selectedOpt;
+                    if (selectedOpt !== undefined && selectedOpt !== null) {
+                        isCorrect = checkIsAnswerCorrect(q, selectedOpt);
+                    }
                 }
             }
-
             if (!q) continue;
 
             if (isCorrect) {
@@ -146,28 +194,32 @@ exports.submitAssessment = async (req, res) => {
         progress.score = progress.bestScore;
         progress.status = progress.bestScore >= assessment.passScore ? 'pass' : 'fail';
         
+        // Categorize student using Algorithm (WEAK < 40%, MEDIUM 40-69%, HIGH >= 70%)
+        let category = 'MEDIUM';
+        if (currentScore < 40) {
+            category = 'WEAK';
+        } else if (currentScore < 70) {
+            category = 'MEDIUM';
+        } else {
+            category = 'HIGH';
+        }
+
         // Handle adaptive logic for INITIAL assessment
         if (assessment.type === 'INITIAL') {
             progress.initialAssessmentScore = currentScore;
-            
-            // Calculate Level and Path Type
-            if (currentScore < 40) {
-                progress.currentLevel = 'LOW';
-                progress.pathType = 'GUIDED';
-            } else if (currentScore < 70) {
-                progress.currentLevel = 'MEDIUM';
-                progress.pathType = 'GUIDED';
-            } else {
-                progress.currentLevel = 'HIGH';
-                progress.pathType = 'DIRECT_MAIN_CONTENT';
-            }
+            progress.currentLevel = category;
+            progress.pathType = category === 'HIGH' ? 'DIRECT_MAIN_CONTENT' : 'GUIDED';
             
             // Populate topic scores based on questions answered
             progress.topicScores = Object.keys(topicTotalCounts).map(tId => ({
                 topicId: tId,
                 score: (topicCorrectCounts[tId] / topicTotalCounts[tId]) * 100
             }));
-        } else if (assessment.type === 'FINAL') {
+        } else {
+            progress.currentLevel = category;
+        }
+
+        if (assessment.type === 'FINAL') {
             progress.finalAssessmentScore = currentScore;
         }
 
@@ -233,9 +285,14 @@ exports.submitAssessment = async (req, res) => {
 
         res.json({ 
             score: progress.score, 
+            latestScore: currentScore,
+            correctCount,
+            totalQuestions,
+            category: progress.currentLevel,
+            currentLevel: progress.currentLevel,
+            pathType: progress.pathType,
             status: progress.status, 
             user: updatedUser,
-            currentLevel: progress.currentLevel,
             topicScores: progress.topicScores,
             newlyUnlockedAchievements
         });

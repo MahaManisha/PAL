@@ -23,6 +23,10 @@ const SlidesPage = ({ type = 'TOPIC' }) => {
     const decodedChapter = decodeURIComponent(chapter || '');
     const decodedTopic   = decodeURIComponent(topic || '');
 
+    // Gate state
+    const [topicDetail, setTopicDetail] = useState(null);
+    const displayTopicName = topicDetail?.topicName || decodedTopic;
+
     const [hasPdf, setHasPdf] = useState(false);
     const [hasPptx, setHasPptx] = useState(false);
     const [hasTamil, setHasTamil] = useState(false);
@@ -31,10 +35,10 @@ const SlidesPage = ({ type = 'TOPIC' }) => {
     const [isCompleting, setIsCompleting] = useState(false);
     const [language, setLanguage] = useState('en'); // 'en' | 'ta'
 
+    const [viewMode, setViewMode] = useState('full'); // 'full' (100% Full Page Slides) | 'split' (Side-by-side Video)
+
     const folderChapter = decodedChapter.includes(':') ? decodedChapter.split(':')[0].trim() : decodedChapter;
 
-    // Gate state
-    const [topicDetail, setTopicDetail] = useState(null);
     const [subjectIdStr, setSubjectIdStr] = useState(null);
     const [isLocked, setIsLocked] = useState(false);
     const [isGateResolved, setIsGateResolved] = useState(false);
@@ -49,6 +53,7 @@ const SlidesPage = ({ type = 'TOPIC' }) => {
     const [mainPptUrl, setMainPptUrl] = useState('');
     const [microVideoUrl, setMicroVideoUrl] = useState('');
     const [microPptUrl, setMicroPptUrl] = useState('');
+    const [activePdfUrl, setActivePdfUrl] = useState('');
 
     useEffect(() => {
         const checkAssets = async () => {
@@ -107,15 +112,49 @@ const SlidesPage = ({ type = 'TOPIC' }) => {
                 }
             };
 
+            // Check candidate PDF presentation files for inline rendering
+            const topicLower = decodedTopic.toLowerCase();
+            const pdfCandidates = [];
+
+            if (topicLower.includes('2.1') || topicLower.includes('introduction')) {
+                pdfCandidates.push('/slides/Mathematics/Chapter%202/2.1_Introduction_to_Complex_Numbers.pdf');
+            } else if (topicLower.includes('2.2') || topicLower.includes('geometry') || topicLower.includes('locus') || topicLower.includes('circle')) {
+                pdfCandidates.push('/slides/Mathematics/Chapter%202/2.2_micro_content_complex_circle_locus.pdf');
+            } else if (topicLower.includes('2.3') || topicLower.includes('algebraic') || topicLower.includes('properties')) {
+                pdfCandidates.push('/slides/Mathematics/Chapter%202/2.3_Algebraic_Properties_of_Complex_Numbers.pdf');
+            } else if (topicLower.includes('2.4') || topicLower.includes('conjugate')) {
+                pdfCandidates.push('/slides/Mathematics/Chapter%202/2.4_Conjugate_of_Complex_Number_MicroContent-2.pdf');
+            }
+
+            pdfCandidates.push(
+                pdfUrl,
+                '/slides/Mathematics/Chapter%202/2.2_micro_content_complex_circle_locus.pdf',
+                '/slides/Mathematics/Chapter%202/2.1_Introduction_to_Complex_Numbers.pdf',
+                '/slides/Mathematics/Chapter%202/2.3_Algebraic_Properties_of_Complex_Numbers.pdf',
+                '/slides/Mathematics/Chapter%202/2.4_Conjugate_of_Complex_Number_MicroContent-2.pdf'
+            );
+
+            let foundPdfUrl = null;
+            for (const cand of pdfCandidates) {
+                const ex = await checkExists(cand);
+                if (ex) {
+                    foundPdfUrl = cand;
+                    break;
+                }
+            }
+
             const [pdfExists, pptxExists, tamilExists, videoExists] = await Promise.all([
-                checkExists(pdfUrl),
+                foundPdfUrl ? Promise.resolve(true) : checkExists(pdfUrl),
                 checkExists(pptxUrl),
                 checkExists(tamilUrl),
                 checkExists(videoUrl)
             ]);
 
-            setHasPdf(pdfExists);
-            // Fallbacks for static content
+            if (foundPdfUrl) {
+                setActivePdfUrl(foundPdfUrl);
+            }
+
+            setHasPdf(pdfExists || !!foundPdfUrl);
             setHasPptx(prev => prev || pptxExists);
             setHasTamil(tamilExists);
             setHasVideo(prev => prev || videoExists);
@@ -169,7 +208,8 @@ const SlidesPage = ({ type = 'TOPIC' }) => {
         setIsGateResolved(true);
     }, [topicDetail, progressionLoading, getTopicState, progressRecords, topicId, type]);
 
-    const activeSlideUrl = language === 'ta' && hasTamil ? tamilUrl : pdfUrl;
+    const activeSlideUrl = language === 'ta' && hasTamil ? tamilUrl : (activePdfUrl || pdfUrl);
+    const pdfEmbedSrc = activeSlideUrl ? `${activeSlideUrl}#view=FitH&toolbar=0` : '';
 
     const handleCompleteLearning = async () => {
         if (type === 'MAIN') {
@@ -178,7 +218,6 @@ const SlidesPage = ({ type = 'TOPIC' }) => {
         }
 
         if (!topicId || !user?.id) {
-            // Fallback navigation if no topicId
             navigate('/dashboard');
             return;
         }
@@ -223,9 +262,9 @@ const SlidesPage = ({ type = 'TOPIC' }) => {
     }
 
     return (
-        <div className="container" style={{ paddingTop: '3rem', maxWidth: '1400px', paddingBottom: '4rem' }}>
-            {/* Header Area */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ paddingTop: '5rem', width: '100%', paddingLeft: '2rem', paddingRight: '2rem', paddingBottom: '3rem' }}>
+            {/* Header Area & Controls */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
                 <Link
                     to={topicId ? `/topic/${topicId}` : '/dashboard'}
                     className="btn btn-secondary"
@@ -233,27 +272,49 @@ const SlidesPage = ({ type = 'TOPIC' }) => {
                 >
                     <ArrowLeft size={18} /> Back to Topic
                 </Link>
+                
                 <div style={{ textAlign: 'center' }}>
-                    <h2 className="heading-gradient" style={{ fontSize: '2rem' }}>Learning Portal</h2>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{decodedChapter} &bull; {decodedTopic}</p>
+                    <h2 className="heading-gradient" style={{ fontSize: '1.8rem', margin: 0 }}>Learning Portal</h2>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0 }}>{decodedChapter} &bull; {displayTopicName}</p>
                 </div>
                 
-                {/* Language Toggle */}
-                {hasTamil ? (
-                    <button 
-                        onClick={() => setLanguage(language === 'en' ? 'ta' : 'en')} 
-                        className="btn" 
-                        style={{ 
-                            gap: '0.5rem', 
-                            background: 'rgba(99, 102, 241, 0.1)', 
-                            border: '1px solid var(--primary)', 
-                            color: 'var(--text)' 
-                        }}
-                    >
-                        <Globe size={18} color="var(--primary)" />
-                        {language === 'en' ? 'Switch to Tamil Slides' : 'Switch to English Slides'}
-                    </button>
-                ) : <div style={{ width: '150px' }} />}
+                {/* View Mode & Language Toggles */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    {hasVideo && (
+                        <button
+                            onClick={() => setViewMode(viewMode === 'full' ? 'split' : 'full')}
+                            className="btn"
+                            style={{
+                                gap: '0.5rem',
+                                background: viewMode === 'full' ? 'rgba(99,102,241,0.15)' : 'rgba(255,255,255,0.05)',
+                                border: '1px solid var(--primary)',
+                                color: 'var(--text)',
+                                fontWeight: 700,
+                                fontSize: '0.85rem'
+                            }}
+                        >
+                            <Video size={16} color="var(--primary)" />
+                            {viewMode === 'full' ? 'Split View with Video' : 'Full Page Slides'}
+                        </button>
+                    )}
+
+                    {hasTamil && (
+                        <button 
+                            onClick={() => setLanguage(language === 'en' ? 'ta' : 'en')} 
+                            className="btn" 
+                            style={{ 
+                                gap: '0.5rem', 
+                                background: 'rgba(99, 102, 241, 0.1)', 
+                                border: '1px solid var(--primary)', 
+                                color: 'var(--text)',
+                                fontSize: '0.85rem'
+                            }}
+                        >
+                            <Globe size={16} color="var(--primary)" />
+                            {language === 'en' ? 'Tamil Slides' : 'English Slides'}
+                        </button>
+                    )}
+                </div>
             </div>
 
             {loadingAssets ? (
@@ -263,12 +324,12 @@ const SlidesPage = ({ type = 'TOPIC' }) => {
             ) : (
                 <div style={{ 
                     display: 'grid', 
-                    gridTemplateColumns: hasVideo ? '7fr 5fr' : '1fr', 
-                    gap: '2rem',
+                    gridTemplateColumns: (viewMode === 'full' || !hasVideo) ? '1fr' : '7fr 5fr', 
+                    gap: '1.5rem',
                     alignItems: 'stretch'
                 }}>
                     
-                    {/* Left Column: Slides View */}
+                    {/* Left Column: Full Page Slides View */}
                     <motion.div 
                         initial={{ opacity: 0, x: -20 }} 
                         animate={{ opacity: 1, x: 0 }} 
@@ -276,30 +337,33 @@ const SlidesPage = ({ type = 'TOPIC' }) => {
                         style={{ 
                             display: 'flex', 
                             flexDirection: 'column', 
-                            height: '75vh',
-                            padding: '1.5rem'
+                            height: '86vh',
+                            padding: '1rem',
+                            borderRadius: '1rem'
                         }}
                     >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', marginBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem' }}>
-                            <BookOpen size={22} color="var(--primary)" />
-                            <h3 style={{ fontSize: '1.2rem', fontWeight: 600 }}>
-                                Interactive Slides {language === 'ta' && ' (Tamil)'}
-                            </h3>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.5rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                <BookOpen size={20} color="var(--primary)" />
+                                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0 }}>
+                                    Presentation Slides {language === 'ta' && ' (Tamil)'}
+                                </h3>
+                            </div>
+                            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.05)', padding: '0.2rem 0.6rem', borderRadius: '4px' }}>
+                                Full Page Viewer
+                            </span>
                         </div>
 
-                        <div style={{ flex: 1, background: 'rgba(0,0,0,0.3)', borderRadius: '0.5rem', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ flex: 1, background: '#000', borderRadius: '0.6rem', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             {hasPdf ? (
-                                <object data={activeSlideUrl} type="application/pdf" width="100%" height="100%">
-                                    <embed src={activeSlideUrl} type="application/pdf" width="100%" height="100%" />
-                                    <div style={{ padding: '2rem', textAlign: 'center' }}>
-                                        <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
-                                            PDF presentation cannot be displayed directly in the browser.
-                                        </p>
-                                        <a href={activeSlideUrl} download className="btn btn-primary">
-                                            <Download size={18} /> Download Slide PDF
-                                        </a>
-                                    </div>
-                                </object>
+                                <iframe 
+                                    src={pdfEmbedSrc} 
+                                    type="application/pdf" 
+                                    width="100%" 
+                                    height="100%" 
+                                    style={{ border: 'none', display: 'block' }} 
+                                    title="Full Page Slides Presentation"
+                                ></iframe>
                             ) : hasPptx ? (
                                 type === 'MAIN' && mainPptUrl ? (
                                     <iframe 
@@ -311,14 +375,40 @@ const SlidesPage = ({ type = 'TOPIC' }) => {
                                         title="Main Chapter Slides"
                                     ></iframe>
                                 ) : type === 'TOPIC' && microPptUrl ? (
-                                    <iframe 
-                                        src={microPptUrl} 
-                                        width="100%" 
-                                        height="100%" 
-                                        allow="autoplay" 
-                                        style={{ border: 'none' }} 
-                                        title="Micro Topic Slides"
-                                    ></iframe>
+                                    microPptUrl.startsWith('http') ? (
+                                        <iframe 
+                                            src={formatEmbedUrl(microPptUrl)} 
+                                            width="100%" 
+                                            height="100%" 
+                                            allow="autoplay; encrypted-media" 
+                                            allowFullScreen
+                                            style={{ border: 'none' }} 
+                                            title="Micro Topic Slides"
+                                        ></iframe>
+                                    ) : (
+                                        <div style={{ padding: '2.5rem 1.5rem', textAlign: 'center', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                            <div style={{ width: '70px', height: '70px', borderRadius: '50%', background: 'rgba(99,102,241,0.15)', border: '2px solid rgba(99,102,241,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                                                <FileText size={36} color="var(--primary)" />
+                                            </div>
+                                            <h4 style={{ marginBottom: '0.5rem', fontSize: '1.35rem', fontWeight: 800, color: 'var(--text)' }}>
+                                                {displayTopicName || 'Micro Content Presentation'}
+                                            </h4>
+                                            <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', fontSize: '0.92rem', maxWidth: '400px', lineHeight: 1.5 }}>
+                                                Interactive PowerPoint Presentation deck for this topic (<code style={{ color: 'var(--primary)', padding: '0.15rem 0.4rem', borderRadius: '4px', background: 'rgba(255,255,255,0.06)' }}>.pptx</code>).
+                                            </p>
+                                            <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+                                                <a 
+                                                    href={microPptUrl} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer" 
+                                                    className="btn btn-primary" 
+                                                    style={{ padding: '0.85rem 1.75rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                                                >
+                                                    <Download size={18} /> Open / Download Presentation (.pptx)
+                                                </a>
+                                            </div>
+                                        </div>
+                                    )
                                 ) : (
                                     <div style={{ padding: '3rem', textAlign: 'center', maxWidth: '450px' }}>
                                         <FileText size={70} color="var(--primary)" style={{ marginBottom: '1.5rem', opacity: 0.8 }} />
@@ -395,7 +485,7 @@ const SlidesPage = ({ type = 'TOPIC' }) => {
                                 <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '0.5rem', border: '1px solid rgba(255,255,255,0.05)' }}>
                                     <h4 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--secondary)' }}>Video Notes</h4>
                                     <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: '1.4' }}>
-                                        Watch the lecture video for <strong>{decodedTopic}</strong> carefully before advancing to practice.
+                                        Watch the lecture video for <strong>{displayTopicName}</strong> carefully before advancing to practice.
                                     </p>
                                 </div>
                             </div>

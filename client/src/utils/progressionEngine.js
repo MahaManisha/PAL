@@ -20,7 +20,7 @@ export const TOPIC_THRESHOLDS = {
 };
 
 export const determineOverallLevel = (score) => {
-    if (score <= ADAPTIVE_THRESHOLDS.LOW_MAX) return 'LOW';
+    if (score <= ADAPTIVE_THRESHOLDS.LOW_MAX) return 'WEAK';
     if (score <= ADAPTIVE_THRESHOLDS.MEDIUM_MAX) return 'MEDIUM';
     return 'HIGH';
 };
@@ -339,9 +339,7 @@ export const determineNextAction = (subjectId, chapters, progressRecords) => {
                             actionType = 'TAKE_ASSESSMENT';
                         }
 
-                        const route = (actionType === 'TAKE_ASSESSMENT') 
-                            ? `/assessment/${topicIdStr}`
-                            : `/topic/${topicIdStr}`;
+                        const route = `/topic/${topicIdStr}?tab=learn`;
 
                         return {
                             type: actionType,

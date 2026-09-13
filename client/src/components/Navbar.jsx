@@ -70,6 +70,14 @@ const NAV_LINKS = [
 
 const AUTH_NAV_LINKS = [
     { name: 'Dashboard', to: '/dashboard' },
+    { name: 'My Progress', to: '/analytics' },
+    { name: 'Sessions', to: '/learning-sessions' },
+    { name: 'Practice', to: '/practice' },
+    { name: 'Revision Center', to: '/revision' },
+    { name: 'Roadmap', to: '/roadmap' },
+    { name: 'Study Groups', to: '/study-groups' },
+    { name: 'Achievements', to: '/achievements' },
+    { name: 'Leaderboard', to: '/leaderboard' },
 ];
 
 const Navbar = () => {
@@ -131,10 +139,11 @@ const Navbar = () => {
 
     const navStyle = {
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 999,
-        height: '80px',
-        background: '#ffffff',
-        boxShadow: '0 2px 24px rgba(0,0,0,0.06)',
-        borderBottom: '1px solid rgba(226,232,240,0.7)',
+        height: '56px',
+        background: 'rgba(255, 255, 255, 0.96)',
+        backdropFilter: 'blur(12px)',
+        boxShadow: '0 1px 12px rgba(0,0,0,0.06)',
+        borderBottom: '1px solid rgba(226,232,240,0.8)',
     };
 
     const textColor = '#0f172a';
@@ -146,32 +155,32 @@ const Navbar = () => {
             {searchOpen && <SearchModal onClose={() => setSearchOpen(false)} />}
 
             <header style={navStyle} role="banner">
-                <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 2rem', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+                <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '0 1.25rem', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
 
                     {/* ─── Logo ─── */}
                     <Link
                         to="/"
                         aria-label="DAZLearning Home"
-                        style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.65rem', flexShrink: 0 }}
+                        style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}
                     >
                         <motion.div
-                            whileHover={{ scale: 1.06, boxShadow: '0 0 20px rgba(59,130,246,0.4)' }}
+                            whileHover={{ scale: 1.06, boxShadow: '0 0 16px rgba(59,130,246,0.4)' }}
                             transition={{ type: 'spring', stiffness: 400 }}
                             style={{
-                                width: '40px', height: '40px',
+                                width: '32px', height: '32px',
                                 background: '#0f172a',
-                                borderRadius: '10px',
+                                borderRadius: '8px',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 cursor: 'pointer', flexShrink: 0
                             }}
                         >
-                            <Brain size={22} color="#ffffff" />
+                            <Brain size={18} color="#ffffff" />
                         </motion.div>
                         <div>
-                            <span style={{ fontWeight: 800, fontSize: '1.3rem', color: textColor, letterSpacing: '-0.03em', display: 'block', lineHeight: 1 }}>
+                            <span style={{ fontWeight: 800, fontSize: '1.1rem', color: textColor, letterSpacing: '-0.03em', display: 'block', lineHeight: 1 }}>
                                 DAZ<span style={{ color: '#3b82f6' }}>Learning</span>
                             </span>
-                            <span style={{ fontSize: '0.65rem', color: mutedColor, fontWeight: 500, letterSpacing: '0.04em', textTransform: 'uppercase', display: 'block' }}>AI-Powered Platform</span>
+                            <span style={{ fontSize: '0.55rem', color: mutedColor, fontWeight: 500, letterSpacing: '0.04em', textTransform: 'uppercase', display: 'block' }}>AI-Powered Platform</span>
                         </div>
                     </Link>
 
@@ -184,12 +193,12 @@ const Navbar = () => {
                                     <motion.button
                                         key={link.id}
                                         onClick={() => scrollToSection(link.id)}
-                                        whileHover={{ y: -2 }}
+                                        whileHover={{ y: -1 }}
                                         aria-label={`Scroll to ${link.name}`}
                                         style={{
                                             background: 'none', border: 'none', cursor: 'pointer',
-                                            padding: '0.45rem 0.75rem', borderRadius: '0.4rem',
-                                            fontSize: '1rem',
+                                            padding: '0.3rem 0.55rem', borderRadius: '0.4rem',
+                                            fontSize: '0.84rem',
                                             fontWeight: isActive ? 700 : 500,
                                             color: isActive ? '#2563eb' : textColor,
                                             fontFamily: 'inherit',
@@ -208,7 +217,7 @@ const Navbar = () => {
                                                     exit={{ scaleX: 0 }}
                                                     style={{
                                                         position: 'absolute', bottom: '2px',
-                                                        left: '0.75rem', right: '0.75rem',
+                                                        left: '0.55rem', right: '0.55rem',
                                                         height: '2px', borderRadius: '99px',
                                                         background: 'linear-gradient(90deg, #2563eb, #8b5cf6)',
                                                         display: 'block'
@@ -224,30 +233,43 @@ const Navbar = () => {
 
                     {/* ─── Authenticated user nav (center) ─── */}
                     {user && (
-                        <nav aria-label="App navigation" className="desktop-nav" style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '1.25rem', alignItems: 'center' }}>
-                            <Link to="/dashboard" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>Dashboard</Link>
-                            <Link to="/analytics" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>My Progress</Link>
-                            <Link to="/learning-sessions" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>Sessions</Link>
-                            <Link to="/practice" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>Practice</Link>
-                            <Link to="/revision" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>Revision Center</Link>
-                            <Link to="/roadmap" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>Roadmap</Link>
-                            <Link to="/study-groups" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>Study Groups</Link>
-                            <Link to="/achievements" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>Achievements</Link>
-                            <Link to="/leaderboard" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600 }}>Leaderboard</Link>
+                        <nav aria-label="App navigation" className="desktop-nav" style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '0.35rem', alignItems: 'center' }}>
+                            {AUTH_NAV_LINKS.map(link => {
+                                const isActive = location.pathname === link.to;
+                                return (
+                                    <Link
+                                        key={link.to}
+                                        to={link.to}
+                                        style={{
+                                            color: isActive ? '#2563eb' : textColor,
+                                            background: isActive ? '#eff6ff' : 'transparent',
+                                            fontWeight: isActive ? 700 : 600,
+                                            fontSize: '0.83rem',
+                                            padding: '0.3rem 0.55rem',
+                                            borderRadius: '6px',
+                                            textDecoration: 'none',
+                                            whiteSpace: 'nowrap',
+                                            transition: 'all 0.15s ease'
+                                        }}
+                                    >
+                                        {link.name}
+                                    </Link>
+                                );
+                            })}
                         </nav>
                     )}
 
                     {/* ─── Right Section ─── */}
-                    <div className="desktop-nav" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
+                    <div className="desktop-nav" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
                         {/* Search Button */}
                         {!user && (
                             <motion.button
                                 onClick={() => setSearchOpen(true)}
-                                whileHover={{ scale: 1.1, rotate: 10 }}
+                                whileHover={{ scale: 1.08, rotate: 10 }}
                                 whileTap={{ scale: 0.95 }}
                                 aria-label="Open global search"
                                 style={{
-                                    width: '38px', height: '38px', borderRadius: '50%',
+                                    width: '32px', height: '32px', borderRadius: '50%',
                                     border: `1.5px solid ${isScrolled ? '#e2e8f0' : 'rgba(0,0,0,0.12)'}`,
                                     background: 'transparent',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -255,7 +277,7 @@ const Navbar = () => {
                                     transition: 'all 0.2s ease'
                                 }}
                             >
-                                <Search size={16} />
+                                <Search size={14} />
                             </motion.button>
                         )}
 
@@ -266,13 +288,13 @@ const Navbar = () => {
                                     to="/login"
                                     aria-label="Login to your account"
                                     style={{
-                                        padding: '0.6rem 1.5rem',
+                                        padding: '0.4rem 1.1rem',
                                         borderRadius: '999px',
                                         border: `1.5px solid ${isScrolled ? '#e2e8f0' : 'rgba(0,0,0,0.12)'}`,
                                         background: 'transparent',
                                         color: textColor,
                                         fontWeight: 600,
-                                        fontSize: '1rem',
+                                        fontSize: '0.85rem',
                                         textDecoration: 'none',
                                         transition: 'all 0.2s ease',
                                         display: 'inline-flex', alignItems: 'center',
@@ -287,15 +309,15 @@ const Navbar = () => {
                                         to="/signup"
                                         aria-label="Create an account"
                                         style={{
-                                            padding: '0.65rem 1.5rem',
+                                            padding: '0.42rem 1.1rem',
                                             borderRadius: '999px',
                                             background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 60%, #8b5cf6 100%)',
                                             color: 'white',
                                             fontWeight: 700,
-                                            fontSize: '1rem',
+                                            fontSize: '0.85rem',
                                             textDecoration: 'none',
                                             display: 'inline-flex', alignItems: 'center',
-                                            boxShadow: '0 4px 15px rgba(59,130,246,0.4)',
+                                            boxShadow: '0 2px 10px rgba(59,130,246,0.35)',
                                             transition: 'box-shadow 0.2s ease',
                                             whiteSpace: 'nowrap'
                                         }}
@@ -307,16 +329,44 @@ const Navbar = () => {
                         ) : (
                             <>
                                 <NotificationBell />
-                                <Link to="/profile" className="nav-link" style={{ color: 'var(--text)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                <Link
+                                    to="/profile"
+                                    style={{
+                                        color: location.pathname === '/profile' ? '#2563eb' : textColor,
+                                        background: location.pathname === '/profile' ? '#eff6ff' : 'transparent',
+                                        fontWeight: 600,
+                                        fontSize: '0.83rem',
+                                        padding: '0.3rem 0.55rem',
+                                        borderRadius: '6px',
+                                        textDecoration: 'none',
+                                        whiteSpace: 'nowrap'
+                                    }}
+                                >
                                     Profile
                                 </Link>
-                                <button onClick={logout} className="nav-link" aria-label="Logout" style={{ color: 'var(--text-muted, #64748b)', fontSize: '0.9rem' }}>Logout</button>
+                                <button
+                                    onClick={logout}
+                                    aria-label="Logout"
+                                    style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        color: '#64748b',
+                                        fontSize: '0.83rem',
+                                        fontWeight: 500,
+                                        padding: '0.3rem 0.55rem',
+                                        borderRadius: '6px',
+                                        whiteSpace: 'nowrap'
+                                    }}
+                                >
+                                    Logout
+                                </button>
                                 <Link
                                     to="/profile"
                                     aria-label={`View profile for ${user.name}`}
                                     style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}
                                 >
-                                    <ProfileAvatarRing user={user} size={42} strokeWidth={3} showBadge={true} />
+                                    <ProfileAvatarRing user={user} size={34} strokeWidth={2.5} showBadge={true} />
                                 </Link>
                             </>
                         )}

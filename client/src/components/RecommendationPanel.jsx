@@ -62,7 +62,7 @@ const getPanelTitle = (experience) => {
 const RecommendationPanel = ({ userId }) => {
     const { experience, themeConfig } = useTheme();
     
-    const { nextAction, allRecommendations, isLoading, error, refreshAction } = useNextAction();
+    const { nextAction, allRecommendations, isLoading: loading, error, refreshAction } = useNextAction();
 
     const panelTitle = getPanelTitle(experience);
     const primary = nextAction;
@@ -87,7 +87,7 @@ const RecommendationPanel = ({ userId }) => {
                 </div>
                 <button
                     onClick={refreshAction}
-                    disabled={isLoading}
+                    disabled={loading}
                     aria-label="Refresh recommendations"
                     style={{
                         background: 'rgba(255,255,255,0.05)',
@@ -129,7 +129,7 @@ const RecommendationPanel = ({ userId }) => {
                         {error}
                     </p>
                     <button
-                        onClick={fetchRecommendations}
+                        onClick={refreshAction}
                         style={{
                             padding: '0.45rem 0.9rem',
                             borderRadius: '0.5rem',

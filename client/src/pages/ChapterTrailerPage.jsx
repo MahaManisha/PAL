@@ -53,26 +53,39 @@ const ChapterTrailerPage = () => {
                     const link = trailer.driveLink;
                     setRawUrl(link);
 
-                    if (link.endsWith('.mp4') || link.endsWith('.webm') || link.endsWith('.mkv')) {
+                    if (link.startsWith('/videos/')) {
+                        const exists = await checkVideoExists(link);
+                        if (exists) {
+                            setVideoSrc(link);
+                            setIsVideoNative(true);
+                            setLoading(false);
+                            return;
+                        }
+                    } else if (link.endsWith('.mp4') || link.endsWith('.webm') || link.endsWith('.mkv')) {
                         setVideoSrc(link);
                         setIsVideoNative(true);
                         setLoading(false);
                         return;
+                    } else if (link.startsWith('http')) {
+                        // Embedded Google Drive Video / Embed Link
+                        setVideoSrc(formatEmbedUrl(link));
+                        setIsVideoNative(false);
+                        setLoading(false);
+                        return;
                     }
-
-                    // Embedded Google Drive Video / Embed Link
-                    setVideoSrc(formatEmbedUrl(link));
-                    setIsVideoNative(false);
-                    setLoading(false);
-                    return;
                 }
 
-                // 3. Fallback: Check local video files in public/videos only if no DB link
+                // 3. Fallback: Check local video files in public/videos only if no valid DB link
                 const localVideoCandidates = [];
-                if (chName.includes('Chapter 2') || chName.includes('Complex Numbers')) {
+                if (chName.includes('Chapter 2') || chName.includes('Complex') || String(chapterId).endsWith('56dc')) {
+                    localVideoCandidates.push('/videos/Mathematics/Chapter%202/02_ComplexNumbers_Video.mp4');
                     localVideoCandidates.push('/videos/Mathematics/Chapter%202/Basic%20Algebraic%20Properties.mp4');
+                    localVideoCandidates.push('/videos/Mathematics/Chapter%202/trailer.mp4');
+                    localVideoCandidates.push('/videos/Mathematics/Chapter%202/Chapter%202.mp4');
                 } else if (chName.includes('Chapter 1') || chName.includes('Matrices') || chName.includes('Row Echelon')) {
                     localVideoCandidates.push('/videos/Mathematics/Chapter%201/Row%20Echelon%20Form.mp4');
+                    localVideoCandidates.push('/videos/Mathematics/Chapter%201/trailer.mp4');
+                    localVideoCandidates.push('/videos/Mathematics/Chapter%201/Chapter%201.mp4');
                 }
 
                 for (const candidate of localVideoCandidates) {

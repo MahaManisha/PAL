@@ -33,7 +33,7 @@ const ProgressSchema = new mongoose.Schema({
     revisionCount: { type: Number, default: 0 },
 
     // Adaptive Learning additions
-    currentLevel: { type: String, enum: ['LOW', 'MEDIUM', 'HIGH', 'PENDING'], default: 'PENDING' },
+    currentLevel: { type: String, enum: ['LOW', 'WEAK', 'MEDIUM', 'HIGH', 'PENDING'], default: 'PENDING' },
     pathType: { type: String, enum: ['DIRECT_MAIN_CONTENT', 'GUIDED', 'PENDING'], default: 'PENDING' },
     initialAssessmentScore: { type: Number },
     finalAssessmentScore: { type: Number },
