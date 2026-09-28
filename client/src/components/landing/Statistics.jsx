@@ -14,6 +14,7 @@ const Statistics = () => {
         const obs = new IntersectionObserver(([entry]) => {
             if (entry.isIntersecting) {
                 setStatsVisible(true);
+                obs.disconnect();
             }
         }, { threshold: 0.3 });
         
@@ -38,7 +39,7 @@ const Statistics = () => {
                     {statsData.map((stat, i) => (
                         <div key={i} className="glass-panel" style={{ padding: '2rem', background: '#ffffff', borderRadius: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
                             <h3 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 900, color: stat.color, letterSpacing: '-0.03em', margin: '0 0 0.5rem 0' }}>
-                                {stat.value >= 1000000 ? `${(stat.value/1000000).toFixed(1)}M` : stat.value >= 1000 ? `${Math.floor(stat.value/1000)}k` : stat.value}{stat.suffix}
+                                {stat.value >= 1000000 ? `${(stat.value/1000000).toFixed(1)}M` : stat.value >= 1000 ? `${Math.floor(stat.value/1000)}K` : stat.value}{stat.suffix}
                             </h3>
                             <p style={{ color: '#64748b', fontWeight: 600, fontSize: '1rem', margin: 0 }}>{stat.label}</p>
                         </div>

@@ -33,14 +33,24 @@ exports.getUserAchievements = async (req, res) => {
             return res.status(400).json({ msg: 'Invalid user ID format' });
         }
 
-        const user = await User.findById(userId).select('unlockedBadges');
+        const user = await User.findById(userId).select('unlockedBadges streak');
         if (!user) {
             return res.status(404).json({ msg: 'User not found' });
         }
+        
+        // Compute progress stats
+        const Progress = require('../models/Progress');
+        const passedTopicsCount = await Progress.countDocuments({ userId, status: 'pass' });
+
+        const progressStats = {
+            passedTopicsCount,
+            streak: user.streak || 0
+        };
 
         res.json({
             userId,
-            unlockedBadges: user.unlockedBadges || []
+            unlockedBadges: user.unlockedBadges || [],
+            progressStats
         });
     } catch (err) {
         console.error('achievementController.getUserAchievements error:', err);

@@ -5,8 +5,8 @@ import { useTheme } from '../context/ThemeContext';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Book, BarChart2, Flame, Award, Ticket, Star, Zap, X, Check,
-    HelpCircle, Brain, Target, Clock, TrendingUp, Palette, RefreshCw, ShoppingBag, Trophy
+    Book, BarChart2, Flame, Award, Ticket, Star, Zap, X, Check, AlertCircle,
+    HelpCircle, Brain, Target, Clock, TrendingUp, Palette, RefreshCw, ShoppingBag, Trophy, ChevronRight, BookOpen, Play
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import ThemeSelectModal from '../components/ThemeSelectModal';
@@ -20,7 +20,79 @@ import AiTutorWidget from '../components/AiTutorWidget';
 import FlashcardDeck from '../components/FlashcardDeck';
 import CertificateModal from '../components/CertificateModal';
 import MockTestGeneratorModal from '../components/MockTestGeneratorModal';
+import DailyMissionCard from '../components/DailyMissionCard';
+import AiStudyInsights from '../components/AiStudyInsights';
+import AchievementUnlockModal from '../components/AchievementUnlockModal';
+import AiCoachCard from '../components/AiCoachCard';
+import { useNextAction } from '../hooks/useNextAction';
 import { getAvatarIcon, getFrameStyle, getAccentColor } from '../config/cosmeticsConfig';
+
+/* ─── Recent Sessions Widget ─── */
+const RecentSessionsWidget = ({ userId }) => {
+    const [sessions, setSessions] = useState([]);
+    useEffect(() => {
+        if(!userId) return;
+        apiClient.get('/api/sessions/history').then(res => setSessions(Array.isArray(res.data) ? res.data.slice(0, 2) : [])).catch(console.error);
+    }, [userId]);
+
+    if(sessions.length === 0) return null;
+    return (
+        <div className="glass-card" style={{ padding: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <h3 style={{ fontSize: '1rem', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Clock size={16} color="var(--primary)"/> Recent Sessions</h3>
+                <Link to="/learning-sessions" style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 700, textDecoration: 'none' }}>View All</Link>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {sessions.map(s => (
+                    <div key={s._id} style={{ padding: '0.75rem', background: 'var(--input-bg)', borderRadius: '0.5rem', border: '1px solid var(--card-border)' }}>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.25rem' }}>{s.topicName}</div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                            <span>{Math.floor(s.durationSeconds / 60)}m spent</span>
+                            <span style={{ color: s.accuracy >= 70 ? '#10b981' : '#f59e0b', fontWeight: 700 }}>{Math.round(s.accuracy)}% acc</span>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+/* ─── Ready For Revision Widget ─── */
+const ReadyForRevisionWidget = ({ userId }) => {
+    const [dueNow, setDueNow] = useState([]);
+    useEffect(() => {
+        if(!userId) return;
+        apiClient.get(`/api/progress/revision-queue/${userId}`)
+            .then(res => setDueNow((res.data?.dueNow || []).slice(0, 3)))
+            .catch(console.error);
+    }, [userId]);
+
+    if(dueNow.length === 0) return null;
+    return (
+        <div className="glass-card" style={{ padding: '1.5rem', borderLeft: '4px solid #ef4444' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <h3 style={{ fontSize: '1rem', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><AlertCircle size={16} color="#ef4444"/> Ready for Revision</h3>
+                <Link to="/revision" style={{ fontSize: '0.8rem', color: '#ef4444', fontWeight: 700, textDecoration: 'none' }}>View Plan</Link>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {dueNow.map(r => (
+                    <div key={r._id} style={{ padding: '0.75rem', background: 'var(--input-bg)', borderRadius: '0.5rem', border: '1px solid var(--card-border)' }}>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.25rem' }}>{r.topicId?.topicName || r.topicId?.title}</div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                            <span style={{ color: '#ef4444', fontWeight: 600 }}>Due Now</span>
+                            <span>Mastery: {Math.round(r.bestScore !== undefined ? r.bestScore : (r.score || 0))}%</span>
+                        </div>
+                    </div>
+                ))}
+            </div>
+            <Link to="/revision" style={{ textDecoration: 'none' }}>
+                <button className="btn" style={{ width: '100%', marginTop: '1rem', padding: '0.6rem', fontSize: '0.85rem', fontWeight: 600, border: '1px solid #ef4444', color: '#ef4444', background: 'rgba(239,68,68,0.05)', cursor: 'pointer', borderRadius: '0.5rem' }}>
+                    Start Revision
+                </button>
+            </Link>
+        </div>
+    );
+};
 
 /* ─── Daily Quest Modal ─── */
 const DailyQuestModal = ({ quest, onClose, onSubmit, submitted, result }) => {
@@ -46,10 +118,10 @@ const DailyQuestModal = ({ quest, onClose, onSubmit, submitted, result }) => {
                     </span>
                 </div>
                 <h3 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '1.5rem', lineHeight: 1.5, color: 'var(--text)' }}>
-                    {quest.questionText}
+                    {quest?.questionText}
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                    {quest.options.map((opt, i) => {
+                    {(quest?.options || []).map((opt, i) => {
                         let border = '1px solid var(--card-border)';
                         let bg = 'rgba(255,255,255,0.03)';
                         if (submitted && result) {
@@ -152,7 +224,9 @@ const Dashboard = () => {
     const { user, logout, updateUserStats } = useContext(AuthContext);
     const { themeConfig, experience, subTheme, savePreference, isChanging } = useTheme();
 
-    const { terminology, reward, progressStyle } = themeConfig;
+    const terminology = themeConfig?.terminology || { chapter: 'Chapter', topic: 'Topic', assessment: 'Assessment', progress: 'Progress', streak: 'Streak', complete: 'Complete' };
+    const reward = themeConfig?.reward || { key: 'points', label: 'Points', emoji: '⭐' };
+    const progressStyle = themeConfig?.progressStyle || 'bar';
 
     const [subjects, setSubjects] = useState([]);
     const [progress, setProgress] = useState([]);
@@ -164,11 +238,38 @@ const Dashboard = () => {
     const [isStoreModalOpen, setIsStoreModalOpen] = useState(false);
     const [isCertModalOpen, setIsCertModalOpen] = useState(false);
     const [isMockTestModalOpen, setIsMockTestModalOpen] = useState(false);
+    const [newlyUnlocked, setNewlyUnlocked] = useState([]);
 
-    const rewardValue = user?.[reward.key] || 0;
-    const passedTopics = progress.filter(p => p.status === 'pass').length;
-    const totalTopicsCount = progress.length > 0 ? Math.max(progress.length, 10) : 10;
-    const progressPercentage = Math.min(Math.round((passedTopics / totalTopicsCount) * 100), 100);
+    const { nextAction, isLoading: isLoadingNextAction } = useNextAction();
+
+    const safeProgress = Array.isArray(progress) ? progress : [];
+    const safeSubjects = Array.isArray(subjects) ? subjects : [];
+
+    const rewardValue = user?.[reward?.key] || 0;
+    const passedTopics = safeProgress.filter(p => p && p.status === 'pass').length;
+
+    // Derive Global Context for AI Tutor
+    let globalContext = {
+        topicName: 'General Study',
+        status: 'in_progress',
+        weakAreas: []
+    };
+    const failingTopics = safeProgress.filter(p => p && p.status === 'fail' && p.topicId);
+    if (failingTopics.length > 0) {
+        const topicObj = failingTopics[0].topicId;
+        const tName = (typeof topicObj === 'object' && topicObj) ? (topicObj.topicName || topicObj.title) : 'Complex concepts';
+        globalContext.weakAreas.push(tName || 'Complex concepts');
+        globalContext.topicName = tName || 'Review Topics';
+        globalContext.status = 'fail';
+    } else {
+        const inProgress = safeProgress.filter(p => p && p.status === 'in_progress' && p.topicId);
+        if (inProgress.length > 0) {
+            const topicObj = inProgress[0].topicId;
+            const tName = (typeof topicObj === 'object' && topicObj) ? (topicObj.topicName || topicObj.title) : 'General Study';
+            globalContext.topicName = tName || 'General Study';
+            globalContext.status = 'in_progress';
+        }
+    }
 
     useEffect(() => {
         const userId = user?.id || user?._id;
@@ -181,10 +282,12 @@ const Dashboard = () => {
                     apiClient.get(`/api/progress/${userId}`),
                 ]);
 
-                setSubjects(subRes.data);
-                setProgress(progRes.data);
+                setSubjects(Array.isArray(subRes.data) ? subRes.data : []);
+                setProgress(Array.isArray(progRes.data) ? progRes.data : []);
             } catch (err) {
                 console.error('Failed to load dashboard data:', err);
+                setSubjects([]);
+                setProgress([]);
             }
         };
 
@@ -210,16 +313,28 @@ const Dashboard = () => {
         fetchDailyQuest();
     }, [user?.id, user?._id]);
 
+    if (!user) {
+        return (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80vh', color: 'var(--text-muted)' }}>
+                Loading Dashboard…
+            </div>
+        );
+    }
+
     const handleDailyQuestSubmit = async (answerIndex) => {
         try {
+            const userId = user?.id || user?._id;
             const res = await apiClient.post('/api/assessment/daily-quest/submit', {
-                userId: user.id, questionId: dailyQuest.question.id, answer: answerIndex,
+                userId, questionId: dailyQuest?.question?.id, answer: answerIndex,
             });
             setQuestResult(res.data);
             setQuestSubmitted(true);
             if (res.data.isCorrect && res.data.userStats) {
                 updateUserStats(res.data.userStats);
                 setDailyQuest(prev => ({ ...prev, alreadyCompleted: true }));
+            }
+            if (res.data.newlyUnlockedAchievements?.length > 0) {
+                setNewlyUnlocked(res.data.newlyUnlockedAchievements);
             }
         } catch (err) { console.error(err); }
     };
@@ -231,6 +346,7 @@ const Dashboard = () => {
 
     return (
         <div className="container" style={{ paddingTop: '6rem' }}>
+            <AchievementUnlockModal achievements={newlyUnlocked} onClose={() => setNewlyUnlocked([])} />
             <AnimatePresence>
                 {questModalOpen && dailyQuest?.question && (
                     <DailyQuestModal
@@ -242,6 +358,17 @@ const Dashboard = () => {
                     />
                 )}
             </AnimatePresence>
+
+            {/* AI Learning Coach Banner */}
+            <AiCoachCard onAskTutor={(insight) => {
+                if (!insight) return;
+                globalContext.topicName = insight.contextTag || insight.title;
+                globalContext.status = insight.type;
+                globalContext.weakAreas = insight.type === 'REMEDIATION' ? [insight.contextTag] : [];
+                // Simply focus or open the chat widget
+                const tutorBtn = document.querySelector('.ai-tutor-toggle');
+                if (tutorBtn) tutorBtn.click();
+            }} />
 
             {/* Theme Select Modal */}
             <ThemeSelectModal
@@ -266,13 +393,13 @@ const Dashboard = () => {
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: '1.9rem', flexShrink: 0,
                             position: 'relative',
-                            ...getFrameStyle(user.equipped?.profile_frame)
+                            ...getFrameStyle(user?.equipped?.profile_frame)
                         }}
                     >
-                        {getAvatarIcon(user.equipped?.avatar)}
+                        {getAvatarIcon(user?.equipped?.avatar)}
                     </div>
                     <div>
-                        <h2 className="heading-gradient" style={{ fontSize: '2.4rem', marginBottom: '0.2rem' }}>Welcome back, {user.name}!</h2>
+                        <h2 className="heading-gradient" style={{ fontSize: '2.4rem', marginBottom: '0.2rem' }}>Welcome back, {user?.name || 'Learner'}!</h2>
                         <p style={{ color: 'var(--text-muted)', margin: 0 }}>Here is your learning progress and performance insights for today.</p>
                     </div>
                 </div>
@@ -283,9 +410,9 @@ const Dashboard = () => {
                         onClick={() => setIsStoreModalOpen(true)}
                         style={{
                             padding: '0.6rem 1.2rem', borderRadius: '9999px',
-                            background: getAccentColor(user.equipped?.theme_accent) ? `${getAccentColor(user.equipped?.theme_accent)}1a` : 'rgba(234,179,8,0.12)',
-                            border: `1px solid ${getAccentColor(user.equipped?.theme_accent) || 'rgba(234,179,8,0.3)'}`,
-                            color: getAccentColor(user.equipped?.theme_accent) || '#eab308', cursor: 'pointer',
+                            background: getAccentColor(user?.equipped?.theme_accent) ? `${getAccentColor(user?.equipped?.theme_accent)}1a` : 'rgba(234,179,8,0.12)',
+                            border: `1px solid ${getAccentColor(user?.equipped?.theme_accent) || 'rgba(234,179,8,0.3)'}`,
+                            color: getAccentColor(user?.equipped?.theme_accent) || '#eab308', cursor: 'pointer',
                             display: 'flex', alignItems: 'center', gap: '0.5rem',
                             fontSize: '0.88rem', fontWeight: 600, transition: 'all 0.2s',
                         }}
@@ -307,6 +434,23 @@ const Dashboard = () => {
                             }}
                         >
                             <Trophy size={15} /> {experience === 'gamified' ? 'Champions Board' : experience === 'cinematic' ? 'Hall of Fame' : 'Leaderboard'}
+                        </motion.button>
+                    </Link>
+
+                    {/* Adaptive Practice CTA */}
+                    <Link to="/practice" style={{ textDecoration: 'none' }}>
+                        <motion.button
+                            whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                            style={{
+                                padding: '0.6rem 1.2rem', borderRadius: '9999px',
+                                background: 'rgba(236,72,153,0.12)',
+                                border: '1px solid rgba(236,72,153,0.3)',
+                                color: '#ec4899', cursor: 'pointer',
+                                display: 'flex', alignItems: 'center', gap: '0.5rem',
+                                fontSize: '0.88rem', fontWeight: 600, transition: 'all 0.2s',
+                            }}
+                        >
+                            <Zap size={15} /> Adaptive Practice
                         </motion.button>
                     </Link>
 
@@ -384,14 +528,14 @@ const Dashboard = () => {
                 }}
             >
                 <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(99,102,241,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
-                    {themeConfig.experienceCfg?.emoji}
+                    {themeConfig?.experienceCfg?.emoji || '🎓'}
                 </div>
                 <div>
                     <span style={{ fontWeight: 800, color: 'var(--text)', fontSize: '0.98rem' }}>
-                        {themeConfig.experienceCfg?.label}
+                        {themeConfig?.experienceCfg?.label || 'Professional'}
                     </span>
                     <span style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '0.88rem', marginLeft: '0.5rem', background: 'rgba(99,102,241,0.1)', padding: '2px 10px', borderRadius: '99px' }}>
-                        {themeConfig.subThemeCfg?.label}
+                        {themeConfig?.subThemeCfg?.label || 'Corporate'}
                     </span>
                 </div>
                 <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginLeft: 'auto', fontWeight: 500 }}>
@@ -484,18 +628,25 @@ const Dashboard = () => {
                         </div>
                     </motion.div>
 
-                    <RecommendationPanel userId={user?.id || user?._id} />
-                    <StudyPlanWidget userId={user?.id || user?._id} />
-                    <WeakAreaPanel userId={user?.id || user?._id} />
-                    <AchievementShowcase userId={user?.id || user?._id} />
+                    {/* Daily Mission Card - Moved to top for easy access */}
+                    <DailyMissionCard 
+                        userId={user?.id || user?._id} 
+                        progress={safeProgress} 
+                        dailyQuest={dailyQuest}
+                        onQuestClick={() => { setQuestModalOpen(true); setQuestSubmitted(false); setQuestResult(null); }}
+                    />
+
+                    {/* AI Study Insights */}
+                    <AiStudyInsights user={user} progress={safeProgress} />
+
                     <div>
                         <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>Your {terminology.chapter}s</h3>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
-                            {subjects.map(subject => (
+                            {safeSubjects.map(subject => (
                                 <Link key={subject._id} to={`/subject/${subject._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                                     <motion.div
                                         whileHover={{ scale: 1.02 }}
-                                        className={`glass-card micro-${themeConfig.micro}`}
+                                        className={`glass-card micro-${themeConfig?.micro || 'slide'}`}
                                         style={{ height: '100%' }}
                                     >
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
@@ -512,12 +663,22 @@ const Dashboard = () => {
                             ))}
                         </div>
                     </div>
+                    <RecommendationPanel userId={user?.id || user?._id} />
+                    <StudyPlanWidget userId={user?.id || user?._id} />
+                    <WeakAreaPanel userId={user?.id || user?._id} />
+                    <AchievementShowcase userId={user?.id || user?._id} />
                 </div>
 
                 {/* Sidebar */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                     {/* Leaderboard Preview Widget */}
                     <LeaderboardPreview />
+
+                    {/* Recent Sessions Widget */}
+                    <RecentSessionsWidget userId={user?.id || user?._id} />
+
+                    {/* Ready For Revision Widget */}
+                    <ReadyForRevisionWidget userId={user?.id || user?._id} />
 
                     {/* Daily Quest */}
                     <motion.div className="glass-card" style={{ padding: '1.5rem' }} whileHover={{ scale: 1.01 }}>
@@ -535,13 +696,15 @@ const Dashboard = () => {
                         ) : dailyQuest?.question ? (
                             <div>
                                 <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
-                                    🔬 {dailyQuest.question.topic} · Hard level
+                                    🔬 {dailyQuest.question.topic || 'Engineering Mathematics'} · Hard level
                                 </p>
-                                <p style={{ color: 'var(--text)', fontSize: '0.9rem', fontWeight: 600, lineHeight: 1.6, marginBottom: '1rem' }}>
-                                    {dailyQuest.question.questionText.length > 80
-                                        ? dailyQuest.question.questionText.substring(0, 80) + '...'
-                                        : dailyQuest.question.questionText}
-                                </p>
+                                {dailyQuest.question.questionText && (
+                                    <p style={{ color: 'var(--text)', fontSize: '0.9rem', fontWeight: 600, lineHeight: 1.6, marginBottom: '1rem' }}>
+                                        {dailyQuest.question.questionText.length > 80
+                                            ? dailyQuest.question.questionText.substring(0, 80) + '...'
+                                            : dailyQuest.question.questionText}
+                                    </p>
+                                )}
                                 <button
                                     className="btn btn-primary"
                                     onClick={() => { setQuestModalOpen(true); setQuestSubmitted(false); setQuestResult(null); }}
@@ -600,8 +763,8 @@ const Dashboard = () => {
                     topicName="Linear Algebra"
                 />
 
-                {/* Floating AI Tutor Chat Assistant */}
-                <AiTutorWidget topicName="Linear Algebra & GATE Maths" />
+                {/* AI Tutor Floating Widget with Context */}
+                <AiTutorWidget contextData={globalContext} />
             </div>
         </div>
     );

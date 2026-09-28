@@ -4,6 +4,7 @@ const User = require('../models/User');
 const Topic = require('../models/Topic');
 const achievementService = require('../services/achievementService');
 const dailyQuestService = require('../services/dailyQuestService');
+const notificationService = require('../services/notificationService');
 
 const getToday = () => new Date().toISOString().split('T')[0];
 const getYesterday = () => {
@@ -22,27 +23,133 @@ exports.getAssessmentByTopic = async (req, res) => {
     }
 };
 
-exports.submitAssessment = async (req, res) => {
-    const { userId, topicId, answers } = req.body;
+exports.getAssessmentByChapter = async (req, res) => {
     try {
-        const assessment = await Assessment.findOne({ topicId });
+        const assessment = await Assessment.findOne({ chapterId: req.params.chapterId, type: req.params.type });
+        if (!assessment) return res.status(404).json({ msg: 'Assessment not found' });
+        res.json(assessment);
+    } catch (err) {
+        res.status(500).send('Server error');
+    }
+};
+
+function getCorrectAnswerIndex(q) {
+    if (!q || q.correctAnswer === undefined || q.correctAnswer === null) return 0;
+    const c = q.correctAnswer;
+    if (typeof c === 'number' && !isNaN(c)) return c;
+    if (!isNaN(Number(c))) return Number(c);
+    if (typeof c === 'string' && c.trim().length === 1) {
+        const charCode = c.trim().toUpperCase().charCodeAt(0) - 65;
+        if (charCode >= 0 && charCode < 10) return charCode;
+    }
+    if (typeof c === 'string' && Array.isArray(q.options)) {
+        const foundIdx = q.options.findIndex(opt => String(opt).trim().toLowerCase() === c.trim().toLowerCase());
+        if (foundIdx !== -1) return foundIdx;
+    }
+    return 0;
+}
+
+function checkIsAnswerCorrect(q, selectedOption) {
+    if (!q || selectedOption === undefined || selectedOption === null) return false;
+    const correctIdx = getCorrectAnswerIndex(q);
+    
+    if (typeof selectedOption === 'number') {
+        return selectedOption === correctIdx;
+    }
+    if (!isNaN(Number(selectedOption))) {
+        return Number(selectedOption) === correctIdx;
+    }
+    if (typeof selectedOption === 'string' && Array.isArray(q.options)) {
+        if (selectedOption.trim().length === 1) {
+            const charCode = selectedOption.trim().toUpperCase().charCodeAt(0) - 65;
+            if (charCode >= 0 && charCode < 10) return charCode === correctIdx;
+        }
+        const optVal = q.options[correctIdx];
+        if (optVal && String(optVal).trim().toLowerCase() === selectedOption.trim().toLowerCase()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+exports.submitAssessment = async (req, res) => {
+    const { userId, topicId, chapterId, answers, type } = req.body;
+    try {
+        // Allow fetching assessment by either topicId or chapterId (+ type if present)
+        let query;
+        if (topicId) {
+            query = { topicId };
+        } else if (chapterId && type) {
+            query = { chapterId, type };
+        } else {
+            query = { chapterId };
+        }
+        const assessment = await Assessment.findOne(query);
         if (!assessment) return res.status(404).json({ msg: 'Assessment not found' });
 
         let correctCount = 0;
         const mistakes = [];
         let fetchedTopicName = null;
         let didFetchTopic = false;
+        
+        // For tracking topic-level scores in INITIAL assessment
+        const topicCorrectCounts = {};
+        const topicTotalCounts = {};
 
-        for (let index = 0; index < assessment.questions.length; index++) {
-            const q = assessment.questions[index];
-            if (q.correctAnswer === answers[index]) {
-                correctCount++;
+        for (let index = 0; index < answers.length; index++) {
+            const answerData = answers[index];
+            let isCorrect = false;
+            let q = null;
+            let selectedOpt = null;
+
+            if (typeof answerData === 'object' && answerData !== null) {
+                const targetQId = answerData.questionId ? String(answerData.questionId) : null;
+                if (targetQId) {
+                    q = assessment.questions.find(quest => quest._id && quest._id.toString() === targetQId);
+                }
+                if (!q && typeof index === 'number' && index < assessment.questions.length) {
+                    q = assessment.questions[index];
+                }
+                if (q) {
+                    selectedOpt = answerData.selectedOption;
+                    if (selectedOpt !== undefined && selectedOpt !== null) {
+                        isCorrect = checkIsAnswerCorrect(q, selectedOpt);
+                    }
+                }
             } else {
+                q = assessment.questions[index];
+                if (q) {
+                    selectedOpt = answerData;
+                    if (selectedOpt !== undefined && selectedOpt !== null) {
+                        isCorrect = checkIsAnswerCorrect(q, selectedOpt);
+                    }
+                }
+            }
+            if (!q) continue;
+
+            if (isCorrect) {
+                correctCount++;
+            }
+            
+            // Track topic-level stats if q.topicId exists
+            if (q.topicId) {
+                const tId = q.topicId.toString();
+                if (!topicTotalCounts[tId]) {
+                    topicTotalCounts[tId] = 0;
+                    topicCorrectCounts[tId] = 0;
+                }
+                topicTotalCounts[tId]++;
+                if (isCorrect) {
+                    topicCorrectCounts[tId]++;
+                }
+            }
+
+            if (!isCorrect) {
                 let effectiveTag = (q.conceptTag && typeof q.conceptTag === 'string' && q.conceptTag.trim() !== '') 
                     ? q.conceptTag.trim() 
                     : null;
                 
-                if (!effectiveTag) {
+                if (!effectiveTag && topicId) {
                     if (!didFetchTopic) {
                         try {
                             const parentTopic = await Topic.findById(assessment.topicId);
@@ -59,16 +166,22 @@ exports.submitAssessment = async (req, res) => {
 
                 mistakes.push({
                     questionId: q._id ? q._id.toString() : null,
-                    selectedOption: answers[index],
+                    selectedOption: selectedOpt,
                     correctOption: q.correctAnswer,
                     conceptTag: effectiveTag
                 });
             }
         }
 
-        const currentScore = (correctCount / assessment.questions.length) * 100;
+        const totalQuestions = answers.length > 0 ? answers.length : assessment.questions.length;
+        const currentScore = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
         
-        let progress = await Progress.findOne({ userId, topicId });
+        // Find existing progress by topicId or chapterId
+        const progressQuery = { userId };
+        if (topicId) progressQuery.topicId = topicId;
+        if (chapterId && !topicId) progressQuery.chapterId = chapterId;
+        
+        let progress = await Progress.findOne(progressQuery);
         let legacyWasPassed = false;
         let effectiveBestScore = currentScore;
         
@@ -80,13 +193,43 @@ exports.submitAssessment = async (req, res) => {
                 effectiveBestScore = progress.score;
             }
         } else {
-            progress = new Progress({ userId, topicId });
+            progress = new Progress(progressQuery);
         }
 
         progress.latestScore = currentScore;
         progress.bestScore = Math.max(effectiveBestScore, currentScore);
         progress.score = progress.bestScore;
-        progress.status = progress.bestScore >= assessment.passScore ? 'pass' : 'fail';
+        const passThreshold = typeof assessment.passScore === 'number' ? Math.min(assessment.passScore, 60) : 60;
+        progress.status = progress.bestScore >= passThreshold ? 'pass' : 'fail';
+        
+        // Categorize student using Algorithm (WEAK < 40%, MEDIUM 40-69%, HIGH >= 70%)
+        let category = 'MEDIUM';
+        if (currentScore < 40) {
+            category = 'WEAK';
+        } else if (currentScore < 70) {
+            category = 'MEDIUM';
+        } else {
+            category = 'HIGH';
+        }
+
+        // Handle adaptive logic for INITIAL assessment
+        if (assessment.type === 'INITIAL') {
+            progress.initialAssessmentScore = currentScore;
+            progress.currentLevel = category;
+            progress.pathType = category === 'HIGH' ? 'DIRECT_MAIN_CONTENT' : 'GUIDED';
+            
+            // Populate topic scores based on questions answered
+            progress.topicScores = Object.keys(topicTotalCounts).map(tId => ({
+                topicId: tId,
+                score: (topicCorrectCounts[tId] / topicTotalCounts[tId]) * 100
+            }));
+        } else {
+            progress.currentLevel = category;
+        }
+
+        if (assessment.type === 'FINAL') {
+            progress.finalAssessmentScore = currentScore;
+        }
 
         const currentAttemptPasses = currentScore >= assessment.passScore;
         const isFirstPassAndEligible = currentAttemptPasses && !progress.rewardClaimed && !legacyWasPassed;
@@ -140,14 +283,27 @@ exports.submitAssessment = async (req, res) => {
 
         await progress.save();
 
+        let newlyUnlockedAchievements = [];
         // Secondary achievement evaluation (isolated with try/catch)
         try {
-            await achievementService.evaluateUserAchievements(userId, currentScore);
+            newlyUnlockedAchievements = await achievementService.evaluateUserAchievements(userId, currentScore);
         } catch (achErr) {
             console.error('submitAssessment: Secondary achievement evaluation error ignored:', achErr);
         }
 
-        res.json({ score: progress.score, status: progress.status, user: updatedUser });
+        res.json({ 
+            score: progress.score, 
+            latestScore: currentScore,
+            correctCount,
+            totalQuestions,
+            category: progress.currentLevel,
+            currentLevel: progress.currentLevel,
+            pathType: progress.pathType,
+            status: progress.status, 
+            user: updatedUser,
+            topicScores: progress.topicScores,
+            newlyUnlockedAchievements
+        });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');
@@ -240,6 +396,7 @@ exports.submitDailyQuest = async (req, res) => {
 
         const isCorrect = (answer === todaysQuest.correctAnswer);
 
+        let newlyUnlockedAchievements = [];
         if (isCorrect) {
             const yesterday = dailyQuestService.getYesterday();
             let newStreak = 1;
@@ -273,10 +430,13 @@ exports.submitDailyQuest = async (req, res) => {
 
             // Secondary achievement evaluation (isolated with try/catch)
             try {
-                await achievementService.evaluateUserAchievements(userId);
+                newlyUnlockedAchievements = await achievementService.evaluateUserAchievements(userId);
             } catch (achErr) {
                 console.error('submitDailyQuest: Secondary achievement evaluation error ignored:', achErr);
             }
+
+            // Notify mission complete
+            await notificationService.notifyMissionComplete(userId);
         }
 
         const updatedUser = await User.findById(userId);
@@ -284,7 +444,8 @@ exports.submitDailyQuest = async (req, res) => {
         res.json({
             isCorrect,
             correctAnswer: todaysQuest.correctAnswer,
-            userStats: { points: updatedUser.points || 0, streak: updatedUser.streak || 0, tokens: updatedUser.tokens || 0 }
+            userStats: { points: updatedUser.points || 0, streak: updatedUser.streak || 0, tokens: updatedUser.tokens || 0 },
+            newlyUnlockedAchievements
         });
     } catch (err) {
         console.error('submitDailyQuest error:', err);

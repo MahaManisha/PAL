@@ -25,9 +25,9 @@ const Contact = () => {
                         <p style={{ color: '#94a3b8', fontSize: '1.1rem', marginBottom: '2rem', lineHeight: 1.6, margin: '0 0 2rem 0' }}>Join thousands of students optimizing their study routines with our AI-powered ecosystem.</p>
                         
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', color: '#cbd5e1' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}><Mail size={20} color="#3b82f6" /> support@dazlearning.com</div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}><Phone size={20} color="#3b82f6" /> +1 (555) 123-4567</div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}><MapPin size={20} color="#3b82f6" /> 123 EdTech Valley, San Francisco, CA</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}><Mail size={20} color="#3b82f6" /> dazdeeptech@gmail.com</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}><Phone size={20} color="#3b82f6" /> 9486742400</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}><MapPin size={20} color="#3b82f6" /> kovilpatti - National Engineering college</div>
                         </div>
                     </div>
 

@@ -7,13 +7,11 @@ import {
     Briefcase, Clapperboard
 } from 'lucide-react';
 import { EXPERIENCE_CONFIG } from '../config/experiences';
-
 const EXPERIENCE_ICONS = {
     professional: <Briefcase size={28} />,
     gamified: <Gamepad2 size={28} />,
     cinematic: <Clapperboard size={28} />,
 };
-
 const SUBTHEME_ICONS = {
     corporate: <Building2 size={16} />,
     academic: <GraduationCap size={16} />,
@@ -38,17 +36,14 @@ const SUBTHEME_ICONS = {
     vintage: <Camera size={16} />,
     imax: <Monitor size={16} />
 };
-
 const EXPERIENCE_GRADIENTS = {
     professional: 'linear-gradient(135deg, #1e40af, #3b82f6)',
     gamified: 'linear-gradient(135deg, #7c3aed, #ec4899)',
     cinematic: 'linear-gradient(135deg, #b45309, #f59e0b)',
 };
-
 function SubThemeCard({ subKey, cfg, selected, onClick }) {
     const primaryColor = cfg?.palette?.['--primary'] || '#6366f1';
     const IconComponent = SUBTHEME_ICONS[subKey] || <Sparkles size={16} />;
-
     return (
         <motion.button
             whileHover={{ scale: 1.04, y: -2 }}
@@ -208,7 +203,6 @@ const ThemeSelectModal = ({ isOpen, mode = 'setup', initialExp = 'professional',
                             <X size={18} />
                         </button>
                     )}
-
                     {/* Header */}
                     <div style={{ marginBottom: '2rem', paddingRight: isSetup ? 0 : '2rem' }}>
                         <AnimatePresence mode="wait">
@@ -245,7 +239,6 @@ const ThemeSelectModal = ({ isOpen, mode = 'setup', initialExp = 'professional',
                             )}
                         </AnimatePresence>
                     </div>
-
                     {/* Step 1: Experience Selection */}
                     <AnimatePresence mode="wait">
                         {step === 1 && (

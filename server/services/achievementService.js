@@ -1,6 +1,7 @@
 const Achievement = require('../models/Achievement');
 const User = require('../models/User');
 const Progress = require('../models/Progress');
+const notificationService = require('./notificationService');
 
 // Canonical 5 achievements
 const CANONICAL_ACHIEVEMENTS = [
@@ -81,6 +82,10 @@ const unlockBadge = async (userId, achievementKey) => {
                         achievementKey,
                         unlockedAt: new Date()
                     }
+                },
+                $inc: {
+                    points: 50,
+                    tokens: 10
                 }
             }
         );
@@ -135,6 +140,14 @@ const evaluateUserAchievements = async (userId, currentScore = null) => {
         if (typeof currentScore === 'number' && currentScore === 100) {
             const unlocked = await unlockBadge(userId, 'PERFECT_SCORE');
             if (unlocked) unlockedThisRun.push('PERFECT_SCORE');
+        }
+
+        // Trigger notifications for any newly unlocked achievements
+        for (const key of unlockedThisRun) {
+            const achData = CANONICAL_ACHIEVEMENTS.find(a => a.key === key);
+            if (achData) {
+                await notificationService.notifyAchievement(userId, achData.name);
+            }
         }
 
         return unlockedThisRun;

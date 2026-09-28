@@ -22,6 +22,7 @@ const UserSchema = new mongoose.Schema({
     tokens: { type: Number, default: 0 },
     lastStudyDate: { type: String, default: '' },
     completedDailyQuestDate: { type: String, default: '' },
+    lastCoachSignature: { type: String, default: '' },
     unlockedBadges: [{
         achievementKey: { type: String, required: true },
         unlockedAt: { type: Date, default: Date.now }

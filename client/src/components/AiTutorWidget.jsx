@@ -7,47 +7,72 @@ function qLowerContains(str, keywords) {
     return keywords.some(k => str.includes(k));
 }
 
-function getSmartFallbackReply(query, topicName) {
+function getSmartFallbackReply(query, contextData = {}) {
+    const cleanTopic = contextData.topicName || 'Engineering Mathematics & Computer Science';
     const qLower = query.toLowerCase();
+
+    let contextPrefix = '';
+    if (contextData.topicName) {
+        if (contextData.status === 'fail' || (contextData.weakAreas && contextData.weakAreas.length > 0)) {
+            contextPrefix = `Based on your recent performance, I notice you might be struggling with **${cleanTopic}**. Let's break it down to strengthen this weak area.\n\n`;
+        } else if (contextData.status === 'pass') {
+            contextPrefix = `Great job mastering **${cleanTopic}** so far! Let's keep exploring.\n\n`;
+        }
+    }
+
     if (qLower.includes('platform') || qLower.includes('daz') || qLower.includes('about this') || qLower.includes('what is this')) {
         return {
             text: `Welcome to **DAZ Learning**! 🚀\n\nDAZ Learning is an AI-powered learning platform designed for Grade 12 & GATE Engineering Mathematics and Computer Science.\n\n**Platform Highlights**:\n• **3 Visual Modes**: Switch between Professional 💼, Gamified 🎮, and Cinematic 🎬 experiences anytime on your Dashboard.\n• **AI Study Assistant**: Ask any question for simplified breakdowns, key formulas, and GATE PYQ solutions.\n• **Flashcards Deck**: Interactive 3D memory cards for spaced repetition.\n• **Mock Test Generator**: Custom practice tests with real-time timers and instant answer keys.\n• **Reward Shop & Certificates**: Earn tokens for study streaks to unlock profile frames, avatars, and downloadable certificates.`,
             keyTakeaways: ['AI-Powered Learning', '3 Visual Experience Modes', 'Interactive Flashcards & Mock Tests', 'Reward Shop & Certificates']
         };
     } else if (qLower.startsWith('hi') || qLower.startsWith('hello') || qLower.startsWith('hey') || qLower.includes('hii') || qLower === 'hi' || qLower === 'hello') {
+        const subjectCtx = contextData.subjectName ? ` in **${contextData.subjectName}**` : '';
+        const tk = ['Ask for concept explanations', 'Request key formulas', 'Practice sample GATE problems'];
+        if (contextData.status === 'fail') tk.push('Review this concept');
+        else if (contextData.status === 'pass') tk.push('Continue to the next topic');
+        
         return {
-            text: `Hello! 👋 How can I help you master **${topicName}** today? Feel free to ask me to explain concepts, list key formulas, or provide GATE sample problems!`,
-            keyTakeaways: ['Ask for concept explanations', 'Request key formulas', 'Practice sample GATE problems']
+            text: `${contextPrefix}Hello! 👋 How can I help you master **${cleanTopic}**${subjectCtx} today? Feel free to ask me to explain concepts, list key formulas, or provide GATE sample problems!`,
+            keyTakeaways: tk
         };
     } else if (qLower.includes('explain') || qLower.includes('simple') || qLower.includes('what is')) {
         return {
-            text: `Here is an intuitive breakdown of **${topicName}**:\n\n1. **Core Concept**: It forms the mathematical foundation for engineering & system analysis.\n2. **Key Property**: Work step-by-step to compute determinants, ranks, or row operations.\n3. **Pro Tip**: Always check constraint conditions and matrix dimensions first!`,
+            text: `${contextPrefix}Here is an intuitive breakdown of **${cleanTopic}**:\n\n1. **Core Concept**: It forms the mathematical foundation for engineering & system analysis.\n2. **Key Property**: Work step-by-step to compute determinants, ranks, or row operations.\n3. **Pro Tip**: Always check constraint conditions and matrix dimensions first!`,
             keyTakeaways: ['Understand fundamental definitions', 'Work step-by-step', 'Verify constraint conditions']
         };
     } else if (qLower.includes('formula') || qLower.includes('equation')) {
         return {
-            text: `Key Formulas for **${topicName}**:\n\n• **Determinant Product**: det(A × B) = det(A) × det(B)\n• **Trace & Eigenvalues**: Trace(A) = sum of eigenvalues, det(A) = product of eigenvalues\n• **Rank-Nullity Theorem**: Rank(A) + Nullity(A) = n`,
+            text: `Key Formulas for **${cleanTopic}**:\n\n• **Determinant Product**: det(A × B) = det(A) × det(B)\n• **Trace & Eigenvalues**: Trace(A) = sum of eigenvalues, det(A) = product of eigenvalues\n• **Rank-Nullity Theorem**: Rank(A) + Nullity(A) = n`,
             keyTakeaways: ['Trace = sum of eigenvalues', 'Determinant = product of eigenvalues', 'Rank + Nullity = columns']
         };
-    } else if (qLower.includes('example') || qLower.includes('problem') || qLower.includes('gate')) {
+    } else if (qLower.includes('example') || qLower.includes('problem') || qLower.includes('gate') || qLower.includes('test me')) {
         return {
-            text: `Here is a GATE PYQ problem for **${topicName}**:\n\n**Question**: If matrix A (3×3) has eigenvalues 1, 2, 3, what is det(A² + 2I)?\n\n**Solution**:\nEigenvalues of (A² + 2I) are 1² + 2 = 3, 2² + 2 = 6, and 3² + 2 = 11.\nDeterminant = 3 × 6 × 11 = 198.`,
+            text: `Here is a GATE PYQ problem for **${cleanTopic}**:\n\n**Question**: If matrix A (3×3) has eigenvalues 1, 2, 3, what is det(A² + 2I)?\n\n**Solution**:\nEigenvalues of (A² + 2I) are 1² + 2 = 3, 2² + 2 = 6, and 3² + 2 = 11.\nDeterminant = 3 × 6 × 11 = 198.`,
             keyTakeaways: ['Apply spectral mapping theorem', 'Compute transformed eigenvalues', 'Product gives determinant']
+        };
+    } else if (qLower.includes('mistake') || qLower.includes('wrong')) {
+        return {
+            text: `Let's look at common mistakes in **${cleanTopic}**.\n\nA frequent error is ignoring the initial constraint conditions or matrix dimensions. When answering practice questions, I won't just give you the final answer immediately—I'll guide you to recognize these edge cases so you learn to spot them yourself!`,
+            keyTakeaways: ['Check constraints', 'Identify edge cases', 'Try 3 practice questions']
         };
     } else {
         return {
-            text: `Great question regarding **${topicName}**!\n\nWhen solving "${query}", ensure you check matrix rank, constraint conditions, and edge cases. Practicing 3-5 GATE PYQs on this exact topic will make your problem-solving 2x faster!`,
+            text: `${contextPrefix}Great question regarding **${cleanTopic}**!\n\nWhen solving "${query}", ensure you check matrix rank, constraint conditions, and edge cases. Practicing 3-5 GATE PYQs on this exact topic will make your problem-solving 2x faster!`,
             keyTakeaways: ['Verify matrix dimensions', 'Apply standard theorems', 'Practice sample GATE problems']
         };
     }
 }
 
-const AiTutorWidget = ({ topicName = 'Linear Algebra' }) => {
+const AiTutorWidget = ({ topicName = 'Linear Algebra', contextData = {} }) => {
+    // If topicName is provided directly via props, merge it into contextData for legacy support
+    const effectiveContext = { topicName, ...contextData };
+    const displayTopic = effectiveContext.topicName || 'General Knowledge';
+
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
         {
             sender: 'ai',
-            text: `Hi! I'm your AI Study Assistant. Asking anything about **${topicName}** or click a quick prompt below!`,
+            text: `Hi! I'm your AI Study Assistant. Asking anything about **${displayTopic}** or click a quick prompt below!`,
             keyTakeaways: ['Ask for simplified explanations', 'Request key formulas', 'Get GATE PYQ examples']
         }
     ]);
@@ -83,7 +108,7 @@ const AiTutorWidget = ({ topicName = 'Linear Algebra' }) => {
 
         if (isGreetingOrPlatform) {
             setTimeout(() => {
-                const smartRes = getSmartFallbackReply(queryText, topicName);
+                const smartRes = getSmartFallbackReply(queryText, effectiveContext);
                 setMessages(prev => [
                     ...prev,
                     { sender: 'ai', text: smartRes.text, keyTakeaways: smartRes.keyTakeaways }
@@ -96,7 +121,8 @@ const AiTutorWidget = ({ topicName = 'Linear Algebra' }) => {
         try {
             const res = await apiClient.post('/api/ai/tutor', {
                 query: queryText,
-                topicContext: topicName
+                topicContext: displayTopic,
+                contextData: effectiveContext
             });
 
             const aiMsg = {
@@ -107,7 +133,7 @@ const AiTutorWidget = ({ topicName = 'Linear Algebra' }) => {
             setMessages(prev => [...prev, aiMsg]);
         } catch (err) {
             console.warn('AI Tutor endpoint pending or network offline, using smart tutor response engine:', err);
-            const fallback = getSmartFallbackReply(queryText, topicName);
+            const fallback = getSmartFallbackReply(queryText, effectiveContext);
             setMessages(prev => [
                 ...prev,
                 { sender: 'ai', text: fallback.text, keyTakeaways: fallback.keyTakeaways }
@@ -124,9 +150,9 @@ const AiTutorWidget = ({ topicName = 'Linear Algebra' }) => {
     };
 
     const promptChips = [
-        { label: 'Explain simply 💡', query: `Explain ${topicName} in simple terms` },
-        { label: 'Key formulas 📐', query: `What are the key formulas for ${topicName}?` },
-        { label: 'GATE Example 🎯', query: `Give me a GATE PYQ problem for ${topicName}` },
+        { label: 'Explain simply 💡', query: `Explain ${displayTopic} in simple terms` },
+        { label: 'Key formulas 📐', query: `What are the key formulas for ${displayTopic}?` },
+        { label: 'GATE Example 🎯', query: `Give me a GATE PYQ problem for ${displayTopic}` },
     ];
 
     return (
@@ -185,8 +211,13 @@ const AiTutorWidget = ({ topicName = 'Linear Algebra' }) => {
                                         AI Tutor
                                     </div>
                                     <div style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
-                                        Topic: <span style={{ color: '#60a5fa', fontWeight: 600 }}>{topicName}</span>
+                                        Currently learning: <span style={{ color: '#60a5fa', fontWeight: 600 }}>{displayTopic}</span>
                                     </div>
+                                    {effectiveContext.weakAreas && effectiveContext.weakAreas.length > 0 && (
+                                        <div style={{ fontSize: '0.72rem', color: '#f87171', marginTop: '2px', fontWeight: 600 }}>
+                                            Focus area: {effectiveContext.weakAreas[0]}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <button
@@ -280,7 +311,7 @@ const AiTutorWidget = ({ topicName = 'Linear Algebra' }) => {
                                 type="text"
                                 value={input}
                                 onChange={e => setInput(e.target.value)}
-                                placeholder={`Ask about ${topicName}...`}
+                                placeholder={`Ask about ${displayTopic}...`}
                                 disabled={loading}
                                 style={{
                                     flex: 1, padding: '0.6rem 0.85rem', borderRadius: '0.5rem',

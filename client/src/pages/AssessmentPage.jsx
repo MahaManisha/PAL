@@ -5,7 +5,7 @@ import { AuthContext } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    HelpCircle, Award, ChevronRight, Check, XCircle, Lock, ArrowLeft,
+    HelpCircle, Award, ChevronRight, Check, CheckCircle, XCircle, Lock, ArrowLeft,
     Star, Zap, Film, Sparkles, Trophy, Target, RefreshCw, BookOpen,
     ChevronRightSquare, Loader
 } from 'lucide-react';
@@ -15,6 +15,7 @@ import {
     getMasteryBand,
     determineNextAction
 } from '../utils/progressionEngine';
+import AchievementUnlockModal from '../components/AchievementUnlockModal';
 
 // ─── Themed result copy ────────────────────────────────────────────────────────
 function getResultCopy(masteryBand, experience, terminology) {
@@ -94,8 +95,8 @@ function ScoreRow({ latestScore, bestScore, isPreviouslyPassedLowerRetake }) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-const AssessmentPage = () => {
-    const { topicId } = useParams();
+const AssessmentPage = ({ type = 'TOPIC' }) => {
+    const { topicId, chapterId } = useParams();
     const location = useLocation();
     const { user, updateUserStats } = useContext(AuthContext);
     const { themeConfig } = useTheme();
@@ -110,6 +111,8 @@ const AssessmentPage = () => {
     const [answers, setAnswers] = useState({});
     const [loading, setLoading] = useState(true);
     const [isGateAllowed, setIsGateAllowed] = useState(true);
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const [isFlipped, setIsFlipped] = useState(false);
 
     // ── Result state ────────────────────────────────────────────────────────────
     const [result, setResult] = useState(null);       // API response: { score: bestScore, status, user }
@@ -119,6 +122,7 @@ const AssessmentPage = () => {
     const [resultLoading, setResultLoading] = useState(false); // while resolving next action
     const [rewardEarned, setRewardEarned] = useState(false);
     const [isPreviouslyPassedLowerRetake, setIsPreviouslyPassedLowerRetake] = useState(false);
+    const [newlyUnlocked, setNewlyUnlocked] = useState([]);
 
     // ── subjectId resolution ────────────────────────────────────────────────────
     // Priority 1: location.state (set by TopicPage)
@@ -133,7 +137,7 @@ const AssessmentPage = () => {
             setLoading(true);
             try {
                 // 1. Gate check
-                if (user?.id && topicId) {
+                if (user?.id && type === 'TOPIC' && topicId) {
                     const progRes = await apiClient.get(`/api/progress/${user.id}`);
                     const records = Array.isArray(progRes.data) ? progRes.data : [];
                     const matched = records.find(p => {
@@ -143,10 +147,25 @@ const AssessmentPage = () => {
                     // Gate: practiceCompleted OR already passed (legacy)
                     const allowed = matched && (matched.practiceCompleted === true || matched.status === 'pass');
                     setIsGateAllowed(!!allowed);
+                } else {
+                    // Always allow chapter-level INITIAL and FINAL assessments for now
+                    setIsGateAllowed(true);
                 }
 
                 // 2. Fetch assessment questions
-                const res = await apiClient.get(`/api/assessment/${topicId}`);
+                let res;
+                if (type === 'TOPIC') {
+                    res = await apiClient.get(`/api/assessment/${topicId}`);
+                } else {
+                    res = await apiClient.get(`/api/assessment/chapter/${chapterId}/${type}`);
+                }
+
+                // Randomize and limit to 20 questions
+                if (res.data && res.data.questions) {
+                    const shuffled = [...res.data.questions].sort(() => 0.5 - Math.random());
+                    res.data.questions = shuffled.slice(0, 20);
+                }
+
                 setAssessment(res.data);
                 // 3. Resolve subjectId if not from location.state
                 const stateSubjectId = location.state?.subjectId;
@@ -170,17 +189,56 @@ const AssessmentPage = () => {
 
         fetchAssessmentAndGate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [topicId, user?.id]);
+    }, [topicId, chapterId, type, user?.id]);
+
+    const getCorrectAnswerIndex = (q) => {
+        if (!q || q.correctAnswer === undefined || q.correctAnswer === null) return 0;
+        const c = q.correctAnswer;
+        if (typeof c === 'number' && !isNaN(c)) return c;
+        if (!isNaN(Number(c))) return Number(c);
+        if (typeof c === 'string' && c.trim().length === 1) {
+            const charCode = c.trim().toUpperCase().charCodeAt(0) - 65;
+            if (charCode >= 0 && charCode < 10) return charCode;
+        }
+        if (typeof c === 'string' && Array.isArray(q.options)) {
+            const foundIdx = q.options.findIndex(opt => String(opt).trim().toLowerCase() === c.trim().toLowerCase());
+            if (foundIdx !== -1) return foundIdx;
+        }
+        return 0;
+    };
+
+    const checkIsAnswerCorrect = (q, selectedOption) => {
+        if (!q || selectedOption === undefined || selectedOption === null) return false;
+        const correctIdx = getCorrectAnswerIndex(q);
+        
+        if (typeof selectedOption === 'number') {
+            return selectedOption === correctIdx;
+        }
+        if (!isNaN(Number(selectedOption))) {
+            return Number(selectedOption) === correctIdx;
+        }
+        if (typeof selectedOption === 'string' && Array.isArray(q.options)) {
+            if (selectedOption.trim().length === 1) {
+                const charCode = selectedOption.trim().toUpperCase().charCodeAt(0) - 65;
+                if (charCode >= 0 && charCode < 10) return charCode === correctIdx;
+            }
+            const optVal = q.options[correctIdx];
+            if (optVal && String(optVal).trim().toLowerCase() === selectedOption.trim().toLowerCase()) {
+                return true;
+            }
+        }
+        return false;
+    };
 
     // ── Compute client-side latest score before submission ──────────────────────
-    // Same algorithm the server uses: count matching correctAnswer indices.
-    // This avoids a second scoring implementation — we just mirror the server's logic.
     const computeLocalScore = useCallback(() => {
         if (!assessment?.questions?.length) return 0;
-        const submittedAnswers = Object.values(answers);
         let correct = 0;
         assessment.questions.forEach((q, i) => {
-            if (q.correctAnswer === submittedAnswers[i]) correct++;
+            const userAns = answers[i];
+            if (userAns !== undefined && userAns !== null && checkIsAnswerCorrect(q, userAns)) {
+                correct++;
+            }
         });
         return (correct / assessment.questions.length) * 100;
     }, [assessment, answers]);
@@ -237,10 +295,17 @@ const AssessmentPage = () => {
         } catch (_) { /* non-critical */ }
 
         try {
+            const formattedAnswers = assessment.questions.map((q, i) => ({
+                questionId: q._id ? String(q._id) : (q.id ? String(q.id) : null),
+                selectedOption: answers[i] !== undefined && answers[i] !== null ? answers[i] : null
+            }));
+
             const res = await apiClient.post('/api/assessment/submit', {
                 userId: user.id,
-                topicId,
-                answers: Object.values(answers)
+                topicId: type === 'TOPIC' ? topicId : undefined,
+                chapterId: type !== 'TOPIC' ? chapterId : undefined,
+                type: type,
+                answers: formattedAnswers
             });
 
             if (res.data.user) {
@@ -248,22 +313,52 @@ const AssessmentPage = () => {
                 setRewardEarned(true);
             }
 
+            if (res.data.latestScore !== undefined) {
+                setLatestScore(res.data.latestScore);
+            }
+
             const bestScore = res.data.score; // backend always returns bestScore
             const band = getMasteryBand(bestScore);
             setMasteryBand(band);
             setResult(res.data);
+
+            if (res.data.newlyUnlockedAchievements?.length > 0) {
+                setNewlyUnlocked(res.data.newlyUnlockedAchievements);
+            }
 
             // Detect previously-passed + lower-retake scenario
             const isLowerRetake = wasPreviouslyPassed && thisAttemptScore < bestScore;
             setIsPreviouslyPassedLowerRetake(isLowerRetake);
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // If it's an INITIAL assessment, we can route directly to the learning path page
+            if (type === 'INITIAL') {
+                navigate(`/chapter/${chapterId}/learning-path`);
+                return;
+            }
 
-            // Resolve next action asynchronously
+            // Resolve next action asynchronously for non-INITIAL
             await resolveNextAction(res.data);
 
         } catch (err) {
             console.error('AssessmentPage: Error submitting assessment', err);
+        }
+    };
+
+    const handleOptionSelect = (oIdx) => {
+        if (isFlipped) return; // Prevent changing answer after flip
+        setAnswers({ ...answers, [currentQuestionIndex]: oIdx });
+        setIsFlipped(true);
+    };
+
+    const handleNextQuestion = () => {
+        if (currentQuestionIndex < (assessment?.questions?.length || 0) - 1) {
+            setIsFlipped(false);
+            // Small delay to hide text change during flip back
+            setTimeout(() => setCurrentQuestionIndex(prev => prev + 1), 150); 
+        } else {
+            handleSubmit();
         }
     };
 
@@ -353,6 +448,8 @@ const AssessmentPage = () => {
             : <XCircle size={72} color="#f43f5e" />;
 
         return (
+            <>
+            <AchievementUnlockModal achievements={newlyUnlocked} onClose={() => setNewlyUnlocked([])} />
             <div className="container" style={{ paddingTop: '5rem', maxWidth: '720px', textAlign: 'center', paddingBottom: '5rem' }}>
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -437,29 +534,37 @@ const AssessmentPage = () => {
                             transition={{ delay: 0.2 }}
                             style={{ display: 'flex', gap: '0.85rem', justifyContent: 'center', flexWrap: 'wrap', marginTop: '2rem' }}
                         >
-                            {/* ─── PASSED BRANCH ───────────────────────────────────────────── */}
-                            {passed && !isSubjectComplete && nextAction && nextAction.route && (
+                            {/* ─── PASSED & ABOVE AVERAGE BRANCH ───────────────────────────────────────────── */}
+                            {passed && (
                                 <>
-                                    {/* Primary: Continue forward */}
-                                    <button
-                                        onClick={() => navigate(nextAction.route)}
-                                        className="btn btn-primary"
-                                        style={{ padding: '0.9rem 1.75rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                                    <Link
+                                        to={`/topic/${topicId || '6a998c8a8d48f24fd34556e1'}?tab=learn`}
+                                        className="btn"
+                                        style={{ padding: '0.9rem 1.5rem', border: '1px solid var(--card-border)', background: 'transparent', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
                                     >
-                                        Continue → {nextAction.title || 'Next'}
-                                        <ChevronRight size={18} />
-                                    </button>
-                                    {/* Secondary (STANDARD): Review topic */}
-                                    {masteryBand === 'STANDARD' && (
-                                        <Link
-                                            to={`/topic/${topicId}`}
-                                            className="btn"
-                                            style={{ padding: '0.9rem 1.5rem', border: '1px solid var(--card-border)', background: 'transparent', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                                        <BookOpen size={18} /> Review Presentation (PPT)
+                                    </Link>
+                                    
+                                    {nextAction && nextAction.route && (
+                                        <button
+                                            onClick={() => {
+                                                let targetRoute = nextAction.route;
+                                                if (targetRoute && targetRoute.startsWith('/topic/') && !targetRoute.includes('?tab=')) {
+                                                    targetRoute += '?tab=learn';
+                                                }
+                                                navigate(targetRoute);
+                                            }}
+                                            className="btn btn-primary"
+                                            style={{
+                                                padding: '0.9rem 1.75rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                                                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                                                boxShadow: '0 4px 15px rgba(99,102,241,0.4)'
+                                            }}
                                         >
-                                            <BookOpen size={16} /> Review {terminology.topic || 'Topic'}
-                                        </Link>
+                                            Proceed to {nextAction.title || 'Next Topic'} Presentation (PPT) →
+                                        </button>
                                     )}
-                                    {/* Dashboard always available */}
+
                                     <Link
                                         to="/dashboard"
                                         className="btn"
@@ -533,6 +638,8 @@ const AssessmentPage = () => {
                                             setNextAction(null);
                                             setRewardEarned(false);
                                             setIsPreviouslyPassedLowerRetake(false);
+                                            setCurrentQuestionIndex(0);
+                                            setIsFlipped(false);
                                             window.scrollTo({ top: 0 });
                                         }}
                                         className="btn"
@@ -546,109 +653,355 @@ const AssessmentPage = () => {
                     )}
                 </motion.div>
             </div>
+            </>
         );
     }
 
     // ══════════════════════════════════════════════════════════════════════════
     // QUESTION SCREEN
     // ══════════════════════════════════════════════════════════════════════════
+    const currentQ = assessment.questions[currentQuestionIndex];
+    const isLastQuestion = currentQuestionIndex === totalQuestions - 1;
+    const selectedAnswerIdx = answers[currentQuestionIndex];
+    const isCorrect = checkIsAnswerCorrect(currentQ, selectedAnswerIdx);
+    const correctOptionIdx = getCorrectAnswerIndex(currentQ);
+
     return (
-        <div className="container" style={{ paddingTop: '3rem', maxWidth: '900px', paddingBottom: '5rem' }}>
-            
-            {/* Header & Progress Indicator */}
-            <div className="glass-card" style={{ marginBottom: '2.5rem', padding: '1.5rem 2rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
-                    <div>
-                        <h2 className="heading-gradient" style={{ fontSize: '2rem', marginBottom: '0.25rem' }}>
-                            {topicDetails?.topicName || 'Diagnostic Topic Assessment'}
-                        </h2>
-                        <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
-                            Complete all questions to prove topic mastery.
-                        </p>
+        <div className="container" style={{ paddingTop: '3rem', maxWidth: '840px', paddingBottom: '5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+
+            {/* Assessment Header Bar */}
+            <div style={{ width: '100%', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                    <button
+                        onClick={() => navigate(-1)}
+                        style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            background: 'var(--surface)',
+                            border: '1px solid var(--card-border)',
+                            borderRadius: '999px',
+                            padding: '0.45rem 1rem',
+                            color: 'var(--text-muted)',
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.04)'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = 'var(--primary)';
+                            e.currentTarget.style.color = 'var(--primary)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = 'var(--card-border)';
+                            e.currentTarget.style.color = 'var(--text-muted)';
+                        }}
+                    >
+                        <ArrowLeft size={16} /> Exit Assessment
+                    </button>
+
+                    <div style={{
+                        padding: '0.4rem 1rem',
+                        borderRadius: '999px',
+                        background: 'rgba(99, 102, 241, 0.1)',
+                        border: '1px solid rgba(99, 102, 241, 0.25)',
+                        color: 'var(--primary)',
+                        fontWeight: 700,
+                        fontSize: '0.82rem',
+                        letterSpacing: '0.04em',
+                        textTransform: 'uppercase',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.45rem'
+                    }}>
+                        <Sparkles size={14} />
+                        {type === 'INITIAL' ? 'Initial Assessment' : type === 'FINAL' ? 'Final Assessment' : `${terminology.assessment || 'Assessment'}`}
                     </div>
-                    
-                    <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Progress</div>
-                        <div style={{ fontWeight: 700, color: 'var(--primary)', fontSize: '1.1rem' }}>
-                            {answeredCount} / {totalQuestions}
+                </div>
+
+                {/* Progress Card Header */}
+                <div className="glass-card" style={{ padding: '1.5rem 1.75rem', borderRadius: '1.25rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                        <div>
+                            <h2 className="heading-gradient" style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '0.2rem', lineHeight: 1.2 }}>
+                                {type === 'INITIAL' ? 'Initial Diagnostic Test' : type === 'FINAL' ? 'Chapter Final Assessment' : `${terminology.assessment || 'Assessment'}`}
+                            </h2>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: 0 }}>
+                                Question <span style={{ fontWeight: 700, color: 'var(--text)' }}>{currentQuestionIndex + 1}</span> of {totalQuestions}
+                            </p>
                         </div>
+                        <div style={{ textAlign: 'right' }}>
+                            <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: '0.2rem', fontWeight: 600 }}>
+                                Progress
+                            </div>
+                            <div style={{ fontWeight: 800, color: 'var(--primary)', fontSize: '1.2rem' }}>
+                                {answeredCount} / {totalQuestions}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Progress Bar with theme-safe background track */}
+                    <div style={{
+                        width: '100%',
+                        height: '8px',
+                        background: 'var(--card-border)',
+                        borderRadius: '999px',
+                        overflow: 'hidden',
+                        boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.06)'
+                    }}>
+                        <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${((currentQuestionIndex + 1) / totalQuestions) * 100}%` }}
+                            transition={{ duration: 0.4, ease: 'easeOut' }}
+                            style={{
+                                height: '100%',
+                                background: 'linear-gradient(90deg, var(--primary), var(--secondary))',
+                                borderRadius: '999px'
+                            }}
+                        />
                     </div>
                 </div>
             </div>
 
-            {/* Progress Bar */}
-            <div style={{ height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '3px', marginBottom: '2.5rem', overflow: 'hidden' }}>
-                <div style={{ width: `${progressPercentage}%`, height: '100%', background: 'var(--primary)', transition: 'width 0.3s' }} />
-            </div>
+            {/* Dynamic Grid Overlay 3D Card Container */}
+            <div style={{ perspective: '1200px', width: '100%' }}>
+                <motion.div
+                    animate={{ rotateY: isFlipped ? 180 : 0 }}
+                    transition={{ type: 'spring', stiffness: 200, damping: 24 }}
+                    style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr',
+                        gridTemplateRows: '1fr',
+                        transformStyle: 'preserve-3d',
+                        width: '100%',
+                        position: 'relative'
+                    }}
+                >
+                    {/* ─── CARD FRONT (Question & Options) ─── */}
+                    <div className="glass-card" style={{
+                        gridArea: '1 / 1 / 2 / 2',
+                        backfaceVisibility: 'hidden',
+                        WebkitBackfaceVisibility: 'hidden',
+                        padding: '2.5rem 2.25rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '1.75rem',
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.08)',
+                        border: '1px solid var(--card-border)',
+                        background: 'var(--surface)',
+                        borderRadius: '1.25rem',
+                        opacity: isFlipped ? 0 : 1,
+                        pointerEvents: isFlipped ? 'none' : 'auto',
+                        transition: 'opacity 0.2s ease'
+                    }}>
+                        {/* Question Text Header */}
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+                            <span style={{
+                                background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
+                                color: '#ffffff',
+                                fontWeight: 800,
+                                fontSize: '0.88rem',
+                                padding: '0.35rem 0.75rem',
+                                borderRadius: '0.5rem',
+                                flexShrink: 0,
+                                marginTop: '0.2rem',
+                                boxShadow: '0 4px 10px rgba(37,99,235,0.25)'
+                            }}>
+                                Q{currentQuestionIndex + 1}
+                            </span>
+                            <h3 style={{
+                                fontSize: '1.25rem',
+                                fontWeight: 700,
+                                lineHeight: 1.6,
+                                color: 'var(--text)',
+                                margin: 0
+                            }}>
+                                {currentQ.questionText}
+                            </h3>
+                        </div>
 
-            {/* Questions */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', marginBottom: '3rem' }}>
-                {assessment.questions.map((q, qIdx) => (
-                    <motion.div
-                        key={qIdx}
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: qIdx * 0.05 }}
-                        className="glass-card"
-                        style={{ padding: '2rem' }}
-                    >
-                        <h3 style={{ fontSize: '1.15rem', marginBottom: '1.25rem', lineHeight: 1.5, color: 'var(--text)' }}>
-                            <span style={{ color: 'var(--primary)', marginRight: '0.5rem' }}>Q{qIdx + 1}.</span>
-                            {q.questionText}
-                        </h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                            {q.options.map((opt, oIdx) => {
-                                const isSelected = answers[qIdx] === oIdx;
+                        {/* Options Buttons */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', width: '100%' }}>
+                            {currentQ.options.map((opt, oIdx) => {
+                                const isSelected = selectedAnswerIdx === oIdx;
                                 return (
                                     <button
                                         key={oIdx}
-                                        onClick={() => {
-                                            if (result) return;
-                                            setAnswers({ ...answers, [qIdx]: oIdx });
-                                        }}
+                                        onClick={() => handleOptionSelect(oIdx)}
                                         style={{
-                                            padding: '1rem 1.25rem', textAlign: 'left', cursor: 'pointer',
-                                            background: isSelected ? 'rgba(37,99,235,0.15)' : 'var(--input-bg)',
+                                            padding: '1.1rem 1.35rem',
+                                            textAlign: 'left',
+                                            cursor: 'pointer',
+                                            background: isSelected ? 'rgba(99, 102, 241, 0.08)' : 'var(--input-bg)',
                                             border: isSelected ? '2px solid var(--primary)' : '1px solid var(--card-border)',
-                                            borderRadius: '0.6rem',
-                                            color: isSelected ? 'var(--primary)' : 'var(--text)',
-                                            fontWeight: isSelected ? 600 : 400,
-                                            display: 'flex', alignItems: 'center', gap: '0.75rem',
-                                            transition: 'all 0.2s'
+                                            borderRadius: '0.85rem',
+                                            color: 'var(--text)',
+                                            fontWeight: isSelected ? 600 : 500,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '1rem',
+                                            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                            boxShadow: isSelected ? '0 4px 14px rgba(99, 102, 241, 0.15)' : '0 2px 5px rgba(0, 0, 0, 0.02)',
+                                            wordBreak: 'break-word',
+                                            width: '100%'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            if (!isSelected) {
+                                                e.currentTarget.style.borderColor = 'var(--primary)';
+                                                e.currentTarget.style.background = 'rgba(99, 102, 241, 0.04)';
+                                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                            }
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            if (!isSelected) {
+                                                e.currentTarget.style.borderColor = 'var(--card-border)';
+                                                e.currentTarget.style.background = 'var(--input-bg)';
+                                                e.currentTarget.style.transform = 'translateY(0)';
+                                            }
                                         }}
                                     >
                                         <span style={{
-                                            width: '24px', height: '24px', borderRadius: '50%',
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            fontSize: '0.8rem', fontWeight: 700,
+                                            width: '32px',
+                                            height: '32px',
+                                            borderRadius: '50%',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: '0.85rem',
+                                            fontWeight: 800,
+                                            flexShrink: 0,
                                             background: isSelected ? 'var(--primary)' : 'var(--card-border)',
-                                            color: isSelected ? '#fff' : 'var(--text-muted)'
+                                            color: isSelected ? '#ffffff' : 'var(--text-muted)',
+                                            transition: 'all 0.2s ease'
                                         }}>
                                             {alphabet[oIdx]}
                                         </span>
-                                        {opt}
+                                        <span style={{ fontSize: '1.05rem', lineHeight: 1.5, flex: 1 }}>{opt}</span>
                                     </button>
                                 );
                             })}
                         </div>
-                    </motion.div>
-                ))}
-            </div>
+                    </div>
 
-            {/* Submit */}
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <button
-                    onClick={handleSubmit}
-                    disabled={answeredCount < totalQuestions}
-                    className="btn btn-primary"
-                    style={{
-                        padding: '1rem 3rem', fontSize: '1.1rem', fontWeight: 700,
-                        opacity: answeredCount < totalQuestions ? 0.5 : 1,
-                        cursor: answeredCount < totalQuestions ? 'not-allowed' : 'pointer'
-                    }}
-                >
-                    Submit {terminology.assessment || 'Assessment'}
-                </button>
+                    {/* ─── CARD BACK (Feedback & Next Question) ─── */}
+                    <div className="glass-card" style={{
+                        gridArea: '1 / 1 / 2 / 2',
+                        backfaceVisibility: 'hidden',
+                        WebkitBackfaceVisibility: 'hidden',
+                        transform: 'rotateY(180deg)',
+                        padding: '2.5rem 2.25rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.08)',
+                        border: isCorrect ? '2px solid rgba(16, 185, 129, 0.4)' : '2px solid rgba(239, 68, 68, 0.4)',
+                        background: isCorrect ? 'rgba(16, 185, 129, 0.04)' : 'rgba(239, 68, 68, 0.04)',
+                        borderRadius: '1.25rem',
+                        opacity: isFlipped ? 1 : 0,
+                        pointerEvents: isFlipped ? 'auto' : 'none',
+                        transition: 'opacity 0.2s ease'
+                    }}>
+                        <motion.div
+                            initial={{ scale: 0.6, opacity: 0 }}
+                            animate={{ scale: isFlipped ? 1 : 0.6, opacity: isFlipped ? 1 : 0 }}
+                            transition={{ delay: 0.15, type: 'spring', damping: 14 }}
+                            style={{ marginBottom: '1.25rem' }}
+                        >
+                            {isCorrect ? (
+                                <div style={{
+                                    padding: '1.25rem',
+                                    borderRadius: '50%',
+                                    background: 'rgba(16, 185, 129, 0.12)',
+                                    color: '#10b981',
+                                    display: 'inline-flex'
+                                }}>
+                                    <CheckCircle size={64} />
+                                </div>
+                            ) : (
+                                <div style={{
+                                    padding: '1.25rem',
+                                    borderRadius: '50%',
+                                    background: 'rgba(239, 68, 68, 0.12)',
+                                    color: '#ef4444',
+                                    display: 'inline-flex'
+                                }}>
+                                    <XCircle size={64} />
+                                </div>
+                            )}
+                        </motion.div>
+                        
+                        <h3 style={{
+                            fontSize: '2rem',
+                            fontWeight: 800,
+                            marginBottom: '0.5rem',
+                            color: isCorrect ? '#10b981' : '#ef4444'
+                        }}>
+                            {isCorrect ? 'Spot On! Correct' : 'Not Quite'}
+                        </h3>
+
+                        {!isCorrect && (
+                            <div style={{
+                                marginTop: '1.25rem',
+                                marginBottom: '1.5rem',
+                                textAlign: 'center',
+                                background: 'var(--surface)',
+                                border: '1px solid var(--card-border)',
+                                padding: '1.25rem 1.5rem',
+                                borderRadius: '1rem',
+                                width: '100%',
+                                maxWidth: '560px',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.04)'
+                            }}>
+                                <div style={{
+                                    fontSize: '0.78rem',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.06em',
+                                    color: 'var(--text-muted)',
+                                    marginBottom: '0.4rem',
+                                    fontWeight: 600
+                                }}>
+                                    Correct Answer
+                                </div>
+                                <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text)', lineHeight: 1.5 }}>
+                                    <span style={{ color: '#10b981', marginRight: '0.5rem' }}>
+                                        {alphabet[correctOptionIdx]}.
+                                    </span>
+                                    {currentQ.options[correctOptionIdx]}
+                                </div>
+                            </div>
+                        )}
+
+                        <button
+                            onClick={handleNextQuestion}
+                            className="btn btn-primary"
+                            style={{
+                                width: '100%',
+                                maxWidth: '360px',
+                                padding: '1rem 1.5rem',
+                                fontSize: '1.05rem',
+                                fontWeight: 700,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '0.75rem',
+                                marginTop: '1rem',
+                                background: isCorrect
+                                    ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                                    : 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)',
+                                boxShadow: isCorrect
+                                    ? '0 6px 20px rgba(16, 185, 129, 0.35)'
+                                    : '0 6px 20px rgba(37, 99, 235, 0.35)',
+                                borderRadius: '0.85rem',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            {isLastQuestion ? `Finish ${terminology.assessment || 'Assessment'}` : 'Next Question'}
+                            <ChevronRight size={20} />
+                        </button>
+                    </div>
+                </motion.div>
             </div>
         </div>
     );

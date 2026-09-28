@@ -85,7 +85,32 @@ export const useProgression = (subjectId) => {
 
                 if (!mountedRef.current || requestGenerationRef.current !== currentGeneration) return;
 
-                setChapters(tree);
+                // Adaptive Filtering: filter topics based on initialAssessmentScore and currentLevel
+                const adaptiveTree = tree.map(chapter => {
+                    const chapterIdStr = normalizeId(chapter._id || chapter.id);
+                    const chapterProgress = fetchedProgress.find(p => p.chapterId && normalizeId(p.chapterId._id || p.chapterId) === chapterIdStr);
+                    
+                    if (chapterProgress && chapterProgress.currentLevel && chapterProgress.currentLevel !== 'PENDING') {
+                        if (chapterProgress.currentLevel === 'HIGH') {
+                            // High level skips all micro-topics, goes straight to Main PPT (which is handled separately in routing)
+                            return { ...chapter, topics: [] };
+                        } else if (chapterProgress.currentLevel === 'MEDIUM') {
+                            // Medium level only takes topics they scored < 70 on
+                            const topicScores = chapterProgress.topicScores || [];
+                            const filteredTopics = chapter.topics.filter(topic => {
+                                const topicIdStr = normalizeId(topic._id || topic.id);
+                                const ts = topicScores.find(ts => normalizeId(ts.topicId) === topicIdStr);
+                                // If score is < 70 or not found, they must take it
+                                return !ts || ts.score < 70;
+                            });
+                            return { ...chapter, topics: filteredTopics };
+                        }
+                    }
+                    // Low level or Pending takes all topics
+                    return chapter;
+                });
+
+                setChapters(adaptiveTree);
                 setProgressRecords(fetchedProgress);
                 setLoading(false);
             } catch (err) {
