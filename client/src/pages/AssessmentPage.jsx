@@ -304,6 +304,7 @@ const AssessmentPage = ({ type = 'TOPIC' }) => {
                 userId: user.id,
                 topicId: type === 'TOPIC' ? topicId : undefined,
                 chapterId: type !== 'TOPIC' ? chapterId : undefined,
+                type: type,
                 answers: formattedAnswers
             });
 
@@ -662,144 +663,342 @@ const AssessmentPage = ({ type = 'TOPIC' }) => {
     const currentQ = assessment.questions[currentQuestionIndex];
     const isLastQuestion = currentQuestionIndex === totalQuestions - 1;
     const selectedAnswerIdx = answers[currentQuestionIndex];
-    const isCorrect = selectedAnswerIdx === currentQ.correctAnswer;
+    const isCorrect = checkIsAnswerCorrect(currentQ, selectedAnswerIdx);
+    const correctOptionIdx = getCorrectAnswerIndex(currentQ);
 
     return (
-        <div className="container" style={{ paddingTop: '5rem', maxWidth: '800px', paddingBottom: '5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div className="container" style={{ paddingTop: '3rem', maxWidth: '840px', paddingBottom: '5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
-            {/* Header */}
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                <div>
-                    <h2 className="heading-gradient" style={{ fontSize: '2rem', marginBottom: '0.25rem' }}>
-                        {terminology.assessment || 'Assessment'}
-                    </h2>
-                    <p style={{ color: 'var(--text-muted)' }}>
-                        Question {currentQuestionIndex + 1} of {totalQuestions}
-                    </p>
+            {/* Assessment Header Bar */}
+            <div style={{ width: '100%', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                    <button
+                        onClick={() => navigate(-1)}
+                        style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            background: 'var(--surface)',
+                            border: '1px solid var(--card-border)',
+                            borderRadius: '999px',
+                            padding: '0.45rem 1rem',
+                            color: 'var(--text-muted)',
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.04)'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = 'var(--primary)';
+                            e.currentTarget.style.color = 'var(--primary)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = 'var(--card-border)';
+                            e.currentTarget.style.color = 'var(--text-muted)';
+                        }}
+                    >
+                        <ArrowLeft size={16} /> Exit Assessment
+                    </button>
+
+                    <div style={{
+                        padding: '0.4rem 1rem',
+                        borderRadius: '999px',
+                        background: 'rgba(99, 102, 241, 0.1)',
+                        border: '1px solid rgba(99, 102, 241, 0.25)',
+                        color: 'var(--primary)',
+                        fontWeight: 700,
+                        fontSize: '0.82rem',
+                        letterSpacing: '0.04em',
+                        textTransform: 'uppercase',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.45rem'
+                    }}>
+                        <Sparkles size={14} />
+                        {type === 'INITIAL' ? 'Initial Assessment' : type === 'FINAL' ? 'Final Assessment' : `${terminology.assessment || 'Assessment'}`}
+                    </div>
                 </div>
-                <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Progress</div>
-                    <div style={{ fontWeight: 700, color: 'var(--primary)', fontSize: '1.1rem' }}>
-                        {answeredCount} / {totalQuestions}
+
+                {/* Progress Card Header */}
+                <div className="glass-card" style={{ padding: '1.5rem 1.75rem', borderRadius: '1.25rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                        <div>
+                            <h2 className="heading-gradient" style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '0.2rem', lineHeight: 1.2 }}>
+                                {type === 'INITIAL' ? 'Initial Diagnostic Test' : type === 'FINAL' ? 'Chapter Final Assessment' : `${terminology.assessment || 'Assessment'}`}
+                            </h2>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: 0 }}>
+                                Question <span style={{ fontWeight: 700, color: 'var(--text)' }}>{currentQuestionIndex + 1}</span> of {totalQuestions}
+                            </p>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                            <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: '0.2rem', fontWeight: 600 }}>
+                                Progress
+                            </div>
+                            <div style={{ fontWeight: 800, color: 'var(--primary)', fontSize: '1.2rem' }}>
+                                {answeredCount} / {totalQuestions}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Progress Bar with theme-safe background track */}
+                    <div style={{
+                        width: '100%',
+                        height: '8px',
+                        background: 'var(--card-border)',
+                        borderRadius: '999px',
+                        overflow: 'hidden',
+                        boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.06)'
+                    }}>
+                        <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${((currentQuestionIndex + 1) / totalQuestions) * 100}%` }}
+                            transition={{ duration: 0.4, ease: 'easeOut' }}
+                            style={{
+                                height: '100%',
+                                background: 'linear-gradient(90deg, var(--primary), var(--secondary))',
+                                borderRadius: '999px'
+                            }}
+                        />
                     </div>
                 </div>
             </div>
 
-            {/* Progress Bar */}
-            <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '3px', marginBottom: '3rem', overflow: 'hidden' }}>
-                <div style={{ width: `${((currentQuestionIndex) / totalQuestions) * 100}%`, height: '100%', background: 'var(--primary)', transition: 'width 0.3s' }} />
-            </div>
-
-            {/* 3D Flip Card */}
-            <div style={{ perspective: '1200px', width: '100%', minHeight: '450px', position: 'relative' }}>
+            {/* Dynamic Grid Overlay 3D Card Container */}
+            <div style={{ perspective: '1200px', width: '100%' }}>
                 <motion.div
                     animate={{ rotateY: isFlipped ? 180 : 0 }}
-                    transition={{ type: 'spring', stiffness: 220, damping: 25 }}
+                    transition={{ type: 'spring', stiffness: 200, damping: 24 }}
                     style={{
-                        position: 'absolute',
-                        width: '100%',
-                        height: '100%',
+                        display: 'grid',
+                        gridTemplateColumns: '1fr',
+                        gridTemplateRows: '1fr',
                         transformStyle: 'preserve-3d',
+                        width: '100%',
+                        position: 'relative'
                     }}
                 >
-                    {/* ─── CARD FRONT ─── */}
+                    {/* ─── CARD FRONT (Question & Options) ─── */}
                     <div className="glass-card" style={{
-                        position: 'absolute', width: '100%', height: '100%', backfaceVisibility: 'hidden',
-                        padding: '3rem 2.5rem', display: 'flex', flexDirection: 'column',
-                        boxShadow: '0 20px 40px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)'
+                        gridArea: '1 / 1 / 2 / 2',
+                        backfaceVisibility: 'hidden',
+                        WebkitBackfaceVisibility: 'hidden',
+                        padding: '2.5rem 2.25rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '1.75rem',
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.08)',
+                        border: '1px solid var(--card-border)',
+                        background: 'var(--surface)',
+                        borderRadius: '1.25rem',
+                        opacity: isFlipped ? 0 : 1,
+                        pointerEvents: isFlipped ? 'none' : 'auto',
+                        transition: 'opacity 0.2s ease'
                     }}>
-                        <h3 style={{ fontSize: '1.35rem', marginBottom: '2rem', lineHeight: 1.6, color: 'var(--text)', flexShrink: 0 }}>
-                            <span style={{ color: 'var(--primary)', marginRight: '0.75rem' }}>Q{currentQuestionIndex + 1}.</span>
-                            {currentQ.questionText}
-                        </h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
+                        {/* Question Text Header */}
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+                            <span style={{
+                                background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
+                                color: '#ffffff',
+                                fontWeight: 800,
+                                fontSize: '0.88rem',
+                                padding: '0.35rem 0.75rem',
+                                borderRadius: '0.5rem',
+                                flexShrink: 0,
+                                marginTop: '0.2rem',
+                                boxShadow: '0 4px 10px rgba(37,99,235,0.25)'
+                            }}>
+                                Q{currentQuestionIndex + 1}
+                            </span>
+                            <h3 style={{
+                                fontSize: '1.25rem',
+                                fontWeight: 700,
+                                lineHeight: 1.6,
+                                color: 'var(--text)',
+                                margin: 0
+                            }}>
+                                {currentQ.questionText}
+                            </h3>
+                        </div>
+
+                        {/* Options Buttons */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', width: '100%' }}>
                             {currentQ.options.map((opt, oIdx) => {
+                                const isSelected = selectedAnswerIdx === oIdx;
                                 return (
                                     <button
                                         key={oIdx}
                                         onClick={() => handleOptionSelect(oIdx)}
-                                        className="hover-lift"
                                         style={{
-                                            padding: '1.25rem 1.5rem', textAlign: 'left', cursor: 'pointer',
-                                            background: 'var(--input-bg)',
-                                            border: '1px solid var(--card-border)',
-                                            borderRadius: '0.75rem',
+                                            padding: '1.1rem 1.35rem',
+                                            textAlign: 'left',
+                                            cursor: 'pointer',
+                                            background: isSelected ? 'rgba(99, 102, 241, 0.08)' : 'var(--input-bg)',
+                                            border: isSelected ? '2px solid var(--primary)' : '1px solid var(--card-border)',
+                                            borderRadius: '0.85rem',
                                             color: 'var(--text)',
-                                            fontWeight: 500,
-                                            display: 'flex', alignItems: 'center', gap: '1rem',
-                                            transition: 'all 0.2s ease',
-                                            boxShadow: '0 4px 6px rgba(0,0,0,0.05)'
+                                            fontWeight: isSelected ? 600 : 500,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '1rem',
+                                            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                            boxShadow: isSelected ? '0 4px 14px rgba(99, 102, 241, 0.15)' : '0 2px 5px rgba(0, 0, 0, 0.02)',
+                                            wordBreak: 'break-word',
+                                            width: '100%'
                                         }}
                                         onMouseEnter={(e) => {
-                                            e.currentTarget.style.borderColor = 'var(--primary)';
-                                            e.currentTarget.style.background = 'rgba(99, 102, 241, 0.05)';
+                                            if (!isSelected) {
+                                                e.currentTarget.style.borderColor = 'var(--primary)';
+                                                e.currentTarget.style.background = 'rgba(99, 102, 241, 0.04)';
+                                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                            }
                                         }}
                                         onMouseLeave={(e) => {
-                                            e.currentTarget.style.borderColor = 'var(--card-border)';
-                                            e.currentTarget.style.background = 'var(--input-bg)';
+                                            if (!isSelected) {
+                                                e.currentTarget.style.borderColor = 'var(--card-border)';
+                                                e.currentTarget.style.background = 'var(--input-bg)';
+                                                e.currentTarget.style.transform = 'translateY(0)';
+                                            }
                                         }}
                                     >
                                         <span style={{
-                                            width: '28px', height: '28px', borderRadius: '50%',
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            fontSize: '0.85rem', fontWeight: 800,
-                                            background: 'var(--card-border)',
-                                            color: 'var(--text-muted)'
+                                            width: '32px',
+                                            height: '32px',
+                                            borderRadius: '50%',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: '0.85rem',
+                                            fontWeight: 800,
+                                            flexShrink: 0,
+                                            background: isSelected ? 'var(--primary)' : 'var(--card-border)',
+                                            color: isSelected ? '#ffffff' : 'var(--text-muted)',
+                                            transition: 'all 0.2s ease'
                                         }}>
                                             {alphabet[oIdx]}
                                         </span>
-                                        <span style={{ fontSize: '1.1rem' }}>{opt}</span>
+                                        <span style={{ fontSize: '1.05rem', lineHeight: 1.5, flex: 1 }}>{opt}</span>
                                     </button>
                                 );
                             })}
                         </div>
                     </div>
 
-                    {/* ─── CARD BACK (RESULT) ─── */}
+                    {/* ─── CARD BACK (Feedback & Next Question) ─── */}
                     <div className="glass-card" style={{
-                        position: 'absolute', width: '100%', height: '100%', backfaceVisibility: 'hidden',
+                        gridArea: '1 / 1 / 2 / 2',
+                        backfaceVisibility: 'hidden',
+                        WebkitBackfaceVisibility: 'hidden',
                         transform: 'rotateY(180deg)',
-                        padding: '3rem 2.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                        boxShadow: '0 20px 40px rgba(0,0,0,0.3)', 
-                        border: isCorrect ? '2px solid rgba(16,185,129,0.4)' : '2px solid rgba(239,68,68,0.4)',
-                        background: isCorrect ? 'rgba(16,185,129,0.05)' : 'rgba(239,68,68,0.05)'
+                        padding: '2.5rem 2.25rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.08)',
+                        border: isCorrect ? '2px solid rgba(16, 185, 129, 0.4)' : '2px solid rgba(239, 68, 68, 0.4)',
+                        background: isCorrect ? 'rgba(16, 185, 129, 0.04)' : 'rgba(239, 68, 68, 0.04)',
+                        borderRadius: '1.25rem',
+                        opacity: isFlipped ? 1 : 0,
+                        pointerEvents: isFlipped ? 'auto' : 'none',
+                        transition: 'opacity 0.2s ease'
                     }}>
                         <motion.div
-                            initial={{ scale: 0.5, opacity: 0 }}
-                            animate={{ scale: isFlipped ? 1 : 0.5, opacity: isFlipped ? 1 : 0 }}
-                            transition={{ delay: 0.15, type: 'spring', damping: 12 }}
-                            style={{ marginBottom: '1.5rem' }}
+                            initial={{ scale: 0.6, opacity: 0 }}
+                            animate={{ scale: isFlipped ? 1 : 0.6, opacity: isFlipped ? 1 : 0 }}
+                            transition={{ delay: 0.15, type: 'spring', damping: 14 }}
+                            style={{ marginBottom: '1.25rem' }}
                         >
-                            {isCorrect ? <CheckCircle size={80} color="#10b981" /> : <XCircle size={80} color="#ef4444" />}
+                            {isCorrect ? (
+                                <div style={{
+                                    padding: '1.25rem',
+                                    borderRadius: '50%',
+                                    background: 'rgba(16, 185, 129, 0.12)',
+                                    color: '#10b981',
+                                    display: 'inline-flex'
+                                }}>
+                                    <CheckCircle size={64} />
+                                </div>
+                            ) : (
+                                <div style={{
+                                    padding: '1.25rem',
+                                    borderRadius: '50%',
+                                    background: 'rgba(239, 68, 68, 0.12)',
+                                    color: '#ef4444',
+                                    display: 'inline-flex'
+                                }}>
+                                    <XCircle size={64} />
+                                </div>
+                            )}
                         </motion.div>
                         
-                        <h3 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem', color: isCorrect ? '#10b981' : '#ef4444' }}>
-                            {isCorrect ? 'Correct!' : 'Incorrect'}
+                        <h3 style={{
+                            fontSize: '2rem',
+                            fontWeight: 800,
+                            marginBottom: '0.5rem',
+                            color: isCorrect ? '#10b981' : '#ef4444'
+                        }}>
+                            {isCorrect ? 'Spot On! Correct' : 'Not Quite'}
                         </h3>
 
                         {!isCorrect && (
-                            <div style={{ marginTop: '1.5rem', textAlign: 'center', background: 'rgba(0,0,0,0.2)', padding: '1.5rem', borderRadius: '1rem', width: '100%' }}>
-                                <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>The right answer was</div>
-                                <div style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text)' }}>
-                                    {alphabet[currentQ.correctAnswer]}. {currentQ.options[currentQ.correctAnswer]}
+                            <div style={{
+                                marginTop: '1.25rem',
+                                marginBottom: '1.5rem',
+                                textAlign: 'center',
+                                background: 'var(--surface)',
+                                border: '1px solid var(--card-border)',
+                                padding: '1.25rem 1.5rem',
+                                borderRadius: '1rem',
+                                width: '100%',
+                                maxWidth: '560px',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.04)'
+                            }}>
+                                <div style={{
+                                    fontSize: '0.78rem',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.06em',
+                                    color: 'var(--text-muted)',
+                                    marginBottom: '0.4rem',
+                                    fontWeight: 600
+                                }}>
+                                    Correct Answer
+                                </div>
+                                <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text)', lineHeight: 1.5 }}>
+                                    <span style={{ color: '#10b981', marginRight: '0.5rem' }}>
+                                        {alphabet[correctOptionIdx]}.
+                                    </span>
+                                    {currentQ.options[correctOptionIdx]}
                                 </div>
                             </div>
                         )}
-
-                        <div style={{ flex: 1 }} />
 
                         <button
                             onClick={handleNextQuestion}
                             className="btn btn-primary"
                             style={{
-                                width: '100%', padding: '1.1rem', fontSize: '1.15rem', fontWeight: 700,
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem',
-                                marginTop: '2rem',
-                                background: isCorrect ? '#10b981' : 'var(--primary)'
+                                width: '100%',
+                                maxWidth: '360px',
+                                padding: '1rem 1.5rem',
+                                fontSize: '1.05rem',
+                                fontWeight: 700,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '0.75rem',
+                                marginTop: '1rem',
+                                background: isCorrect
+                                    ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                                    : 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)',
+                                boxShadow: isCorrect
+                                    ? '0 6px 20px rgba(16, 185, 129, 0.35)'
+                                    : '0 6px 20px rgba(37, 99, 235, 0.35)',
+                                borderRadius: '0.85rem',
+                                cursor: 'pointer'
                             }}
                         >
                             {isLastQuestion ? `Finish ${terminology.assessment || 'Assessment'}` : 'Next Question'}
-                            <ChevronRight size={22} />
+                            <ChevronRight size={20} />
                         </button>
                     </div>
                 </motion.div>
@@ -809,3 +1008,4 @@ const AssessmentPage = ({ type = 'TOPIC' }) => {
 };
 
 export default AssessmentPage;
+

@@ -32,7 +32,7 @@ const RecentSessionsWidget = ({ userId }) => {
     const [sessions, setSessions] = useState([]);
     useEffect(() => {
         if(!userId) return;
-        apiClient.get('/api/sessions/history').then(res => setSessions(res.data.slice(0, 2))).catch(console.error);
+        apiClient.get('/api/sessions/history').then(res => setSessions(Array.isArray(res.data) ? res.data.slice(0, 2) : [])).catch(console.error);
     }, [userId]);
 
     if(sessions.length === 0) return null;
@@ -63,7 +63,7 @@ const ReadyForRevisionWidget = ({ userId }) => {
     useEffect(() => {
         if(!userId) return;
         apiClient.get(`/api/progress/revision-queue/${userId}`)
-            .then(res => setDueNow((res.data.dueNow || []).slice(0, 3)))
+            .then(res => setDueNow((res.data?.dueNow || []).slice(0, 3)))
             .catch(console.error);
     }, [userId]);
 
@@ -118,10 +118,10 @@ const DailyQuestModal = ({ quest, onClose, onSubmit, submitted, result }) => {
                     </span>
                 </div>
                 <h3 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '1.5rem', lineHeight: 1.5, color: 'var(--text)' }}>
-                    {quest.questionText}
+                    {quest?.questionText}
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                    {quest.options.map((opt, i) => {
+                    {(quest?.options || []).map((opt, i) => {
                         let border = '1px solid var(--card-border)';
                         let bg = 'rgba(255,255,255,0.03)';
                         if (submitted && result) {
@@ -224,7 +224,9 @@ const Dashboard = () => {
     const { user, logout, updateUserStats } = useContext(AuthContext);
     const { themeConfig, experience, subTheme, savePreference, isChanging } = useTheme();
 
-    const { terminology, reward, progressStyle } = themeConfig;
+    const terminology = themeConfig?.terminology || { chapter: 'Chapter', topic: 'Topic', assessment: 'Assessment', progress: 'Progress', streak: 'Streak', complete: 'Complete' };
+    const reward = themeConfig?.reward || { key: 'points', label: 'Points', emoji: '⭐' };
+    const progressStyle = themeConfig?.progressStyle || 'bar';
 
     const [subjects, setSubjects] = useState([]);
     const [progress, setProgress] = useState([]);
@@ -240,8 +242,11 @@ const Dashboard = () => {
 
     const { nextAction, isLoading: isLoadingNextAction } = useNextAction();
 
-    const rewardValue = user?.[reward.key] || 0;
-    const passedTopics = progress.filter(p => p.status === 'pass').length;
+    const safeProgress = Array.isArray(progress) ? progress : [];
+    const safeSubjects = Array.isArray(subjects) ? subjects : [];
+
+    const rewardValue = user?.[reward?.key] || 0;
+    const passedTopics = safeProgress.filter(p => p && p.status === 'pass').length;
 
     // Derive Global Context for AI Tutor
     let globalContext = {
@@ -249,15 +254,19 @@ const Dashboard = () => {
         status: 'in_progress',
         weakAreas: []
     };
-    const failingTopics = progress.filter(p => p.status === 'fail' && p.topicId);
+    const failingTopics = safeProgress.filter(p => p && p.status === 'fail' && p.topicId);
     if (failingTopics.length > 0) {
-        globalContext.weakAreas.push(failingTopics[0].topicId.topicName || 'Complex concepts');
-        globalContext.topicName = failingTopics[0].topicId.topicName || 'Review Topics';
+        const topicObj = failingTopics[0].topicId;
+        const tName = (typeof topicObj === 'object' && topicObj) ? (topicObj.topicName || topicObj.title) : 'Complex concepts';
+        globalContext.weakAreas.push(tName || 'Complex concepts');
+        globalContext.topicName = tName || 'Review Topics';
         globalContext.status = 'fail';
     } else {
-        const inProgress = progress.filter(p => p.status === 'in_progress' && p.topicId);
+        const inProgress = safeProgress.filter(p => p && p.status === 'in_progress' && p.topicId);
         if (inProgress.length > 0) {
-            globalContext.topicName = inProgress[0].topicId.topicName;
+            const topicObj = inProgress[0].topicId;
+            const tName = (typeof topicObj === 'object' && topicObj) ? (topicObj.topicName || topicObj.title) : 'General Study';
+            globalContext.topicName = tName || 'General Study';
             globalContext.status = 'in_progress';
         }
     }
@@ -273,10 +282,12 @@ const Dashboard = () => {
                     apiClient.get(`/api/progress/${userId}`),
                 ]);
 
-                setSubjects(subRes.data);
-                setProgress(progRes.data);
+                setSubjects(Array.isArray(subRes.data) ? subRes.data : []);
+                setProgress(Array.isArray(progRes.data) ? progRes.data : []);
             } catch (err) {
                 console.error('Failed to load dashboard data:', err);
+                setSubjects([]);
+                setProgress([]);
             }
         };
 
@@ -302,10 +313,19 @@ const Dashboard = () => {
         fetchDailyQuest();
     }, [user?.id, user?._id]);
 
+    if (!user) {
+        return (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80vh', color: 'var(--text-muted)' }}>
+                Loading Dashboard…
+            </div>
+        );
+    }
+
     const handleDailyQuestSubmit = async (answerIndex) => {
         try {
+            const userId = user?.id || user?._id;
             const res = await apiClient.post('/api/assessment/daily-quest/submit', {
-                userId: user.id, questionId: dailyQuest.question.id, answer: answerIndex,
+                userId, questionId: dailyQuest?.question?.id, answer: answerIndex,
             });
             setQuestResult(res.data);
             setQuestSubmitted(true);
@@ -341,6 +361,7 @@ const Dashboard = () => {
 
             {/* AI Learning Coach Banner */}
             <AiCoachCard onAskTutor={(insight) => {
+                if (!insight) return;
                 globalContext.topicName = insight.contextTag || insight.title;
                 globalContext.status = insight.type;
                 globalContext.weakAreas = insight.type === 'REMEDIATION' ? [insight.contextTag] : [];
@@ -372,13 +393,13 @@ const Dashboard = () => {
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: '1.9rem', flexShrink: 0,
                             position: 'relative',
-                            ...getFrameStyle(user.equipped?.profile_frame)
+                            ...getFrameStyle(user?.equipped?.profile_frame)
                         }}
                     >
-                        {getAvatarIcon(user.equipped?.avatar)}
+                        {getAvatarIcon(user?.equipped?.avatar)}
                     </div>
                     <div>
-                        <h2 className="heading-gradient" style={{ fontSize: '2.4rem', marginBottom: '0.2rem' }}>Welcome back, {user.name}!</h2>
+                        <h2 className="heading-gradient" style={{ fontSize: '2.4rem', marginBottom: '0.2rem' }}>Welcome back, {user?.name || 'Learner'}!</h2>
                         <p style={{ color: 'var(--text-muted)', margin: 0 }}>Here is your learning progress and performance insights for today.</p>
                     </div>
                 </div>
@@ -389,9 +410,9 @@ const Dashboard = () => {
                         onClick={() => setIsStoreModalOpen(true)}
                         style={{
                             padding: '0.6rem 1.2rem', borderRadius: '9999px',
-                            background: getAccentColor(user.equipped?.theme_accent) ? `${getAccentColor(user.equipped?.theme_accent)}1a` : 'rgba(234,179,8,0.12)',
-                            border: `1px solid ${getAccentColor(user.equipped?.theme_accent) || 'rgba(234,179,8,0.3)'}`,
-                            color: getAccentColor(user.equipped?.theme_accent) || '#eab308', cursor: 'pointer',
+                            background: getAccentColor(user?.equipped?.theme_accent) ? `${getAccentColor(user?.equipped?.theme_accent)}1a` : 'rgba(234,179,8,0.12)',
+                            border: `1px solid ${getAccentColor(user?.equipped?.theme_accent) || 'rgba(234,179,8,0.3)'}`,
+                            color: getAccentColor(user?.equipped?.theme_accent) || '#eab308', cursor: 'pointer',
                             display: 'flex', alignItems: 'center', gap: '0.5rem',
                             fontSize: '0.88rem', fontWeight: 600, transition: 'all 0.2s',
                         }}
@@ -507,14 +528,14 @@ const Dashboard = () => {
                 }}
             >
                 <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(99,102,241,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
-                    {themeConfig.experienceCfg?.emoji}
+                    {themeConfig?.experienceCfg?.emoji || '🎓'}
                 </div>
                 <div>
                     <span style={{ fontWeight: 800, color: 'var(--text)', fontSize: '0.98rem' }}>
-                        {themeConfig.experienceCfg?.label}
+                        {themeConfig?.experienceCfg?.label || 'Professional'}
                     </span>
                     <span style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '0.88rem', marginLeft: '0.5rem', background: 'rgba(99,102,241,0.1)', padding: '2px 10px', borderRadius: '99px' }}>
-                        {themeConfig.subThemeCfg?.label}
+                        {themeConfig?.subThemeCfg?.label || 'Corporate'}
                     </span>
                 </div>
                 <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginLeft: 'auto', fontWeight: 500 }}>
@@ -558,22 +579,22 @@ const Dashboard = () => {
                     {/* Daily Mission Card - Moved to top for easy access */}
                     <DailyMissionCard 
                         userId={user?.id || user?._id} 
-                        progress={progress} 
+                        progress={safeProgress} 
                         dailyQuest={dailyQuest}
                         onQuestClick={() => { setQuestModalOpen(true); setQuestSubmitted(false); setQuestResult(null); }}
                     />
 
                     {/* AI Study Insights */}
-                    <AiStudyInsights user={user} progress={progress} />
+                    <AiStudyInsights user={user} progress={safeProgress} />
 
                     <div>
                         <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>Your {terminology.chapter}s</h3>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
-                            {subjects.map(subject => (
+                            {safeSubjects.map(subject => (
                                 <Link key={subject._id} to={`/subject/${subject._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                                     <motion.div
                                         whileHover={{ scale: 1.02 }}
-                                        className={`glass-card micro-${themeConfig.micro}`}
+                                        className={`glass-card micro-${themeConfig?.micro || 'slide'}`}
                                         style={{ height: '100%' }}
                                     >
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
@@ -623,13 +644,15 @@ const Dashboard = () => {
                         ) : dailyQuest?.question ? (
                             <div>
                                 <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
-                                    🔬 {dailyQuest.question.topic} · Hard level
+                                    🔬 {dailyQuest.question.topic || 'Engineering Mathematics'} · Hard level
                                 </p>
-                                <p style={{ color: 'var(--text)', fontSize: '0.9rem', fontWeight: 600, lineHeight: 1.6, marginBottom: '1rem' }}>
-                                    {dailyQuest.question.questionText.length > 80
-                                        ? dailyQuest.question.questionText.substring(0, 80) + '...'
-                                        : dailyQuest.question.questionText}
-                                </p>
+                                {dailyQuest.question.questionText && (
+                                    <p style={{ color: 'var(--text)', fontSize: '0.9rem', fontWeight: 600, lineHeight: 1.6, marginBottom: '1rem' }}>
+                                        {dailyQuest.question.questionText.length > 80
+                                            ? dailyQuest.question.questionText.substring(0, 80) + '...'
+                                            : dailyQuest.question.questionText}
+                                    </p>
+                                )}
                                 <button
                                     className="btn btn-primary"
                                     onClick={() => { setQuestModalOpen(true); setQuestSubmitted(false); setQuestResult(null); }}

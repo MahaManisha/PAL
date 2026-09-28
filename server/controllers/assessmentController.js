@@ -73,10 +73,17 @@ function checkIsAnswerCorrect(q, selectedOption) {
 }
 
 exports.submitAssessment = async (req, res) => {
-    const { userId, topicId, chapterId, answers } = req.body;
+    const { userId, topicId, chapterId, answers, type } = req.body;
     try {
-        // Allow fetching assessment by either topicId or chapterId depending on type
-        const query = topicId ? { topicId } : { chapterId };
+        // Allow fetching assessment by either topicId or chapterId (+ type if present)
+        let query;
+        if (topicId) {
+            query = { topicId };
+        } else if (chapterId && type) {
+            query = { chapterId, type };
+        } else {
+            query = { chapterId };
+        }
         const assessment = await Assessment.findOne(query);
         if (!assessment) return res.status(404).json({ msg: 'Assessment not found' });
 
@@ -192,7 +199,8 @@ exports.submitAssessment = async (req, res) => {
         progress.latestScore = currentScore;
         progress.bestScore = Math.max(effectiveBestScore, currentScore);
         progress.score = progress.bestScore;
-        progress.status = progress.bestScore >= assessment.passScore ? 'pass' : 'fail';
+        const passThreshold = typeof assessment.passScore === 'number' ? Math.min(assessment.passScore, 60) : 60;
+        progress.status = progress.bestScore >= passThreshold ? 'pass' : 'fail';
         
         // Categorize student using Algorithm (WEAK < 40%, MEDIUM 40-69%, HIGH >= 70%)
         let category = 'MEDIUM';

@@ -170,11 +170,11 @@ const AdaptivePathResultPage = () => {
                 </div>
 
                 <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', marginBottom: '2.5rem', lineHeight: 1.6 }}>
-                    {progress.pathType === 'DIRECT_MAIN_CONTENT' 
-                        ? "Outstanding! You scored in the HIGH category. We've unlocked the Main Chapter content for you."
+                    {progress.pathType === 'DIRECT_MAIN_CONTENT' || studentLevel === 'HIGH'
+                        ? "Outstanding! You scored in the HIGH category (≥70%). Micro-content is skipped for you, and we've unlocked the Main Chapter content directly."
                         : (studentLevel === 'WEAK' || studentLevel === 'LOW')
-                        ? "Based on your score, you've been placed in the WEAK category. We've created a step-by-step foundational remediation path to help you master key concepts."
-                        : "Great effort! You are in the MEDIUM category. We've prepared a guided practice path to help you reinforce your understanding."}
+                        ? "Based on your initial assessment score (<40%), you've been placed in the WEAK category. We have unlocked the Topic Micro-Content (foundational remediation slides & videos) specifically for your learning path."
+                        : "Great effort! You are in the MEDIUM category (40%–69%). We have unlocked the Topic Micro-Content (guided practice & concept review modules) to help reinforce your understanding."}
                 </p>
 
                 <motion.button 

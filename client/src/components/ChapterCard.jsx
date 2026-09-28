@@ -413,6 +413,8 @@ const ChapterCard = ({
                             const isTopicLocked = topicState === 'LOCKED';
                             const topicIdStr = normalizeId(topic._id || topic.id);
                             const topicTitle = topic.topicName || topic.title || 'Topic';
+                            const hasNumberPrefix = /^\d+(\.\d+)*[\s\.]/.test(topicTitle.trim());
+                            const displayTitle = hasNumberPrefix ? topicTitle : `${i + 1}. ${topicTitle}`;
 
                             return (
                                 <Link
@@ -444,7 +446,7 @@ const ChapterCard = ({
                                                 fontSize: '0.92rem', fontWeight: 600, flex: 1,
                                                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
                                             }}>
-                                                {i + 1}. {topicTitle}
+                                                {displayTitle}
                                             </span>
                                         </div>
 

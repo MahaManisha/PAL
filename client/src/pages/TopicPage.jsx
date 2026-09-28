@@ -279,7 +279,7 @@ const TopicPage = () => {
                     latestScore: newScore,
                     score: Math.max(practiceResult?.score || 0, newScore),
                     currentLevel: level,
-                    status: newScore >= 70 ? 'pass' : 'fail',
+                    status: newScore >= 60 ? 'pass' : 'fail',
                     correctCount: correct,
                     totalQuestions: practiceQuestions.length
                 });
@@ -492,19 +492,19 @@ const TopicPage = () => {
                                 <BookOpen size={28} />
                             </div>
                             <div>
-                                <h2 style={{ fontSize: '1.75rem', margin: 0 }}>Interactive Learning Materials</h2>
+                                <h2 style={{ fontSize: '1.75rem', margin: 0 }}>Topic Micro-Content</h2>
                                 <p style={{ color: 'var(--text-muted)', margin: 0 }}>
-                                    Study slide decks and watch video lectures for {topicName}.
+                                    Targeted remediation slides and video lectures for {topicName}.
                                 </p>
                             </div>
                         </div>
 
                         <div style={{ background: 'var(--input-bg)', padding: '1.5rem', borderRadius: '0.75rem', marginBottom: '2rem', border: '1px solid var(--card-border)' }}>
-                            <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: 'var(--text)' }}>Learning Objectives</h3>
+                            <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: 'var(--text)' }}>Micro-Learning Objectives</h3>
                             <ul style={{ color: 'var(--text-muted)', paddingLeft: '1.25rem', lineHeight: 1.6, margin: 0 }}>
                                 <li>Understand core principles and mathematical definitions of {topicName}.</li>
-                                <li>Study key properties, equations, and elementary row operations.</li>
-                                <li>Review solved examples and video demonstrations before practice.</li>
+                                <li>Study key properties, equations, and elementary operations.</li>
+                                <li>Review micro-content slides and video demonstrations before practice.</li>
                             </ul>
                         </div>
 
@@ -516,7 +516,7 @@ const TopicPage = () => {
                                 className="btn btn-primary"
                                 style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', padding: '0.9rem 1.75rem', fontWeight: 700 }}
                             >
-                                <Play size={18} /> Launch Slides & Lecture Video Portal
+                                <Play size={18} /> Launch Micro-Content (Slides & Video Portal)
                             </Link>
 
                             <button
@@ -677,7 +677,7 @@ const TopicPage = () => {
                                 : (typeof practiceResult.score === 'number' && !isNaN(practiceResult.score) ? practiceResult.score : 0);
                             
                             const roundedScore = Math.round(scoreVal);
-                            const isPass = roundedScore >= 70;
+                            const isPass = roundedScore >= 60;
                             
                             let cat = practiceResult.currentLevel;
                             if (!cat || cat === 'PENDING' || cat === 'LOW') {
@@ -769,7 +769,7 @@ const TopicPage = () => {
                                                 >
                                                     Proceed to Final Gateway →
                                                 </button>
-                                                {nextTopic && (
+                                                {nextTopic ? (
                                                     <Link
                                                         to={`/topic/${normalizeId(nextTopic._id || nextTopic.id)}?tab=learn`}
                                                         className="btn btn-primary"
@@ -781,6 +781,19 @@ const TopicPage = () => {
                                                         }}
                                                     >
                                                         Proceed to {nextTopic.topicName || 'Next Topic'} Presentation (PPT) →
+                                                    </Link>
+                                                ) : (
+                                                    <Link
+                                                        to={`/chapter/${normalizeId(topicDetail?.chapterId?._id || topicDetail?.chapterId)}/microcontent-complete`}
+                                                        className="btn btn-primary"
+                                                        style={{
+                                                            padding: '0.9rem 1.75rem', fontWeight: 800, fontSize: '0.95rem',
+                                                            display: 'inline-flex', alignItems: 'center', gap: '0.6rem',
+                                                            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                                            boxShadow: '0 4px 20px rgba(16,185,129,0.45)'
+                                                        }}
+                                                    >
+                                                        Complete Micro-Content Journey 🎉 →
                                                     </Link>
                                                 )}
                                             </>

@@ -77,7 +77,14 @@ export const normalizeProgress = (progressRecords, topicId, chapterProgress) => 
     let hasFail = false;
 
     topicRecords.forEach(record => {
-        if (record.status === 'pass') {
+        const score = getEffectiveBestScore(record);
+        if (typeof score === 'number') {
+            if (merged.effectiveBestScore === null || score > merged.effectiveBestScore) {
+                merged.effectiveBestScore = score;
+            }
+        }
+
+        if (record.status === 'pass' || (typeof score === 'number' && score >= 60)) {
             merged.status = 'pass';
         } else if (record.status === 'in_progress') {
             hasInProgress = true;
@@ -91,16 +98,11 @@ export const normalizeProgress = (progressRecords, topicId, chapterProgress) => 
         if (record.practiceCompleted) {
             merged.practiceCompleted = true;
         }
-
-        const score = getEffectiveBestScore(record);
-        if (typeof score === 'number') {
-            if (merged.effectiveBestScore === null || score > merged.effectiveBestScore) {
-                merged.effectiveBestScore = score;
-            }
-        }
     });
 
-    if (merged.status !== 'pass') {
+    if (merged.effectiveBestScore !== null && merged.effectiveBestScore >= 60) {
+        merged.status = 'pass';
+    } else if (merged.status !== 'pass') {
         if (hasInProgress) {
             merged.status = 'in_progress';
         } else if (hasFail) {
@@ -123,12 +125,17 @@ export const calculateTopicState = (topic, normalizedProgress, isParentChapterLo
         }
     }
     
-    if (!normalizedProgress || (normalizedProgress.status === undefined && normalizedProgress.initialScore !== null)) {
+    if (!normalizedProgress) {
         return 'NOT_STARTED';
     }
-    
-    if (normalizedProgress.status === 'pass') return 'PASSED';
-    if (normalizedProgress.status === 'fail') return 'NEEDS_REVISION';
+
+    const hasPassedScore = 
+        normalizedProgress.status === 'pass' ||
+        (typeof normalizedProgress.effectiveBestScore === 'number' && normalizedProgress.effectiveBestScore >= 60) ||
+        (typeof normalizedProgress.initialScore === 'number' && normalizedProgress.initialScore >= 60);
+
+    if (hasPassedScore) return 'PASSED';
+    if (normalizedProgress.status === 'fail' && (typeof normalizedProgress.effectiveBestScore !== 'number' || normalizedProgress.effectiveBestScore < 60)) return 'NEEDS_REVISION';
     if (normalizedProgress.practiceCompleted) return 'ASSESSMENT_READY';
     if (normalizedProgress.learningCompleted) return 'PRACTICING';
     

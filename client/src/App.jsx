@@ -15,6 +15,8 @@ import Leaderboard from './pages/Leaderboard';
 import ProfilePage from './pages/ProfilePage';
 import ChapterTrailerPage from './pages/ChapterTrailerPage';
 import AdaptivePathResultPage from './pages/AdaptivePathResultPage';
+import ChapterMilestonePage from './pages/ChapterMilestonePage';
+import MainContentViewer from './pages/MainContentViewer';
 import SkillTreePage from './pages/SkillTreePage';
 import RevisionCenter from './pages/RevisionCenter';
 import ProgressAnalytics from './pages/ProgressAnalytics';
@@ -30,10 +32,46 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ThemeSelectModal from './components/ThemeSelectModal';
 
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: '6rem 2rem 4rem 2rem', textAlign: 'center', color: 'var(--text)', maxWidth: '600px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '1.8rem', marginBottom: '1rem', color: '#ef4444' }}>Something went wrong loading this view.</h2>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+            {this.state.error?.message || 'An unexpected rendering error occurred.'}
+          </p>
+          <button 
+            className="btn btn-primary" 
+            onClick={() => {
+              this.setState({ hasError: false, error: null });
+              window.location.reload();
+            }}
+            style={{ padding: '0.75rem 1.5rem', borderRadius: '0.5rem', cursor: 'pointer', fontWeight: 600 }}
+          >
+            Reload Page
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
   if (loading) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', color: 'var(--text-muted)' }}>Loading…</div>;
-  return user ? children : <Navigate to="/login" />;
+  return user ? <ErrorBoundary>{children}</ErrorBoundary> : <Navigate to="/login" />;
 };
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
@@ -92,10 +130,12 @@ const AppContent = () => {
             <Route path="/chapter/:chapterId/trailer" element={<ProtectedRoute><ChapterTrailerPage /></ProtectedRoute>} />
             <Route path="/chapter/:chapterId/initial-assessment" element={<ProtectedRoute><AssessmentPage type="INITIAL" /></ProtectedRoute>} />
             <Route path="/chapter/:chapterId/learning-path" element={<ProtectedRoute><AdaptivePathResultPage /></ProtectedRoute>} />
+            <Route path="/chapter/:chapterId/microcontent-complete" element={<ProtectedRoute><ChapterMilestonePage /></ProtectedRoute>} />
+            <Route path="/chapter/:chapterId/main-content" element={<ProtectedRoute><MainContentViewer /></ProtectedRoute>} />
             <Route path="/chapter/:chapterId/final-assessment" element={<ProtectedRoute><AssessmentPage type="FINAL" /></ProtectedRoute>} />
             <Route path="/assessment/:topicId" element={<ProtectedRoute><AssessmentPage type="TOPIC" /></ProtectedRoute>} />
             <Route path="/slides/:subject/:chapter/:topic" element={<ProtectedRoute><SlidesPage /></ProtectedRoute>} />
-            <Route path="/slides/:chapterId/main" element={<ProtectedRoute><SlidesPage type="MAIN" /></ProtectedRoute>} />
+            <Route path="/slides/:chapterId/main" element={<ProtectedRoute><MainContentViewer /></ProtectedRoute>} />
           </Routes>
         </div>
         {!user && <Footer />}
