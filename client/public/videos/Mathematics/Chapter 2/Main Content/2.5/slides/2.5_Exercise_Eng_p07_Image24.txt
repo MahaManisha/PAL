@@ -1,0 +1,1 @@
+6. If Izl = 2, show that 8 S Iz +6 + 8il 12. Solution: Given Izl 2 100 10. Let a 6 + 8i. 62 + 82 Then lal = 16 + = Upper Bound (Triangle Inequality): Using Iz -kal Izl -l- lal, 36 + 64 Izl + lal = 2+ IO = 12. Using Iz -kal 2 Ilal 41=110-21 = 8. Combining both results, 12.

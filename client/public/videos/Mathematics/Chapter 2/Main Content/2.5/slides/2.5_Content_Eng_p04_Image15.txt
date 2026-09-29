@@ -1,0 +1,1 @@
+4. PROPERTIES OF MODULUS For any complex numbers ZI, z2, z = Izl ZIZ2 — IIZII - The modulus of a complex number is equal to the modulus of its conjugate. Triangle inequality for complex numbers. The modulus of a product is equal to the product of the moduli. The modulus of the difference is greater than or equal to the absolute difference of the moduli.

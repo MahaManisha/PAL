@@ -1,0 +1,215 @@
+{
+  "section": "2.7",
+  "title": "Polar and Euler Form of a Complex Number",
+  "course": "XII - Mathematics | Chapter 2: Complex Numbers",
+  "resources": [
+    {
+      "id": "content",
+      "title": "Resource 1: Theory, Polar Coordinates & Euler's Formula (2.7_content_Eng.pdf)",
+      "filename": "2.7_content_Eng.pdf",
+      "order": 1,
+      "description": "Polar Coordinate System, Definition 2.6, Modulus r and Argument θ, Principal Argument Arg(z) in 4 Quadrants, Euler Formula e^(iθ), and Properties of Products and Quotients",
+      "sections": [
+        {
+          "heading": "Why Polar Form?",
+          "text": "Rectangular form (x + iy) is best suited for addition and subtraction. Polar form (r, θ) is best suited for multiplication, division, powers, and roots of complex numbers."
+        },
+        {
+          "heading": "2.7.1 Polar Form of a Complex Number (Definition 2.6)",
+          "reference": "Definition 2.6, Page 78",
+          "text": "Let r and θ be the polar coordinates of point P(x, y) representing complex number z = x + iy. Then x = r cos θ, y = r sin θ. Thus: z = r(cos θ + i sin θ), which can also be written in short notation as z = r cis θ.",
+          "formula": "z = r(cos θ + i sin θ) = r cis θ",
+          "notes": "r = |z| = √(x² + y²) is the modulus, and θ is the argument or amplitude, written θ = arg(z)."
+        },
+        {
+          "heading": "General Argument vs. Principal Argument Arg(z)",
+          "reference": "Page 79",
+          "text": "Since cos θ and sin θ are 2π-periodic, θ has infinitely many values differing by multiples of 2π. The unique value of θ satisfying -π < θ ≤ π is called the principal argument of z, denoted Arg(z).",
+          "formula": "-π < Arg(z) ≤ π  and  arg(z) = Arg(z) + 2nπ, n ∈ ℤ"
+        },
+        {
+          "heading": "Reference Angle α and Quadrant Rules for Arg(z)",
+          "reference": "Page 80",
+          "text": "First calculate reference angle α = tan⁻¹|y/x|. Then find θ based on the quadrant:",
+          "quadrants": [
+            {
+              "quadrant": "Quadrant I (x > 0, y > 0)",
+              "rule": "θ = α"
+            },
+            {
+              "quadrant": "Quadrant II (x < 0, y > 0)",
+              "rule": "θ = π - α"
+            },
+            {
+              "quadrant": "Quadrant III (x < 0, y < 0)",
+              "rule": "θ = α - π  [or -(π - α)]"
+            },
+            {
+              "quadrant": "Quadrant IV (x > 0, y < 0)",
+              "rule": "θ = -α"
+            }
+          ]
+        },
+        {
+          "heading": "2.7.2 Euler's Form of a Complex Number",
+          "reference": "Page 82",
+          "text": "Euler's formula states that e^(iθ) = cos θ + i sin θ. Therefore, any complex number z can be expressed in Euler's exponential form as z = r e^(iθ).",
+          "formula": "e^(iθ) = cos θ + i sin θ  =>  z = r e^(iθ)"
+        },
+        {
+          "heading": "Properties of Polar Products, Quotients & Inverses",
+          "reference": "Page 81",
+          "properties": [
+            {
+              "property": "Multiplicative Inverse",
+              "formula": "z⁻¹ = (1/r)(cos θ - i sin θ) = (1/r) e^(-iθ)"
+            },
+            {
+              "property": "Product Rule",
+              "formula": "z₁z₂ = r₁r₂ [cos(θ₁ + θ₂) + i sin(θ₁ + θ₂)], so arg(z₁z₂) = arg(z₁) + arg(z₂)"
+            },
+            {
+              "property": "Quotient Rule",
+              "formula": "z₁/z₂ = (r₁/r₂) [cos(θ₁ - θ₂) + i sin(θ₁ - θ₂)], so arg(z₁/z₂) = arg(z₁) - arg(z₂)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "example",
+      "title": "Resource 2: Worked Examples 2.22 to 2.27 (2.7_Example_Eng.pdf)",
+      "filename": "2.7_Example_Eng.pdf",
+      "order": 2,
+      "items": [
+        {
+          "label": "Example 2.22",
+          "title": "Modulus and Principal Argument Across Quadrants",
+          "problem": "Find the modulus and principal argument of: (i) √3 + i, (ii) -√3 + i, (iii) -√3 - i, (iv) √3 - i.",
+          "steps": [
+            "For all cases, r = √((√3)² + 1²) = 2 and α = tan⁻¹(1/√3) = π/6.",
+            "(i) √3 + i (Quad I): θ = α = π/6 => Modulus = 2, Arg = π/6",
+            "(ii) -√3 + i (Quad II): θ = π - α = π - π/6 = 5π/6 => Modulus = 2, Arg = 5π/6",
+            "(iii) -√3 - i (Quad III): θ = α - π = π/6 - π = -5π/6 => Modulus = 2, Arg = -5π/6",
+            "(iv) √3 - i (Quad IV): θ = -α = -π/6 => Modulus = 2, Arg = -π/6"
+          ]
+        },
+        {
+          "label": "Example 2.23",
+          "title": "Polar Form Representation",
+          "problem": "Represent (i) -1 - i and (ii) 1 + i√3 in polar form.",
+          "steps": [
+            "(i) -1 - i: r = √(1+1) = √2. α = tan⁻¹(1) = π/4. Quad III => θ = π/4 - π = -3π/4. Polar form: √2 [cos(-3π/4) + i sin(-3π/4)] = √2 [cos(3π/4) - i sin(3π/4)].",
+            "(ii) 1 + i√3: r = √(1+3) = 2. α = tan⁻¹(√3) = π/3. Quad I => θ = π/3. Polar form: 2(cos π/3 + i sin π/3). General form: 2 [cos(π/3 + 2kπ) + i sin(π/3 + 2kπ)], k ∈ ℤ."
+          ]
+        },
+        {
+          "label": "Example 2.24",
+          "title": "Principal Argument of a Quotient",
+          "problem": "Find the principal argument Arg(z) when z = -2 / (1 + i√3).",
+          "steps": [
+            "arg(z) = arg(-2) - arg(1 + i√3).",
+            "arg(-2) = π, and arg(1 + i√3) = π/3.",
+            "arg(z) = π - π/3 = 2π/3. Since 2π/3 ∈ (-π, π], Arg(z) = 2π/3."
+          ]
+        },
+        {
+          "label": "Example 2.25",
+          "title": "Product in Rectangular Form",
+          "problem": "Find the product (3/2)(cos π/3 + i sin π/3) · 6(cos 5π/6 + i sin 5π/6) in rectangular form.",
+          "steps": [
+            "Moduli: (3/2) · 6 = 9.",
+            "Arguments sum: π/3 + 5π/6 = 2π/6 + 5π/6 = 7π/6 = π + π/6.",
+            "= 9 [cos(7π/6) + i sin(7π/6)] = 9 [-cos(π/6) - i sin(π/6)] = 9 [-√3/2 - i(1/2)] = -9√3/2 - (9/2)i."
+          ]
+        },
+        {
+          "label": "Example 2.26",
+          "title": "Quotient in Rectangular Form",
+          "problem": "Find the quotient 2(cos 9π/4 + i sin 9π/4) ÷ 4(cos(-3π/2) + i sin(-3π/2)) in rectangular form.",
+          "steps": [
+            "Moduli: 2/4 = 1/2.",
+            "Arguments difference: 9π/4 - (-3π/2) = 9π/4 + 6π/4 = 15π/4 = 4π - π/4 = -π/4.",
+            "= (1/2) [cos(-π/4) + i sin(-π/4)] = (1/2) [1/√2 - i(1/√2)] = 1/(2√2) - i/(2√2) = √2/4 - i(√2/4)."
+          ]
+        },
+        {
+          "label": "Example 2.27",
+          "title": "Locus from Argument Condition",
+          "problem": "If z = x + iy and arg((z - 1)/(z + 1)) = π/2, show that x² + y² = 1.",
+          "steps": [
+            "(z - 1)/(z + 1) = [(x - 1) + iy] / [(x + 1) + iy] = [(x - 1) + iy][(x + 1) - iy] / [(x + 1)² + y²]",
+            "= [(x² + y² - 1) + i(2y)] / [(x + 1)² + y²].",
+            "arg(w) = π/2 implies Real part = 0 and Imaginary part > 0.",
+            "Therefore: x² + y² - 1 = 0 => x² + y² = 1 (with y > 0). Proved."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "exercise",
+      "title": "Resource 3: Exercise 2.7 Solutions (2.7_Exercise_Eng.pdf)",
+      "filename": "2.7_Exercise_Eng.pdf",
+      "order": 3,
+      "items": [
+        {
+          "label": "Question 1",
+          "problem": "Write in polar form: (i) 2 + i2√3, (ii) 3 - i√3, (iii) -2 - i2, (iv) i - 1.",
+          "steps": [
+            "(i) 2 + i2√3: r = √(4+12) = 4, θ = π/3 => 4(cos π/3 + i sin π/3)",
+            "(ii) 3 - i√3: r = √(9+3) = 2√3, θ = -π/6 => 2√3 [cos(-π/6) + i sin(-π/6)]",
+            "(iii) -2 - i2: r = √(4+4) = 2√2, θ = -3π/4 => 2√2 [cos(-3π/4) + i sin(-3π/4)]",
+            "(iv) i - 1 = -1 + i: r = √(1+1) = √2, θ = 3π/4 => √2(cos 3π/4 + i sin 3π/4)"
+          ]
+        },
+        {
+          "label": "Question 2",
+          "problem": "Find the rectangular form of: (i) (cos π/6 + i sin π/6)(cos π/12 + i sin π/12), (ii) [cos π/6 - i sin π/6] / [2(cos π/3 + i sin π/3)].",
+          "steps": [
+            "(i) Angle sum = π/6 + π/12 = 3π/12 = π/4. Result = cos π/4 + i sin π/4 = 1/√2 + i(1/√2) = √2/2 + i(√2/2).",
+            "(ii) Numerator = cos(-π/6) + i sin(-π/6). Angle diff = -π/6 - π/3 = -π/2. Result = (1/2)[cos(-π/2) + i sin(-π/2)] = (1/2)[0 - i] = -i/2."
+          ]
+        },
+        {
+          "label": "Question 3",
+          "problem": "If (x₁ + iy₁)(x₂ + iy₂)···(xₙ + iyₙ) = a + ib, show that: (i) (x₁² + y₁²)(x₂² + y₂²)···(xₙ² + yₙ²) = a² + b², (ii) Σ tan⁻¹(yᵣ/xᵣ) = tan⁻¹(b/a) + 2kπ, k ∈ ℤ.",
+          "steps": [
+            "(i) Taking modulus on both sides: |z₁z₂···zₙ| = |a + ib| => |z₁||z₂|···|zₙ| = |a + ib|. Squaring: (x₁² + y₁²)(x₂² + y₂²)···(xₙ² + yₙ²) = a² + b². Proved.",
+            "(ii) Taking argument: arg(z₁z₂···zₙ) = arg(a + ib) => arg(z₁) + arg(z₂) + ··· + arg(zₙ) = arg(a + ib) + 2kπ. Since arg(xᵣ + iyᵣ) = tan⁻¹(yᵣ/xᵣ), Σ tan⁻¹(yᵣ/xᵣ) = tan⁻¹(b/a) + 2kπ. Proved."
+          ]
+        },
+        {
+          "label": "Question 4",
+          "problem": "If (1 + z)/(1 - z) = cos 2θ + i sin 2θ, show that z = i tan θ.",
+          "steps": [
+            "Use cos 2θ + i sin 2θ = e^(i2θ) = (cos θ + i sin θ)/(cos θ - i sin θ) = (1 + i tan θ)/(1 - i tan θ).",
+            "By componendo-dividendo (or cross-multiplication): [(1+z) - (1-z)] / [(1+z) + (1-z)] = [(1+i tan θ) - (1-i tan θ)] / [(1+i tan θ) + (1-i tan θ)].",
+            "2z / 2 = (2i tan θ) / 2 => z = i tan θ. Proved."
+          ]
+        },
+        {
+          "label": "Question 5",
+          "problem": "If cos α + cos β + cos γ = sin α + sin β + sin γ = 0, show that: (i) cos 3α + cos 3β + cos 3γ = 3 cos(α + β + γ), (ii) sin 3α + sin 3β + sin 3γ = 3 sin(α + β + γ).",
+          "steps": [
+            "Let a = e^(iα), b = e^(iβ), c = e^(iγ).",
+            "a + b + c = (cos α + cos β + cos γ) + i(sin α + sin β + sin γ) = 0 + i0 = 0.",
+            "When a + b + c = 0, we know the algebraic identity a³ + b³ + c³ = 3abc.",
+            "LHS: (e^(iα))³ + (e^(iβ))³ + (e^(iγ))³ = e^(i3α) + e^(i3β) + e^(i3γ) = (cos 3α + cos 3β + cos 3γ) + i(sin 3α + sin 3β + sin 3γ).",
+            "RHS: 3 e^(i(α+β+γ)) = 3 cos(α + β + γ) + 3i sin(α + β + γ).",
+            "Equating real and imaginary parts proves both (i) and (ii). Q.E.D."
+          ]
+        },
+        {
+          "label": "Question 6",
+          "problem": "If z = x + iy and arg((z - i)/(z + 2)) = π/4, show that x² + y² + 3x - 3y + 2 = 0.",
+          "steps": [
+            "(z - i)/(z + 2) = [x + i(y - 1)] / [(x + 2) + iy] = [x + i(y - 1)][(x + 2) - iy] / [(x + 2)² + y²]",
+            "Numerator = [x(x + 2) + y(y - 1)] + i[(y - 1)(x + 2) - xy] = (x² + 2x + y² - y) + i(xy + 2y - x - 2 - xy) = (x² + y² + 2x - y) + i(2y - x - 2).",
+            "arg(w) = π/4 => Im(w) / Re(w) = tan(π/4) = 1 => Im(w) = Re(w).",
+            "2y - x - 2 = x² + y² + 2x - y => x² + y² + 3x - 3y + 2 = 0. Proved."
+          ]
+        }
+      ]
+    }
+  ]
+}

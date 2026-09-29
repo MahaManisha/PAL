@@ -1,0 +1,1 @@
+3. EXAMPLES OF MODULUS 2 For a complex number z = x + iy, Izl — 2 = Iz12 Example I Find lil. lil 02 + 12 Example 2 Find I—12il. 02 + ( I-12il = 144 12 -12)2 Example 3 Find 112 - 5il. 122 + (—5)2 112-5il = 144 + 25 169 13 IMPORTANT RESULT For any complex number z = 2 Izl zz Where = x — iy is the conjugate of z. That is, (x + iy)(x — iy) = x2 + y

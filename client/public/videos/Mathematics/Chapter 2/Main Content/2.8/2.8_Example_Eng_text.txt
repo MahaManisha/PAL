@@ -1,0 +1,125 @@
+--- PAGE 1 ---
+Examples 2.28 – 2.36
+Complex Numbers — De Moivre's Theorem & Roots of Unity
+Detailed, step-by-step solutions to all 9 worked examples
+
+--- PAGE 2 ---
+2.28 If z = cosθ + isinθ, show zⁿ+1/zⁿ = 2cos nθ and zⁿ−1/zⁿ = 2i sin nθ
+Step 1:  Apply De Moivre's theorem to zⁿ.
+z = cosθ + isinθ  ⟹ zⁿ = (cosθ+isinθ)ⁿ = cos nθ + i sin nθ
+Step 2:  Find 1/zⁿ using the same theorem.
+1/zⁿ = (cosθ+isinθ)⁻ⁿ = cos nθ − i sin nθ
+Step 3:  Add and subtract the two results.
+zⁿ + 1/zⁿ = (cos nθ+isin nθ) + (cos nθ−isin nθ) = 2cos nθ
+zⁿ − 1/zⁿ = (cos nθ+isin nθ) − (cos nθ−isin nθ) = 2i sin nθ
+Hence  zⁿ + 1/zⁿ = 2cos nθ   and   zⁿ − 1/zⁿ = 2i sin nθ  — proved.
+
+--- PAGE 3 ---
+2.29 Simplify (sin π/6 + i cos π/6)¹⁸
+Step 1:  Rewrite sinθ + icosθ using i · cis(−θ).
+i · cis(−θ) = i(cosθ − isinθ) = icosθ + sinθ = sinθ + icosθ
+So   sin(π/6) + icos(π/6) = i · cis(−π/6)
+Step 2:  Raise both sides to the power 18.
+[sin(π/6)+icos(π/6)]¹⁸ = i¹⁸ · cis(−18π/6) = i¹⁸ · cis(−3π)
+Step 3:  Simplify i¹⁸ and cis(−3π).
+i¹⁸ = (i⁴)⁴ · i² = 1 · (−1) = −1
+cis(−3π) = cos(3π) − i sin(3π) = −1 − 0 = −1
+Result = (−1) × (−1) = 1
+
+--- PAGE 4 ---
+2.30 Simplify [(1+cos2θ+isin2θ) / (1+cos2θ−isin2θ)]³⁰
+Step 1:  Let z = cos2θ + isin2θ.  Since |z| = 1, we get 1/z = z̄ = cos2θ − isin2θ.
+Step 2:  Rewrite numerator and denominator in terms of z.
+Numerator:   1 + cos2θ + isin2θ = 1 + z
+Denominator: 1 + cos2θ − isin2θ = 1 + 1/z = (z+1)/z
+Step 3:  Divide.
+(1+z) ÷ [(1+z)/z] = z
+Step 4:  Raise to the power 30 and apply De Moivre's theorem.
+z³⁰ = (cos2θ+isin2θ)³⁰ = cos60θ + isin60θ
+Result = cos60θ + i sin60θ
+
+--- PAGE 5 ---
+2.31 (i) Simplify (1 + i)¹⁸
+Step 1:  Convert 1+i to polar form.
+r = √(1²+1²) = √2 ,   θ = tan⁻¹(1/1) = π/4  (first quadrant)
+1 + i = √2 (cos π/4 + i sin π/4)
+Step 2:  Raise to power 18 using De Moivre's theorem.
+(1+i)¹⁸ = (√2)¹⁸ [cos(18·π/4) + isin(18·π/4)] = 2⁹ [cos(9π/2)+isin(9π/2)]
+Step 3:  Reduce the angle.
+9π/2 = 4π + π/2  ⟹ cos(9π/2)+isin(9π/2) = cos(π/2)+isin(π/2) = i
+(1+i)¹⁸ = 2⁹ · i = 512i
+
+--- PAGE 6 ---
+2.31 (ii) Simplify (−√3 + 3i)³¹
+Step 1:  Convert −√3+3i to polar form.
+r = √[(−√3)²+3²] = √12 = 2√3
+Reference angle = tan⁻¹(3/√3) = tan⁻¹(√3) = π/3;  point lies in Quadrant II
+θ = π − π/3 = 2π/3
+−√3+3i = 2√3 (cos 2π/3 + i sin 2π/3)
+Step 2:  Raise to power 31 and reduce the angle.
+(−√3+3i)³¹ = (2√3)³¹ [cos(62π/3)+isin(62π/3)]
+62π/3 = 20π + 2π/3  ⟹ angle reduces to 2π/3
+Step 3:  Substitute cos(2π/3) = −1/2, sin(2π/3) = √3/2, and (2√3)³¹ = 2³¹·3¹⁵√3.
+Result = 2³¹·3¹⁵√3 (−1/2 + i√3/2)  =  −2³⁰·3¹⁵√3 + i·2³⁰·3¹⁶
+
+--- PAGE 7 ---
+2.32 Find the cube roots of unity
+Step 1:  We need z = 1^(1/3), i.e. solve z³ = 1.
+In polar form:  z³ = cos(2kπ) + isin(2kπ),  k = 0, 1, 2
+⟹ z = cos(2kπ/3) + isin(2kπ/3),  k = 0, 1, 2
+Step 2:  Substitute k = 0, 1, 2.
+k=0:   z = cos0 + isin0 = 1
+k=1:   z = cos(2π/3) + isin(2π/3) = −1/2 + i√3/2
+k=2:   z = cos(4π/3) + isin(4π/3) = −1/2 − i√3/2
+Cube roots of unity:  1,  (−1+i√3)/2,  (−1−i√3)/2   i.e.  1, ω, ω²
+
+--- PAGE 8 ---
+2.33 Find the fourth roots of unity
+Step 1:  We need z = 1^(1/4), i.e. solve z⁴ = 1.
+In polar form:  z⁴ = cos(2kπ)+isin(2kπ),  k = 0,1,2,3
+⟹ z = cos(2kπ/4)+isin(2kπ/4) = cos(kπ/2)+isin(kπ/2),  k = 0,1,2,3
+Step 2:  Substitute k = 0, 1, 2, 3.
+k=0:   z = cos0 + isin0 = 1
+k=1:   z = cos(π/2) + isin(π/2) = i
+k=2:   z = cosπ + isinπ = −1
+k=3:   z = cos(3π/2) + isin(3π/2) = −i
+Fourth roots of unity:  1, i, −1, −i   i.e.  1, ω, ω², ω³
+
+--- PAGE 9 ---
+2.34 Solve z³ + 8i = 0, z ∈ ℂ
+Step 1:  Write z³ = −8i and convert −8i to polar form.
+|−8i| = 8,   argument = −π/2   ⟹ z³ = 8[cos(−π/2+2kπ) + isin(−π/2+2kπ)], k=0,1,2
+Step 2:  Take the cube root.
+z = 2[cos((−π/2+2kπ)/3) + isin((−π/2+2kπ)/3)],   k = 0, 1, 2
+Step 3:  Substitute k = 0, 1, 2.
+k=0:  angle = −π/6   ⟹ z = 2(cos(−30°)+isin(−30°)) = √3 − i
+k=1:  angle = π/2    ⟹ z = 2(cos90°+isin90°) = 2i
+k=2:  angle = 7π/6   ⟹ z = 2(cos210°+isin210°) = −√3 − i
+Roots:  z = √3 − i,   2i,   −√3 − i
+
+--- PAGE 10 ---
+2.35 Find all cube roots of √3 + i
+Step 1:  Convert √3+i to polar form.
+r = √(3+1) = 2,   θ = tan⁻¹(1/√3) = π/6   ⟹ √3+i = 2(cos π/6 + isin π/6)
+Step 2:  Take the cube root using De Moivre's formula.
+z = 2^(1/3) [cos((π/6+2kπ)/3) + isin((π/6+2kπ)/3)],   k = 0, 1, 2
+Step 3:  Substitute k = 0, 1, 2.
+k=0:   z = 2^(1/3) [cos(π/18) + isin(π/18)]
+k=1:   z = 2^(1/3) [cos(13π/18) + isin(13π/18)]
+k=2:   z = 2^(1/3) [cos(25π/18) + isin(25π/18)] = 2^(1/3) [−cos(7π/18) − isin(7π/18)]
+
+--- PAGE 11 ---
+2.36 Equilateral triangle inscribed in |z|=2, z₁=1+i√3 — find z₂, z₃
+Setup:  |z| = 2 is a circle, centre origin, radius 2. For an equilateral triangle inscribed in it,
+each vertex is obtained by rotating the previous one by 2π/3 (120°) about the origin.
+(Multiplying z by e^(iθ) rotates z by θ radians anticlockwise about the origin.)
+Step 1:  Find z₂ by rotating z₁ by 2π/3.
+z₂ = z₁ · cis(2π/3) = (1+i√3)(−1/2+i√3/2) = −1/2+i√3/2−i√3/2+i²(3/2)
+= −1/2 − 3/2 = −2
+Step 2:  Find z₃ by rotating z₁ by 4π/3 (or z₂ by 2π/3).
+z₃ = z₂ · cis(2π/3) = −2(−1/2+i√3/2) = 1 − i√3
+z₂ = −2   and   z₃ = 1 − i√3
+
+--- PAGE 12 ---
+Thank You
+Examples 2.28 – 2.36 — Complex Numbers, Solutions Complete

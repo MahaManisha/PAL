@@ -1,0 +1,1 @@
+Exercise 2.6 (QI): Locus from Modulus Ratio Mathematical Proof Setup Given: z = x + iy and 1. Apply Modulus Division Property: z - 4i = 1 z -4i = 1 z - 41 | Required: Z + 4i Show that the locus of z is the real axis. 2. Substitute z = x + iy: lx+iy-4il = I x + iy + 4i I 3. Square & Expand: 2 -8y+ 16 = x + y +8y + 16 - 8y = 8y 16y = 0 y = 0

@@ -1,0 +1,1 @@
+10.(i) Find the square roots of 4 -k 3i. olution Let (a -k bi)2 — 4 + 3i. Then, 2ab = 3 From (2), b — —A. Substitute in (1): 16a2 -9 16 —k 144 .(1) ..(2) 16a2 160 — — 20 Solving, a From (2), b = Square roots: — ±2v/S 3vs '2vf5 + i 20 —2vT5 20

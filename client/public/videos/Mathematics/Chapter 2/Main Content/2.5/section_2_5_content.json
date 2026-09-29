@@ -1,0 +1,280 @@
+{
+  "section": "2.5",
+  "title": "Modulus of a Complex Number",
+  "course": "XII - Mathematics | Chapter 2: Complex Numbers",
+  "resources": [
+    {
+      "id": "content",
+      "title": "Resource 1: Theory & Core Concepts (2.5_Content_Eng.pdf)",
+      "filename": "2.5_Content_Eng.pdf",
+      "order": 1,
+      "description": "Definition, Geometrical Interpretation, 9 Properties of Modulus, Triangle Inequality Proof, and Square Root Formula",
+      "sections": [
+        {
+          "heading": "2.5 Definition 2.4: Modulus of a Complex Number",
+          "reference": "Definition 2.4, Page 67",
+          "text": "If z = x + iy, then the modulus or absolute value of z, denoted by |z|, is defined by |z| = √(x² + y²). Note that |z| is always a non-negative real number (|z| ≥ 0).",
+          "formula": "|z| = √(x² + y²)"
+        },
+        {
+          "heading": "Geometrical Meaning of Modulus",
+          "reference": "Page 67",
+          "text": "Geometrically, |z| represents the distance of the point (x, y) from the origin (0, 0) in the Argand plane. The distance between two complex numbers z₁ = x₁ + iy₁ and z₂ = x₂ + iy₂ is given by |z₁ - z₂| = √((x₁ - x₂)² + (y₁ - y₂)²).",
+          "formula": "Distance(z₁, z₂) = |z₁ - z₂|"
+        },
+        {
+          "heading": "Properties of Modulus (Properties 1 – 9)",
+          "reference": "Page 68",
+          "properties": [
+            {
+              "id": 1,
+              "name": "Conjugate Modulus",
+              "formula": "|z| = |z̄|"
+            },
+            {
+              "id": 2,
+              "name": "Triangle Inequality",
+              "formula": "|z₁ + z₂| ≤ |z₁| + |z₂|"
+            },
+            {
+              "id": 3,
+              "name": "Product of Moduli",
+              "formula": "|z₁z₂| = |z₁||z₂|"
+            },
+            {
+              "id": 4,
+              "name": "Difference Lower Bound",
+              "formula": "|z₁ - z₂| ≥ ||z₁| - |z₂||"
+            },
+            {
+              "id": 5,
+              "name": "Quotient of Moduli",
+              "formula": "|z₁ / z₂| = |z₁| / |z₂|, z₂ ≠ 0"
+            },
+            {
+              "id": 6,
+              "name": "Integer Powers",
+              "formula": "|zⁿ| = |z|ⁿ (where n is an integer)"
+            },
+            {
+              "id": 7,
+              "name": "Real Part Bound",
+              "formula": "Re(z) ≤ |Re(z)| ≤ |z|"
+            },
+            {
+              "id": 8,
+              "name": "Imaginary Part Bound",
+              "formula": "Im(z) ≤ |Im(z)| ≤ |z|"
+            },
+            {
+              "id": 9,
+              "name": "Modulus-Conjugate Product",
+              "formula": "|z|² = z · z̄"
+            }
+          ]
+        },
+        {
+          "heading": "Proof Spotlight: Triangle Inequality |z₁ + z₂| ≤ |z₁| + |z₂|",
+          "reference": "Theorem / Spotlight",
+          "proofSteps": [
+            "Consider |z₁ + z₂|² = (z₁ + z₂)(overline{z₁ + z₂}) = (z₁ + z₂)(z̄₁ + z̄₂)",
+            "= z₁z̄₁ + z₁z̄₂ + z₂z̄₁ + z₂z̄₂ = |z₁|² + (z₁z̄₂ + overline{z₁z̄₂}) + |z₂|²",
+            "= |z₁|² + 2 Re(z₁z̄₂) + |z₂|²",
+            "Since Re(w) ≤ |w| for any complex number w, we have Re(z₁z̄₂) ≤ |z₁z̄₂| = |z₁||z̄₂| = |z₁||z₂|",
+            "Thus: |z₁ + z₂|² ≤ |z₁|² + 2|z₁||z₂| + |z₂|² = (|z₁| + |z₂|)²",
+            "Taking square roots on both sides gives: |z₁ + z₂| ≤ |z₁| + |z₂|. Q.E.D."
+          ]
+        },
+        {
+          "heading": "Square Root of a Complex Number",
+          "reference": "Formula Spotlight",
+          "text": "For any non-zero complex number z = a + ib, its square roots are given by:",
+          "formula": "√(a + ib) = ± [ √((|z| + a)/2) + i · sgn(b) · √((|z| - a)/2) ]",
+          "notes": "where |z| = √(a² + b²) and sgn(b) = 1 if b > 0, and -1 if b < 0."
+        }
+      ]
+    },
+    {
+      "id": "example",
+      "title": "Resource 2: Worked Examples 2.9 to 2.17 (2.5_Example_Eng.pdf)",
+      "filename": "2.5_Example_Eng.pdf",
+      "order": 2,
+      "items": [
+        {
+          "label": "Example 2.9",
+          "title": "Modulus of Products and Quotients",
+          "problem": "Find the modulus of (i) (2-i)/(1+i), (ii) (1+i)(1-2i), (iii) (2+i)³.",
+          "steps": [
+            "(i) |(2-i)/(1+i)| = |2-i| / |1+i| = √(2²+(-1)²) / √(1²+1²) = √5 / √2 = √(5/2)",
+            "(ii) |(1+i)(1-2i)| = |1+i| · |1-2i| = √(1+1) · √(1+4) = √2 · √5 = √10",
+            "(iii) |(2+i)³| = |2+i|³ = (√(2²+1²))³ = (√5)³ = 5√5"
+          ]
+        },
+        {
+          "label": "Example 2.11",
+          "title": "Equilateral Triangle in Complex Plane",
+          "problem": "Show that the points 1, (-1 + i√3)/2, and (-1 - i√3)/2 form the vertices of an equilateral triangle.",
+          "steps": [
+            "Let z₁ = 1, z₂ = -1/2 + i(√3/2), z₃ = -1/2 - i(√3/2).",
+            "Side 1: |z₁ - z₂| = |1 - (-1/2 + i√3/2)| = |3/2 - i√3/2| = √((3/2)² + (-√3/2)²) = √(9/4 + 3/4) = √3",
+            "Side 2: |z₂ - z₃| = |(-1/2 + i√3/2) - (-1/2 - i√3/2)| = |i√3| = √3",
+            "Side 3: |z₃ - z₁| = |(-1/2 - i√3/2) - 1| = |-3/2 - i√3/2| = √(9/4 + 3/4) = √3",
+            "Since |z₁ - z₂| = |z₂ - z₃| = |z₃ - z₁| = √3, the vertices form an equilateral triangle. Q.E.D."
+          ]
+        },
+        {
+          "label": "Example 2.12",
+          "title": "Triangle Inequality Distance Bounds",
+          "problem": "If |z| = 2, show that 3 ≤ |z + 3 + 4i| ≤ 7.",
+          "steps": [
+            "Let z₁ = z and z₂ = 3 + 4i. We have |z| = 2 and |z₂| = √(3² + 4²) = 5.",
+            "Upper bound: |z + (3 + 4i)| ≤ |z| + |3 + 4i| = 2 + 5 = 7.",
+            "Lower bound: |z + (3 + 4i)| ≥ ||z| - |3 + 4i|| = |2 - 5| = 3.",
+            "Hence, 3 ≤ |z + 3 + 4i| ≤ 7. Proved."
+          ]
+        },
+        {
+          "label": "Example 2.15",
+          "title": "Symmetric Modulus Identity for Three Numbers",
+          "problem": "Let z₁, z₂, z₃ be complex numbers such that |z₁| = |z₂| = |z₃| = r > 0 and z₁ + z₂ + z₃ ≠ 0. Prove that |(z₁z₂ + z₂z₃ + z₃z₁) / (z₁ + z₂ + z₃)| = r.",
+          "steps": [
+            "Since |z_k| = r, we have |z_k|² = z_k · z̄_k = r² => z̄_k = r² / z_k.",
+            "Take the conjugate inside the modulus: |(z₁z₂ + z₂z₃ + z₃z₁) / (z₁ + z₂ + z₃)| = |overline{(z₁z₂ + z₂z₃ + z₃z₁) / (z₁ + z₂ + z₃)}|",
+            "= |(z̄₁z̄₂ + z̄₂z̄₃ + z̄₃z̄₁) / (z̄₁ + z̄₂ + z̄₃)|",
+            "Substitute z̄_k = r²/z_k: Numerator = r⁴(1/(z₁z₂) + 1/(z₂z₃) + 1/(z₃z₁)) = r⁴(z₁ + z₂ + z₃) / (z₁z₂z₃)",
+            "Denominator = r²(1/z₁ + 1/z₂ + 1/z₃) = r²(z₁z₂ + z₂z₃ + z₃z₁) / (z₁z₂z₃)",
+            "Dividing gives: r² · |(z₁ + z₂ + z₃) / (z₁z₂ + z₂z₃ + z₃z₁)|.",
+            "Therefore, |(z₁z₂ + z₂z₃ + z₃z₁) / (z₁ + z₂ + z₃)| = r² / |(z₁z₂ + z₂z₃ + z₃z₁) / (z₁ + z₂ + z₃)| => Square equals r² => Result is r. Q.E.D."
+          ]
+        },
+        {
+          "label": "Example 2.16",
+          "title": "Equation Solutions with Conjugate",
+          "problem": "Show that the equation z² = z̄ has four solutions.",
+          "steps": [
+            "Taking modulus on both sides: |z²| = |z̄| => |z|² = |z| => |z|(|z| - 1) = 0.",
+            "Case 1: |z| = 0 => z = 0 (1 solution).",
+            "Case 2: |z| = 1 => |z|² = z · z̄ = 1 => z̄ = 1/z.",
+            "Substitute in z² = z̄: z² = 1/z => z³ = 1.",
+            "The solutions to z³ = 1 are the three cube roots of unity: 1, ω, ω².",
+            "Total solutions: z = 0, 1, -1/2 + i√3/2, -1/2 - i√3/2 (4 distinct solutions). Q.E.D."
+          ]
+        },
+        {
+          "label": "Example 2.17",
+          "title": "Square Root Calculation",
+          "problem": "Find the square root of 6 - 8i.",
+          "steps": [
+            "Here a = 6, b = -8. Modulus |z| = √(6² + (-8)²) = √(36 + 64) = 10.",
+            "Since b < 0, sgn(b) = -1.",
+            "√(6 - 8i) = ± [ √((10 + 6)/2) - i √((10 - 6)/2) ] = ± [ √(16/2) - i √(4/2) ] = ± [ √8 - i √2 ] = ±(2√2 - i√2)."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "exercise",
+      "title": "Resource 3: Exercise 2.5 Solutions (2.5_Exercise_Eng.pdf)",
+      "filename": "2.5_Exercise_Eng.pdf",
+      "order": 3,
+      "items": [
+        {
+          "label": "Question 1",
+          "problem": "Find the modulus of: (i) 2i/(3+4i), (ii) (2-i)/(1-2i), (iii) (1-i)¹⁰, (iv) 2i(3-4i)(4-3i).",
+          "steps": [
+            "(i) |2i/(3+4i)| = |2i| / |3+4i| = 2 / √(9+16) = 2/5",
+            "(ii) |(2-i)/(1-2i)| = |2-i| / |1-2i| = √(4+1) / √(1+4) = √5/√5 = 1",
+            "(iii) |(1-i)¹⁰| = |1-i|¹⁰ = (√(1+1))¹⁰ = (√2)¹⁰ = 2⁵ = 32",
+            "(iv) |2i(3-4i)(4-3i)| = |2i| · |3-4i| · |4-3i| = 2 · √(9+16) · √(16+9) = 2 · 5 · 5 = 50"
+          ]
+        },
+        {
+          "label": "Question 2",
+          "problem": "For any two complex numbers z₁ and z₂ such that |z₁| = |z₂| = 1 and z₁z₂ ≠ -1, show that (z₁ + z₂)/(1 + z₁z₂) is a real number.",
+          "steps": [
+            "Let w = (z₁ + z₂)/(1 + z₁z₂). Since |z_k| = 1, z̄_k = 1/z_k.",
+            "Take conjugate: w̄ = (z̄₁ + z̄₂)/(1 + z̄₁z̄₂) = (1/z₁ + 1/z₂)/(1 + 1/(z₁z₂)) = [(z₁ + z₂)/(z₁z₂)] / [(z₁z₂ + 1)/(z₁z₂)] = (z₁ + z₂)/(1 + z₁z₂) = w.",
+            "Since w̄ = w, w is purely real. Q.E.D."
+          ]
+        },
+        {
+          "label": "Question 3",
+          "problem": "Which one of the points 10 - 8i, 11 + 6i is closest to 1 + i?",
+          "steps": [
+            "Distance 1: |(10 - 8i) - (1 + i)| = |9 - 9i| = √(81 + 81) = √162 = 9√2 ≈ 12.73",
+            "Distance 2: |(11 + 6i) - (1 + i)| = |10 + 5i| = √(100 + 25) = √125 = 5√5 ≈ 11.18",
+            "Since 5√5 < 9√2, the point 11 + 6i is closest to 1 + i."
+          ]
+        },
+        {
+          "label": "Question 4",
+          "problem": "If |z| = 3, show that 7 ≤ |z + 6 - 8i| ≤ 13.",
+          "steps": [
+            "Let a = 6 - 8i => |a| = √(36 + 64) = 10.",
+            "Upper bound: |z + a| ≤ |z| + |a| = 3 + 10 = 13.",
+            "Lower bound: |z + a| ≥ ||a| - |z|| = |10 - 3| = 7.",
+            "Hence 7 ≤ |z + 6 - 8i| ≤ 13. Proved."
+          ]
+        },
+        {
+          "label": "Question 5",
+          "problem": "If |z| = 1, show that 2 ≤ |z² - 3| ≤ 4.",
+          "steps": [
+            "Since |z| = 1, |z²| = |z|² = 1.",
+            "Upper bound: |z² - 3| ≤ |z²| + |-3| = 1 + 3 = 4.",
+            "Lower bound: |z² - 3| ≥ ||z²| - |3|| = |1 - 3| = 2.",
+            "Therefore, 2 ≤ |z² - 3| ≤ 4. Proved."
+          ]
+        },
+        {
+          "label": "Question 6",
+          "problem": "If |z| = 2, show that 8 ≤ |z + 6 + 8i| ≤ 12.",
+          "steps": [
+            "Let a = 6 + 8i => |a| = √(36 + 64) = 10.",
+            "Upper bound: |z + a| ≤ |z| + |a| = 2 + 10 = 12.",
+            "Lower bound: |z + a| ≥ ||a| - |z|| = |10 - 2| = 8.",
+            "Therefore, 8 ≤ |z + 6 + 8i| ≤ 12. Proved."
+          ]
+        },
+        {
+          "label": "Question 7",
+          "problem": "If |z₁| = 1, |z₂| = 2, |z₃| = 3 and |z₁ + z₂ + z₃| = 1, show that |9z₁z₂ + 4z₁z₃ + z₂z₃| = 6.",
+          "steps": [
+            "Note that 9z₁z₂ + 4z₁z₃ + z₂z₃ = |z₃|²z₁z₂ + |z₂|²z₁z₃ + |z₁|²z₂z₃",
+            "= z₁z₂z₃(z̄₃/z₃ · ... ) = z₁z₂z₃(z̄₁ + z̄₂ + z̄₃).",
+            "Taking modulus: |9z₁z₂ + 4z₁z₃ + z₂z₃| = |z₁||z₂||z₃||overline{z₁ + z₂ + z₃}| = 1 · 2 · 3 · |z₁ + z₂ + z₃| = 6 · 1 = 6. Q.E.D."
+          ]
+        },
+        {
+          "label": "Question 8",
+          "problem": "If the area of the triangle formed by vertices z, iz, and z + iz is 50 square units, find the value of |z|.",
+          "steps": [
+            "The vertices z, iz, z+iz form a right triangle with legs |z| and |iz| = |z|.",
+            "Area = 1/2 · |z| · |iz| = 1/2 · |z|² = 50 => |z|² = 100 => |z| = 10."
+          ]
+        },
+        {
+          "label": "Question 9",
+          "problem": "Show that the equation z³ + 2z̄ = 0 has five solutions.",
+          "steps": [
+            "z³ = -2z̄. Taking modulus: |z|³ = 2|z̄| = 2|z| => |z|(|z|² - 2) = 0.",
+            "Case 1: |z| = 0 => z = 0 (1 solution).",
+            "Case 2: |z| = √2 => z · z̄ = 2 => z̄ = 2/z.",
+            "Substitute: z³ = -2(2/z) = -4/z => z⁴ = -4.",
+            "Since this is a degree 4 polynomial with non-zero roots, it has 4 distinct solutions.",
+            "Total solutions = 1 + 4 = 5 distinct solutions. Q.E.D."
+          ]
+        },
+        {
+          "label": "Question 10",
+          "problem": "Find the square roots of (i) 4 + 3i, (ii) -6 + 8i, (iii) -5 - 12i.",
+          "steps": [
+            "(i) 4 + 3i: a = 4, b = 3, |z| = √(16+9) = 5. √(4+3i) = ± [ √((5+4)/2) + i √((5-4)/2) ] = ±(3/√2 + i/√2).",
+            "(ii) -6 + 8i: a = -6, b = 8, |z| = √(36+64) = 10. √(-6+8i) = ± [ √((10-6)/2) + i √((10+6)/2) ] = ±(√2 + i√8) = ±(√2 + 2i√2).",
+            "(iii) -5 - 12i: a = -5, b = -12, |z| = √(25+144) = 13. b < 0 => ± [ √((13-5)/2) - i √((13+5)/2) ] = ±(√4 - i√9) = ±(2 - 3i)."
+          ]
+        }
+      ]
+    }
+  ]
+}

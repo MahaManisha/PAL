@@ -1,0 +1,1 @@
+Example 2.12 Problem If ZI, 7.2, and z3 are complex numbers such that Solution Since IZI we know that for any complex number z with Izl = 1 Hence, ZI ZI, ZI find the value of ZI IZI + + Z31 l, Substituting in the given expression, ZI But El -F + = Therefore, 7.3. = IZI = 1. ZI = IZI + Z2 + Z3 1 Answer:

@@ -1,0 +1,1 @@
+Example 2.20: Interior of a Circle Setup Given: The inequality Iz+2-il < 2. Required: Show it represents interior points of a circle; find center and radius. Mathematical Proof 1. Recall Inequality Condition: z - zo I < r represents the interior of a circle. 2. Rewrite Given Inequality: Factor out a negative sign to match (z - zo ) : Iz-(-2+i)l<2

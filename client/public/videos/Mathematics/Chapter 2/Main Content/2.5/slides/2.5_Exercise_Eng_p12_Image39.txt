@@ -1,0 +1,1 @@
+10.(ii) Find the square roots of olution: 2 Let z = a + bi such that z Then, 2 b2 a ..(1) 2ab — 8 From (2), ab 4 b — Substitute in (1): 2 a 2 Let a So, t — 2 or t — —8. 4 (where a # 0). a (14 6a2 -16=0 ¯ 16 + — 2) Since a2 > 0, take t = 2 a From ab Square roots: 4 a 4 ±2N/'5 (same sign as a).

@@ -1,0 +1,1 @@
+22 +12 2 3 Example 2.10 (i) Problem ZI Solution Concept Used: Find the modulus of the numerator Find the modulus of the denominator Divide the moduli 4+1 —1 Answer: 1

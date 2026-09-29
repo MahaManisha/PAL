@@ -1,0 +1,1 @@
+Cartesian Form of Locus (Cont.) Solution (ii) Find locus for 1 2z - 3 -i I Step 1: Substitute z we have 1 2z - 3 -i I 12 (x +iy)-3-iI Group real and imaginary parts: I (2x-3) +i(2y-1) I Step 2: Apply Modulus & Square Squaring on both sides, we get I (2x-3) +i(2y-1) 12 (2x-3)2 + (2y-1) 2 Resulting Equation: • 4x +4y - 12x - 4y +1=0 This is the locus of Z in Cartesian form.

@@ -1,0 +1,179 @@
+--- PAGE 1 ---
+E XE R C ISE 2. 8
+Complex Numbers
+Step-by-step solutions to all nine problems — cube roots of unity, De Moivre's 
+theorem, and rotations in the complex plane.
+
+--- PAGE 2 ---
+Question 1
+If ω ≠ 1 is a cube root of unity, show that
+(a+bω+cω²)/(b+cω+aω²) + (a+bω+cω²)/(c+aω+bω²) = −1
+Step 1 — Key facts about ω
+Since ω is a cube root of unity: ω³ = 1 and 1 + ω + ω² = 0.
+Let x = a + bω + cω² (the common numerator).
+Step 2 — Rewrite the first denominator
+ω²·x = ω²(a+bω+cω²) = aω² + bω³ + cω⁴ = aω² + b + cω   (using ω³=1, ω⁴=ω)
+So  b + cω + aω² = ω²x.  →  First fraction = x / (ω²x) = 1/ω² = ω
+Step 3 — Rewrite the second denominator
+ω·x = ω(a+bω+cω²) = aω + bω² + cω³ = aω + bω² + c
+So  c + aω + bω² = ωx.  →  Second fraction = x / (ωx) = 1/ω = ω²
+Step 4 — Add the two fractions
+Sum = ω + ω² = −1   (since 1 + ω + ω² = 0)
+Result:  Sum = −1   ✓
+
+--- PAGE 3 ---
+Question 2
+Show that  (√3/2 + i/2)⁵ + (√3/2 − i/2)⁵ = −√3
+Step 1 — Write each term in polar (cis) form
+√3/2 + i/2 = cos30° + i sin30° = cis(π/6)
+√3/2 − i/2 = cos30° − i sin30° = cis(−π/6)
+Step 2 — Apply De Moivre's theorem, raise to the 5th power
+[cis(π/6)]⁵ = cis(5π/6) = cos150° + i sin150° = −√3/2 + i/2
+[cis(−π/6)]⁵ = cis(−5π/6) = cos(−150°) + i sin(−150°) = −√3/2 − i/2
+Step 3 — Add the two results
+(−√3/2 + i/2) + (−√3/2 − i/2) = −√3/2 − √3/2 = −√3
+The imaginary parts (+i/2 and −i/2) cancel out exactly.
+Result:  Sum = −√3   ✓
+
+--- PAGE 4 ---
+Question 3
+Find the value of  [ (1 + sinπ/10 + i cosπ/10) / (1 + sinπ/10 − i cosπ/10) ]¹⁰
+Step 1 — Convert sin, cos of π/10 to cos, sin of a companion angle
+Let φ = π/2 − π/10 = 2π/5. Then sin(π/10)=cosφ and cos(π/10)=sinφ.
+So numerator = 1+cosφ+i·sinφ, denominator = 1+cosφ−i·sinφ.
+Step 2 — Use half-angle identities
+1+cosφ = 2cos²(φ/2)  and  sinφ = 2sin(φ/2)cos(φ/2)
+Numerator = 2cos(φ/2)·cis(φ/2)   |   Denominator = 2cos(φ/2)·cis(−φ/2)
+Step 3 — Simplify the ratio
+Ratio = cis(φ/2) / cis(−φ/2) = cis(φ) = cis(2π/5)
+Step 4 — Raise to the 10th power (De Moivre)
+[cis(2π/5)]¹⁰ = cis(10 × 2π/5) = cis(4π) = cos(4π) + i sin(4π) = 1
+Result:  Value = 1   ✓
+
+--- PAGE 5 ---
+Question 4  — Part (i) & (ii)
+Given 2cosα = x + 1/x  and  2cosβ = y + 1/y, show the identities below.
+Setup — solve for x and y
+x + 1/x = 2cosα  ⇒ x² − 2cosα·x + 1 = 0  ⇒ x = cosα ± i sinα
+Take x = cisα  (so 1/x = cis(−α)).  Similarly y = cisβ  (so 1/y = cis(−β)).
+(i)  x/y + y/x = 2cos(α − β)
+x/y = cisα / cisβ = cis(α−β)      y/x = cisβ / cisα = cis(β−α) = cis(−(α−β))
+x/y + y/x = cis(α−β) + cis(−(α−β)) = 2cos(α−β)   ✔
+(ii)  xy − 1/(xy) = 2i sin(α + β)
+xy = cisα·cisβ = cis(α+β)      1/(xy) = cis(−(α+β))
+xy − 1/(xy) = cis(α+β) − cis(−(α+β)) = 2i sin(α+β)   ✔
+
+--- PAGE 6 ---
+Question 4  — Part (iii) & (iv)
+Continuing with x = cisα and y = cisβ from the setup on the previous slide.
+(iii)  xᵐ/yⁿ − yⁿ/xᵐ = 2i sin(mα − nβ)
+xᵐ = cis(mα),  yⁿ = cis(nβ)
+xᵐ/yⁿ = cis(mα − nβ)      yⁿ/xᵐ = cis(−(mα−nβ))
+xᵐ/yⁿ − yⁿ/xᵐ = cis(mα−nβ) − cis(−(mα−nβ)) = 2i sin(mα − nβ)   ✔
+(iv)  xᵐyⁿ + 1/(xᵐyⁿ) = 2cos(mα + nβ)
+xᵐyⁿ = cis(mα)·cis(nβ) = cis(mα+nβ)      1/(xᵐyⁿ) = cis(−(mα+nβ))
+xᵐyⁿ + 1/(xᵐyⁿ) = cis(mα+nβ) + cis(−(mα+nβ)) = 2cos(mα + nβ)   ✔
+All four identities follow directly from x = cisα, y = cisβ   ✓
+
+--- PAGE 7 ---
+Question 5
+Solve the equation  z³ + 27 = 0
+Step 1 — Isolate z³
+z³ = −27
+Step 2 — Write −27 in polar form
+−27 = 27·cis(π)   (modulus 27, argument π + 2kπ)
+Step 3 — Take cube roots using De Moivre's theorem
+z = 27^(1/3)·cis[(π+2kπ)/3] = 3·cis(π/3 + 2kπ/3),   k = 0, 1, 2
+Step 4 — Substitute k = 0, 1, 2
+k=0:  z = 3cis(π/3) = 3(1/2 + i√3/2) = 3/2 + (3√3/2)i
+k=1:  z = 3cis(π) = 3(−1 + 0i) = −3
+k=2:  z = 3cis(5π/3) = 3(1/2 − i√3/2) = 3/2 − (3√3/2)i
+Roots:  −3,  3/2 ± (3√3/2)i
+
+--- PAGE 8 ---
+Question 6
+If ω ≠ 1 is a cube root of unity, show that the roots of (z−1)³ + 8 = 0 are −1, 1−2ω, 1−2ω²
+Step 1 — Substitute w = z − 1
+(z−1)³ + 8 = 0  ⇒ w³ = −8
+Step 2 — Write −8 using the cube roots of unity
+The three cube roots of 1 are 1, ω, ω². Since −8 = (−2)³, the cube roots of −8 are:
+w = −2(1) = −2,      w = −2ω,      w = −2ω²
+Check: (−2ω)³ = −8ω³ = −8·1 = −8  ✔ (similarly for −2ω²)
+Step 3 — Return to z using z = w + 1
+w=−2   →  z = −2+1 = −1
+w=−2ω  →  z = 1−2ω
+w=−2ω² →  z = 1−2ω²
+Roots:  −1,  1−2ω,  1−2ω²   ✓
+
+--- PAGE 9 ---
+Question 7
+Find the value of  Σ (k=1 to 8)  [ cos(2kπ/9) + i sin(2kπ/9) ]
+Step 1 — Recognise each term as a 9th root of unity
+cos(2kπ/9) + i sin(2kπ/9) = cis(2kπ/9) = e^(i2kπ/9)
+As k runs 0,1,2,...,8 these are exactly the nine 9th roots of unity.
+Step 2 — Use the fact that all n-th roots of unity sum to 0
+Σ (k=0 to 8) cis(2kπ/9) = 0   (standard result for roots of unity)
+Step 3 — Remove the k = 0 term to match the given sum
+The given sum starts at k = 1, so it excludes the k = 0 term, which equals cis(0) = 1.
+Σ (k=1 to 8) cis(2kπ/9) = 0 − 1 = −1
+Result:  Sum = −1   ✓
+
+--- PAGE 10 ---
+Question 8  — Part (i)
+If ω ≠ 1 is a cube root of unity, show that (1−ω+ω²)⁶ + (1+ω−ω²)⁶ = 128
+Step 1 — Simplify each bracket using 1+ω+ω² = 0
+1 − ω + ω² = (1+ω+ω²) − 2ω = 0 − 2ω = −2ω
+1 + ω − ω² = (1+ω+ω²) − 2ω² = 0 − 2ω² = −2ω²
+Step 2 — Raise each to the 6th power
+(−2ω)⁶ = 64·ω⁶ = 64·(ω³)² = 64·1² = 64
+(−2ω²)⁶ = 64·ω¹² = 64·(ω³)⁴ = 64·1⁴ = 64
+Step 3 — Add the two results
+(1−ω+ω²)⁶ + (1+ω−ω²)⁶ = 64 + 64 = 128
+Result:  Sum = 128   ✓
+
+--- PAGE 11 ---
+Question 8  — Part (ii)
+If ω ≠ 1 is a cube root of unity, show that (1+ω)(1+ω²)(1+ω⁴)(1+ω⁸)⋯(1+ω²¹¹) = 1
+Step 1 — Identify the pattern of exponents
+The factors are (1+ω^(2^k)) for k = 0,1,2,...,11 — 12 factors in total.
+Step 2 — Reduce each exponent mod 3 (since ω³ = 1)
+2^k mod 3 cycles with period 2:  k even → 2^k ≡ 1 (mod 3);  k odd → 2^k ≡ 2 (mod 3)
+So for k = 0,...,11 the factor is (1+ω) when k is even, and (1+ω²) when k is odd — 6 of each.
+Step 3 — Group the factors
+Product = (1+ω)⁶ · (1+ω²)⁶ = [(1+ω)(1+ω²)]⁶
+Step 4 — Simplify (1+ω)(1+ω²)
+(1+ω)(1+ω²) = 1+ω²+ω+ω³ = 1+(ω+ω²)+1 = 1+(−1)+1 = 1
+So Product = 1⁶ = 1
+Result:  Product = 1   ✓
+
+--- PAGE 12 ---
+Question 9  — Part (i) & (ii)
+If z = 2−2i, find the rotation of z by θ radians (counter-clockwise) about the origin.
+Rule: rotating z by θ about the origin gives  z′ = z · cisθ = z(cosθ + i sinθ)
+(i)  θ = π/3
+cis(π/3) = cos60° + i sin60° = 1/2 + i√3/2
+z′ = (2−2i)(1/2 + i√3/2) = 1 + i√3 − i − i²√3 = 1 + i√3 − i + √3
+z′ = (1+√3) + (√3−1)i
+(ii)  θ = 2π/3
+cis(2π/3) = cos120° + i sin120° = −1/2 + i√3/2
+z′ = (2−2i)(−1/2 + i√3/2) = −1 + i√3 + i − i²√3 = −1 + i√3 + i + √3
+z′ = (√3−1) + (√3+1)i
+(i) z′=(1+√3)+(√3−1)i    (ii) z′=(√3−1)+(√3+1)i
+
+--- PAGE 13 ---
+Question 9  — Part (iii)
+If z = 2−2i, find the rotation of z by θ = 3π/2 radians (counter-clockwise) about the origin.
+Step 1 — Recall the rotation rule
+z′ = z · cisθ = z(cosθ + i sinθ)
+Step 2 — Evaluate cis(3π/2)
+cos(3π/2) = 0,   sin(3π/2) = −1   ⇒ cis(3π/2) = −i
+Step 3 — Multiply
+z′ = (2−2i)(−i) = −2i + 2i² = −2i − 2
+z′ = −2 − 2i
+Geometric check
+A rotation of 3π/2 (270°) counter-clockwise is the same as 90° clockwise — consistent with
+z = 2−2i (4th quadrant) landing on −2−2i (3rd quadrant).
+Result:  z′ = −2 − 2i   ✓
+
+--- PAGE 14 ---
+THANK YOU

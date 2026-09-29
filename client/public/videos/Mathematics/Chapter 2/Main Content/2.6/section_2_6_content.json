@@ -1,0 +1,157 @@
+{
+  "section": "2.6",
+  "title": "Geometry and Locus of Complex Numbers",
+  "course": "XII - Mathematics | Chapter 2: Complex Numbers",
+  "resources": [
+    {
+      "id": "content",
+      "title": "Resource 1: Theory & Circle Equation (2.6_Content_Eng.pdf)",
+      "filename": "2.6_Content_Eng.pdf",
+      "order": 1,
+      "description": "Geometrical Interpretation, Definition 2.5 of a Circle, Complex Form |z - z₀| = r, Interior and Exterior Regions, and Cartesian Loci",
+      "sections": [
+        {
+          "heading": "2.6 Geometrical Interpretation in the Complex Plane",
+          "reference": "Page 74",
+          "text": "In this section, we study the geometrical interpretation of a complex number z in the complex plane and the locus of z in Cartesian form."
+        },
+        {
+          "heading": "Definition 2.5 (Circle in the Complex Plane)",
+          "reference": "Definition 2.5, Page 74",
+          "text": "A circle is defined as the locus of a point which moves in a plane such that its distance from a fixed point in that plane is always a constant. The fixed point is the centre (z₀) and the constant distance is the radius (r) of the circle.",
+          "formula": "|z - z₀| = r  (Complex Form of Circle Equation)"
+        },
+        {
+          "heading": "Interior and Exterior of a Circle",
+          "reference": "Page 74",
+          "properties": [
+            {
+              "condition": "|z - z₀| = r",
+              "meaning": "Points lying strictly ON the circle circumference."
+            },
+            {
+              "condition": "|z - z₀| < r",
+              "meaning": "Points lying in the INTERIOR of the circle."
+            },
+            {
+              "condition": "|z - z₀| > r",
+              "meaning": "Points lying in the EXTERIOR of the circle."
+            }
+          ]
+        },
+        {
+          "heading": "Converting Complex Equations to Cartesian Form",
+          "reference": "Methodology",
+          "text": "To find the Cartesian equation of a locus, substitute z = x + iy (where x, y ∈ ℝ), group real and imaginary parts, and evaluate using the modulus definition."
+        }
+      ]
+    },
+    {
+      "id": "example",
+      "title": "Resource 2: Worked Examples 2.18 to 2.21 (2.6_Example_Eng.pdf)",
+      "filename": "2.6_Example_Eng.pdf",
+      "order": 2,
+      "items": [
+        {
+          "label": "Example 2.18",
+          "title": "Isosceles Right Triangle in the Argand Plane",
+          "problem": "Given z = 3 + 2i, represent z, iz, and z + iz in one Argand plane and show they form an isosceles right triangle.",
+          "steps": [
+            "Vertices: A = z = 3 + 2i, B = z + iz = (3+2i) + (-2+3i) = 1 + 5i, C = iz = i(3+2i) = -2 + 3i.",
+            "Side AB² = |(z+iz) - z|² = |iz|² = |-2+3i|² = (-2)² + 3² = 4 + 9 = 13.",
+            "Side BC² = |iz - (z+iz)|² = |-z|² = |-3-2i|² = (-3)² + (-2)² = 9 + 4 = 13.",
+            "Side CA² = |z - iz|² = |(3+2i) - (-2+3i)|² = |5 - i|² = 5² + (-1)² = 25 + 1 = 26.",
+            "Since AB² = BC² = 13 (AB = BC) and AB² + BC² = 13 + 13 = 26 = CA², △ABC is an isosceles right triangle. Q.E.D."
+          ]
+        },
+        {
+          "label": "Example 2.19",
+          "title": "Standardizing Circle Equation",
+          "problem": "Show that |3z - 5 + i| = 4 represents a circle, and find its centre and radius.",
+          "steps": [
+            "Factor out 3: 3 · |z - (5/3 - i/3)| = 4 => |z - (5/3 - i/3)| = 4/3.",
+            "This is of the standard form |z - z₀| = r.",
+            "Centre z₀ = 5/3 - (1/3)i, Radius r = 4/3."
+          ]
+        },
+        {
+          "label": "Example 2.20",
+          "title": "Interior Region of Circle",
+          "problem": "Show that |z + 2 - i| < 2 represents interior points of a circle, and find its centre and radius.",
+          "steps": [
+            "Rewrite as |z - (-2 + i)| < 2.",
+            "This is of the form |z - z₀| < r.",
+            "It represents the interior points of a circle with centre z₀ = -2 + i and radius r = 2."
+          ]
+        },
+        {
+          "label": "Example 2.21",
+          "title": "Cartesian Form of Locus",
+          "problem": "Obtain the Cartesian locus of (i) |z| = |z - i|, (ii) |2z - 3 - i| = 3.",
+          "steps": [
+            "(i) Substitute z = x + iy: |x + iy| = |x + i(y - 1)| => x² + y² = x² + (y - 1)² => x² + y² = x² + y² - 2y + 1 => 2y - 1 = 0.",
+            "(ii) |2(x + iy) - 3 - i| = 3 => |(2x - 3) + i(2y - 1)| = 3.",
+            "Squaring: (2x - 3)² + (2y - 1)² = 9 => 4x² - 12x + 9 + 4y² - 4y + 1 = 9 => 4x² + 4y² - 12x - 4y + 1 = 0."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "exercise",
+      "title": "Resource 3: Exercise 2.6 Solutions (2.6_Exercise_Eng.pdf)",
+      "filename": "2.6_Exercise_Eng.pdf",
+      "order": 3,
+      "items": [
+        {
+          "label": "Question 1",
+          "problem": "If z = x + iy and |(z - 4i)/(z + 4i)| = 1, show that the locus of z is the real axis.",
+          "steps": [
+            "|(z - 4i)/(z + 4i)| = 1 => |z - 4i| = |z + 4i|.",
+            "Substitute z = x + iy: |x + i(y - 4)| = |x + i(y + 4)|.",
+            "Squaring: x² + (y - 4)² = x² + (y + 4)² => x² + y² - 8y + 16 = x² + y² + 8y + 16.",
+            "-8y = 8y => 16y = 0 => y = 0.",
+            "Since y = 0 represents the x-axis, the locus of z is the real axis. Q.E.D."
+          ]
+        },
+        {
+          "label": "Question 2",
+          "problem": "If z = x + iy and Im((2z + 1)/(iz + 1)) = 0, show that the locus of z is 2x² + 2y² + x - 2y = 0.",
+          "steps": [
+            "Numerator: 2(x + iy) + 1 = (2x + 1) + i(2y).",
+            "Denominator: i(x + iy) + 1 = ix - y + 1 = (1 - y) + ix.",
+            "Rationalize: [(2x + 1) + i(2y)][(1 - y) - ix] / [(1 - y)² + x²].",
+            "Extract Imaginary Part: [2y(1 - y) - x(2x + 1)] / [(1 - y)² + x²] = 0.",
+            "2y - 2y² - 2x² - x = 0 => -(2x² + 2y² + x - 2y) = 0 => 2x² + 2y² + x - 2y = 0. Proved."
+          ]
+        },
+        {
+          "label": "Question 3",
+          "problem": "Obtain the Cartesian equation for the locus of z = x + iy in: (i) Re(iz²), (ii) Im((1-i)z + 1) = 0, (iii) |z + i| = |z - 1|, (iv) z̄ = z⁻¹.",
+          "steps": [
+            "(i) iz² = i(x + iy)² = i(x² - y² + 2ixy) = -2xy + i(x² - y²). Re(iz²) = -2xy. (Or if iz + 3: -y + 3 = 0).",
+            "(ii) (1 - i)(x + iy) + 1 = (x + y + 1) + i(y - x). Im = 0 => y - x = 0 => x - y = 0.",
+            "(iii) |x + i(y + 1)| = |(x - 1) + iy| => x² + (y + 1)² = (x - 1)² + y² => 2y + 1 = -2x + 1 => 2x + 2y = 0 => x + y = 0.",
+            "(iv) z̄ = 1/z => z · z̄ = 1 => |z|² = 1 => x² + y² = 1 (unit circle)."
+          ]
+        },
+        {
+          "label": "Question 4",
+          "problem": "Show that the equations represent circles and find center and radius: (i) |z - 2 - i| = 3, (ii) |2z + 2 - 4i| = 2, (iii) |3z - 6 + 12i| = 8.",
+          "steps": [
+            "(i) |z - (2 + i)| = 3 => Center: 2 + i (or (2,1)), Radius: 3.",
+            "(ii) 2|z + 1 - 2i| = 2 => |z - (-1 + 2i)| = 1 => Center: -1 + 2i (or (-1,2)), Radius: 1.",
+            "(iii) 3|z - 2 + 4i| = 8 => |z - (2 - 4i)| = 8/3 => Center: 2 - 4i (or (2,-4)), Radius: 8/3."
+          ]
+        },
+        {
+          "label": "Question 5",
+          "problem": "Obtain the Cartesian equation for the locus of z: (i) |z - 4| = 16, (ii) |z - 4|² - |z - 1|² = 16.",
+          "steps": [
+            "(i) |(x - 4) + iy| = 16 => (x - 4)² + y² = 256 => x² - 8x + 16 + y² = 256 => x² + y² - 8x - 240 = 0.",
+            "(ii) [(x - 4)² + y²] - [(x - 1)² + y²] = 16 => (x² - 8x + 16 + y²) - (x² - 2x + 1 + y²) = 16 => -6x + 15 = 16 => -6x = 1 => 6x + 1 = 0."
+          ]
+        }
+      ]
+    }
+  ]
+}

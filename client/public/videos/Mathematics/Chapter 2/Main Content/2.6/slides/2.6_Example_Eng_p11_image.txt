@@ -1,0 +1,1 @@
+Exercise 2.6 (Q3 iii-iv): Equating Moduli & Conjugates Given & Required: Find the Cartesian equation for the locus of z = x + iy. Part (iii): = lx+i(y+l)l= Square both sides: 2 x2 + Y2 + 2y + 1 I z -11 (x -1) +iyl 2 - 2x + I + y Part (iv): -1 1. Rewrite z- as zi = 1 Recall Identity: zi = Substitute identity: 2 — - 2x + 1 2x + 2y = 0 x + y = 0

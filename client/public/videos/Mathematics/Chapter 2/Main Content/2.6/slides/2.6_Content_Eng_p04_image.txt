@@ -1,0 +1,1 @@
+CircleEquation Examples Example 2.19 Show that 1 3Z - 5 + i = 4 represents a circle, and, find its centre and radius. Solution The given equation 1 3Z - 5 + i I = 4 can be written as: 5 i 3 Iz- It is of the form Z - Zo = r and so it represents a circle, whose 5 centre and radius are - and respectively. 600 x 400

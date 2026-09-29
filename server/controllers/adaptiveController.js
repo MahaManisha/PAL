@@ -42,6 +42,53 @@ const LEVEL_THRESHOLDS = {
     HIGH_MIN: 70
 };
 
+const MEMORY_PROGRESS = new Map();
+
+const getProgressKey = (userId, chapterId) => `${userId}_${chapterId}`;
+
+const findProgress = async (userId, chapterId) => {
+    if (mongoose.connection.readyState === 1) {
+        try {
+            let progress = await AdaptiveProgress.findOne({ userId, chapterId });
+            return progress;
+        } catch (e) {
+            console.warn('DB findProgress failed, falling back to memory:', e.message);
+        }
+    }
+    const key = getProgressKey(userId, chapterId);
+    if (!MEMORY_PROGRESS.has(key)) {
+        MEMORY_PROGRESS.set(key, {
+            userId,
+            chapterId,
+            currentStep: 'TRAILER',
+            currentTopicIndex: 0,
+            level: 'UNASSIGNED',
+            initialScore: 0,
+            initialMaxScore: 0,
+            initialPercentage: 0,
+            completedTopics: [],
+            finalScore: 0,
+            finalMaxScore: 0,
+            finalPercentage: 0,
+            topicPerformance: {}
+        });
+    }
+    return MEMORY_PROGRESS.get(key);
+};
+
+const saveProgressDoc = async (progress) => {
+    if (mongoose.connection.readyState === 1 && typeof progress.save === 'function') {
+        try {
+            return await progress.save();
+        } catch (e) {
+            console.warn('DB saveProgress failed:', e.message);
+        }
+    }
+    const key = getProgressKey(progress.userId, progress.chapterId);
+    MEMORY_PROGRESS.set(key, progress);
+    return progress;
+};
+
 // GET /api/adaptive/chapter-data/:chapterId
 exports.getChapterAdaptiveData = async (req, res) => {
     try {
@@ -51,16 +98,24 @@ exports.getChapterAdaptiveData = async (req, res) => {
         let topics = [];
         let assessments = [];
 
-        try {
-            chapter = await Chapter.findById(chapterId) || await Chapter.findOne({ order: 2 }) || await Chapter.findOne();
-            if (chapter) {
-                topics = await Topic.find({ chapterId: chapter._id }).sort({ order: 1 });
-                const topicIds = topics.map(t => t._id);
-                assessments = await Assessment.find({ topicId: { $in: topicIds } });
+        if (mongoose.connection.readyState === 1) {
+            try {
+                if (mongoose.Types.ObjectId.isValid(chapterId)) {
+                    chapter = await Chapter.findById(chapterId);
+                }
+                if (!chapter) {
+                    chapter = await Chapter.findOne({ order: 2 }) || await Chapter.findOne();
+                }
+                if (chapter) {
+                    topics = await Topic.find({ chapterId: chapter._id }).sort({ order: 1 });
+                    const topicIds = topics.map(t => t._id);
+                    assessments = await Assessment.find({ topicId: { $in: topicIds } });
+                }
+            } catch (dbErr) {
+                console.warn('Database query fallback triggered:', dbErr.message);
             }
-        } catch (dbErr) {
-            console.warn('Database query fallback triggered:', dbErr.message);
         }
+
 
         // If topics are empty (e.g. DB not seeded yet), construct robust static Chapter 2 structure
         if (!topics || topics.length === 0) {
@@ -299,18 +354,8 @@ exports.getChapterAdaptiveData = async (req, res) => {
 exports.getAdaptiveProgress = async (req, res) => {
     try {
         const { userId, chapterId } = req.params;
-
-        let progress = await AdaptiveProgress.findOne({ userId, chapterId });
-        if (!progress) {
-            progress = new AdaptiveProgress({
-                userId,
-                chapterId,
-                currentStep: 'TRAILER',
-                level: 'UNASSIGNED'
-            });
-            await progress.save();
-        }
-
+        let progress = await findProgress(userId, chapterId);
+        await saveProgressDoc(progress);
         return res.json(progress);
     } catch (err) {
         console.error('Error fetching adaptive progress:', err);
@@ -322,16 +367,12 @@ exports.getAdaptiveProgress = async (req, res) => {
 exports.submitInitialAssessment = async (req, res) => {
     try {
         const { userId, chapterId, answers } = req.body;
-        // answers: Array of { topicId, questionIndex, selectedOption, isCorrect }
 
         if (!userId || !chapterId || !Array.isArray(answers)) {
             return res.status(400).json({ message: 'Missing required parameters' });
         }
 
-        let progress = await AdaptiveProgress.findOne({ userId, chapterId });
-        if (!progress) {
-            progress = new AdaptiveProgress({ userId, chapterId });
-        }
+        let progress = await findProgress(userId, chapterId);
 
         let totalCorrect = 0;
         const totalQuestions = answers.length;
@@ -373,7 +414,7 @@ exports.submitInitialAssessment = async (req, res) => {
         progress.topicPerformance = topicStats;
         progress.currentStep = 'LEVEL_RESULT';
 
-        await progress.save();
+        await saveProgressDoc(progress);
 
         return res.json({
             message: 'Initial assessment evaluated successfully',
@@ -390,15 +431,12 @@ exports.updateAdaptiveStep = async (req, res) => {
     try {
         const { userId, chapterId, step, topicIndex } = req.body;
 
-        let progress = await AdaptiveProgress.findOne({ userId, chapterId });
-        if (!progress) {
-            progress = new AdaptiveProgress({ userId, chapterId });
-        }
+        let progress = await findProgress(userId, chapterId);
 
         if (step) progress.currentStep = step;
         if (typeof topicIndex === 'number') progress.currentTopicIndex = topicIndex;
 
-        await progress.save();
+        await saveProgressDoc(progress);
         return res.json(progress);
     } catch (err) {
         console.error('Error updating adaptive step:', err);
@@ -411,16 +449,14 @@ exports.completeTopic = async (req, res) => {
     try {
         const { userId, chapterId, topicId, score, maxScore, totalTopics } = req.body;
 
-        let progress = await AdaptiveProgress.findOne({ userId, chapterId });
-        if (!progress) {
-            progress = new AdaptiveProgress({ userId, chapterId });
-        }
+        let progress = await findProgress(userId, chapterId);
 
+        if (!progress.completedTopics) progress.completedTopics = [];
         if (topicId && !progress.completedTopics.includes(topicId)) {
             progress.completedTopics.push(topicId);
         }
 
-        const nextTopicIndex = progress.currentTopicIndex + 1;
+        const nextTopicIndex = (progress.currentTopicIndex || 0) + 1;
         const total = totalTopics || 6;
 
         if (nextTopicIndex >= total) {
@@ -430,7 +466,7 @@ exports.completeTopic = async (req, res) => {
             progress.currentStep = 'MICRO_CONTENT';
         }
 
-        await progress.save();
+        await saveProgressDoc(progress);
         return res.json(progress);
     } catch (err) {
         console.error('Error completing topic:', err);
@@ -443,10 +479,7 @@ exports.submitFinalAssessment = async (req, res) => {
     try {
         const { userId, chapterId, score, maxScore } = req.body;
 
-        let progress = await AdaptiveProgress.findOne({ userId, chapterId });
-        if (!progress) {
-            progress = new AdaptiveProgress({ userId, chapterId });
-        }
+        let progress = await findProgress(userId, chapterId);
 
         const percentage = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
 
@@ -456,10 +489,11 @@ exports.submitFinalAssessment = async (req, res) => {
         progress.finalCompletedAt = new Date();
         progress.currentStep = 'COMPLETED';
 
-        await progress.save();
+        await saveProgressDoc(progress);
         return res.json(progress);
     } catch (err) {
         console.error('Error submitting final assessment:', err);
         return res.status(500).json({ message: 'Server error', error: err.message });
     }
 };
+

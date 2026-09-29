@@ -1,0 +1,276 @@
+{
+  "section": "2.8",
+  "title": "De Moivre's Theorem and its Applications",
+  "course": "XII - Mathematics | Chapter 2: Complex Numbers",
+  "resources": [
+    {
+      "id": "content",
+      "title": "Resource 1: Theory, De Moivre's Theorem & n-th Roots of Unity (2.8_Content_Eng.pdf)",
+      "filename": "2.8_Content_Eng.pdf",
+      "order": 1,
+      "description": "Historical Background, Theorem Statement, Corollaries 1-4, Finding n-th roots of a complex number, Geometry and Algebraic Properties of Roots of Unity",
+      "sections": [
+        {
+          "heading": "2.8.1 Historical Background & Theorem Statement",
+          "reference": "Page 87",
+          "text": "Abraham De Moivre (1667–1754) was among the first mathematicians to use complex numbers in trigonometry. De Moivre's Theorem states: For any complex number cos θ + i sin θ and any integer n, (cos θ + i sin θ)ⁿ = cos nθ + i sin nθ.",
+          "formula": "(cos θ + i sin θ)ⁿ = cos nθ + i sin nθ"
+        },
+        {
+          "heading": "Corollaries of De Moivre's Theorem",
+          "reference": "Page 88",
+          "corollaries": [
+            {
+              "id": 1,
+              "formula": "(cos θ + i sin θ)ⁿ = cos nθ + i sin nθ",
+              "note": "Theorem itself for integer n"
+            },
+            {
+              "id": 2,
+              "formula": "(cos θ + i sin θ)⁻ⁿ = cos nθ - i sin nθ",
+              "note": "Negative integer index"
+            },
+            {
+              "id": 3,
+              "formula": "(cos θ - i sin θ)ⁿ = cos nθ - i sin nθ",
+              "note": "Conjugate base with positive index"
+            },
+            {
+              "id": 4,
+              "formula": "(cos θ - i sin θ)⁻ⁿ = cos nθ + i sin nθ",
+              "note": "Conjugate base with negative index"
+            }
+          ]
+        },
+        {
+          "heading": "2.8.2 Finding the n-th Roots of a Complex Number",
+          "reference": "Page 89",
+          "text": "To find the n distinct n-th roots of a complex number z = r(cos θ + i sin θ):",
+          "formula": "z^(1/n) = r^(1/n) [ cos((θ + 2kπ)/n) + i sin((θ + 2kπ)/n) ],  where k = 0, 1, 2, ..., n - 1."
+        },
+        {
+          "heading": "2.8.3 Roots of Unity and their Properties",
+          "reference": "Page 90",
+          "text": "The n-th roots of unity are solutions to zⁿ = 1. They are given by ω_k = cos(2kπ/n) + i sin(2kπ/n) = e^(i2kπ/n) = ω^k, for k = 0, 1, 2, ..., n - 1, where ω = e^(i2π/n).",
+          "properties": [
+            {
+              "property": "Geometric Placement",
+              "detail": "The n roots lie on the unit circle |z| = 1 and form the vertices of a regular polygon of n sides centered at the origin."
+            },
+            {
+              "property": "Geometric Progression",
+              "detail": "The roots form a G.P. with common ratio ω = e^(i2π/n): 1, ω, ω², ..., ω^(n-1)."
+            },
+            {
+              "property": "Sum of Roots",
+              "detail": "1 + ω + ω² + ··· + ω^(n-1) = 0."
+            },
+            {
+              "property": "Product of Roots",
+              "detail": "1 · ω · ω² ··· ω^(n-1) = (-1)^(n-1)."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "example",
+      "title": "Resource 2: Worked Examples 2.28 to 2.36 (2.8_Example_Eng.pdf)",
+      "filename": "2.8_Example_Eng.pdf",
+      "order": 2,
+      "items": [
+        {
+          "label": "Example 2.28",
+          "title": "Symmetric Powers of cis(θ)",
+          "problem": "If z = cos θ + i sin θ, show that zⁿ + 1/zⁿ = 2 cos nθ and zⁿ - 1/zⁿ = 2i sin nθ.",
+          "steps": [
+            "zⁿ = cos nθ + i sin nθ.",
+            "1/zⁿ = z⁻ⁿ = cos nθ - i sin nθ.",
+            "Sum: zⁿ + 1/zⁿ = (cos nθ + i sin nθ) + (cos nθ - i sin nθ) = 2 cos nθ.",
+            "Difference: zⁿ - 1/zⁿ = (cos nθ + i sin nθ) - (cos nθ - i sin nθ) = 2i sin nθ. Q.E.D."
+          ]
+        },
+        {
+          "label": "Example 2.29",
+          "title": "Power of a Swapped Phase",
+          "problem": "Simplify (sin π/6 + i cos π/6)¹⁸.",
+          "steps": [
+            "Factor out i: sin π/6 + i cos π/6 = i(cos π/6 - i sin π/6).",
+            "Raise to power 18: i¹⁸ (cos π/6 - i sin π/6)¹⁸ = (i²)⁹ [cos(18π/6) - i sin(18π/6)] = (-1)⁹ [cos 3π - i sin 3π] = -1 · (-1 - i·0) = 1."
+          ]
+        },
+        {
+          "label": "Example 2.30",
+          "title": "Fractional Power Simplification",
+          "problem": "Simplify [(1 + cos 2θ + i sin 2θ) / (1 + cos 2θ - i sin 2θ)]³⁰.",
+          "steps": [
+            "Let z = cos 2θ + i sin 2θ => 1/z = cos 2θ - i sin 2θ.",
+            "Expression = [(1 + z) / (1 + 1/z)]³⁰ = [(1 + z) / ((z + 1)/z)]³⁰ = (z)³⁰ = (cos 2θ + i sin 2θ)³⁰ = cos 60θ + i sin 60θ."
+          ]
+        },
+        {
+          "label": "Example 2.31",
+          "title": "Binomial Powers in Polar Form",
+          "problem": "Simplify: (i) (1 + i)¹⁸, (ii) (-√3 + 3i)³¹.",
+          "steps": [
+            "(i) 1 + i = √2(cos π/4 + i sin π/4). (1+i)¹⁸ = (√2)¹⁸ (cos 18π/4 + i sin 18π/4) = 2⁹ (cos 9π/2 + i sin 9π/2) = 512 (0 + i·1) = 512i.",
+            "(ii) -√3 + 3i = 2√3(cos 2π/3 + i sin 2π/3). (-√3 + 3i)³¹ = (2√3)³¹ [cos(62π/3) + i sin(62π/3)] = (2√3)³¹ [cos(20π + 2π/3) + i sin(20π + 2π/3)] = (2√3)³¹ [-1/2 + i√3/2]."
+          ]
+        },
+        {
+          "label": "Example 2.32",
+          "title": "Cube Roots of Unity",
+          "problem": "Find the cube roots of unity.",
+          "steps": [
+            "z³ = 1 = cos 0 + i sin 0.",
+            "z = cos(2kπ/3) + i sin(2kπ/3), k = 0, 1, 2.",
+            "k = 0 => 1.",
+            "k = 1 => cos 2π/3 + i sin 2π/3 = -1/2 + i√3/2 = ω.",
+            "k = 2 => cos 4π/3 + i sin 4π/3 = -1/2 - i√3/2 = ω²."
+          ]
+        },
+        {
+          "label": "Example 2.33",
+          "title": "Fourth Roots of Unity",
+          "problem": "Find the fourth roots of unity.",
+          "steps": [
+            "z⁴ = 1 = cos 0 + i sin 0 => z = cos(2kπ/4) + i sin(2kπ/4) = cos(kπ/2) + i sin(kπ/2), k = 0, 1, 2, 3.",
+            "k = 0 => 1, k = 1 => i, k = 2 => -1, k = 3 => -i. Roots are ±1, ±i."
+          ]
+        },
+        {
+          "label": "Example 2.34",
+          "title": "Solve z³ + 8i = 0",
+          "problem": "Solve z³ + 8i = 0, where z ∈ ℂ.",
+          "steps": [
+            "z³ = -8i = 8(0 - i) = 8(cos(-π/2) + i sin(-π/2)).",
+            "z = 2 [cos((-π/2 + 2kπ)/3) + i sin((-π/2 + 2kπ)/3)] = 2 [cos((4k - 1)π/6) + i sin((4k - 1)π/6)], k = 0, 1, 2.",
+            "k = 0 => 2(cos(-π/6) + i sin(-π/6)) = 2(√3/2 - i/2) = √3 - i.",
+            "k = 1 => 2(cos(3π/6) + i sin(3π/6)) = 2(cos π/2 + i sin π/2) = 2i.",
+            "k = 2 => 2(cos(7π/6) + i sin(7π/6)) = 2(-√3/2 - i/2) = -√3 - i."
+          ]
+        },
+        {
+          "label": "Example 2.35",
+          "title": "Cube Roots of √3 + i",
+          "problem": "Find all cube roots of √3 + i.",
+          "steps": [
+            "√3 + i = 2(cos π/6 + i sin π/6).",
+            "z = 2^(1/3) [cos((π/6 + 2kπ)/3) + i sin((π/6 + 2kπ)/3)] = 2^(1/3) [cos((12k + 1)π/18) + i sin((12k + 1)π/18)], k = 0, 1, 2."
+          ]
+        },
+        {
+          "label": "Example 2.36",
+          "title": "Inscribed Equilateral Triangle Vertices",
+          "problem": "Suppose z₁, z₂, z₃ are the vertices of an equilateral triangle inscribed in the circle |z| = 2. If z₁ = 1 + i√3, find z₂ and z₃.",
+          "steps": [
+            "z₁ = 1 + i√3 = 2(cos π/3 + i sin π/3).",
+            "Vertices of equilateral triangle inscribed in a circle are separated by 2π/3 (rotation by ω).",
+            "z₂ = z₁ · e^(i2π/3) = 2(cos(π/3 + 2π/3) + i sin(π/3 + 2π/3)) = 2(cos π + i sin π) = -2.",
+            "z₃ = z₁ · e^(i4π/3) = 2(cos(π/3 + 4π/3) + i sin(π/3 + 4π/3)) = 2(cos(5π/3) + i sin(5π/3)) = 2(1/2 - i√3/2) = 1 - i√3."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "exercise",
+      "title": "Resource 3: Exercise 2.8 Solutions (2.8_Exercise_Eng.pdf)",
+      "filename": "2.8_Exercise_Eng.pdf",
+      "order": 3,
+      "items": [
+        {
+          "label": "Question 1",
+          "problem": "If ω ≠ 1 is a cube root of unity, show that (a + bω + cω²)/(b + cω + aω²) + (a + bω + cω²)/(c + aω + bω²) = -1.",
+          "steps": [
+            "Term 1: Multiply numerator by ω: ω(a + bω + cω²) = aω + bω² + cω³ = aω + bω² + c = b + c + aω. Therefore, (a + bω + cω²)/(b + cω + aω²) = ω².",
+            "Term 2: Multiply numerator by ω²: (a + bω + cω²)/(c + aω + bω²) = ω.",
+            "Sum = ω² + ω. Since 1 + ω + ω² = 0, ω² + ω = -1. Proved."
+          ]
+        },
+        {
+          "label": "Question 2",
+          "problem": "Show that ((√3/2 + i/2)⁵ + (√3/2 - i/2)⁵ = -√3.",
+          "steps": [
+            "√3/2 + i/2 = cos π/6 + i sin π/6.",
+            "(√3/2 + i/2)⁵ = cos 5π/6 + i sin 5π/6.",
+            "(√3/2 - i/2)⁵ = cos 5π/6 - i sin 5π/6.",
+            "Sum = 2 cos(5π/6) = 2(-√3/2) = -√3. Proved."
+          ]
+        },
+        {
+          "label": "Question 3",
+          "problem": "Find the value of (1 + sin π/10 + i cos π/10) / (1 + sin π/10 - i cos π/10)]¹⁰.",
+          "steps": [
+            "Let z = sin π/10 + i cos π/10. Then 1/z = sin π/10 - i cos π/10.",
+            "Expression = [(1 + z) / (1 + 1/z)]¹⁰ = z¹⁰ = (sin π/10 + i cos π/10)¹⁰.",
+            "= [i(cos π/10 - i sin π/10)]¹⁰ = i¹⁰ [cos π - i sin π] = (-1) · (-1) = 1. (Or -1 depending on sign)."
+          ]
+        },
+        {
+          "label": "Question 4",
+          "problem": "If 2 cos α = x + 1/x and 2 cos β = y + 1/y, show that: (i) x/y + y/x = 2 cos(α - β), (ii) xy - 1/(xy) = 2i sin(α + β), (iii) xᵐ/yⁿ - yⁿ/xᵐ = 2i sin(mα - nβ), (iv) xᵐyⁿ + 1/(xᵐyⁿ) = 2 cos(mα + nβ).",
+          "steps": [
+            "x = cos α + i sin α, y = cos β + i sin β.",
+            "(i) x/y = cos(α - β) + i sin(α - β) => x/y + y/x = 2 cos(α - β).",
+            "(ii) xy = cos(α + β) + i sin(α + β) => xy - 1/(xy) = 2i sin(α + β).",
+            "(iii) xᵐ/yⁿ = cos(mα - nβ) + i sin(mα - nβ) => xᵐ/yⁿ - yⁿ/xᵐ = 2i sin(mα - nβ).",
+            "(iv) xᵐyⁿ = cos(mα + nβ) + i sin(mα + nβ) => xᵐyⁿ + 1/(xᵐyⁿ) = 2 cos(mα + nβ). Proved."
+          ]
+        },
+        {
+          "label": "Question 5",
+          "problem": "Solve the equation z³ + 27 = 0.",
+          "steps": [
+            "z³ = -27 = 27(cos π + i sin π).",
+            "z = 3 [cos((π + 2kπ)/3) + i sin((π + 2kπ)/3)], k = 0, 1, 2.",
+            "k = 0 => 3(cos π/3 + i sin π/3) = 3(1/2 + i√3/2) = 3/2 + i(3√3/2).",
+            "k = 1 => 3(cos π + i sin π) = -3.",
+            "k = 2 => 3(cos 5π/3 + i sin 5π/3) = 3(1/2 - i√3/2) = 3/2 - i(3√3/2)."
+          ]
+        },
+        {
+          "label": "Question 6",
+          "problem": "If ω ≠ 1 is a cube root of unity, show that the roots of (z - 1)³ + 8 = 0 are -1, 1 - 2ω, 1 - 2ω².",
+          "steps": [
+            "(z - 1)³ = -8 = (-2)³ · 1.",
+            "(z - 1)/(-2) = (1)^(1/3) = 1, ω, ω².",
+            "z - 1 = -2 => z = -1.",
+            "z - 1 = -2ω => z = 1 - 2ω.",
+            "z - 1 = -2ω² => z = 1 - 2ω². Proved."
+          ]
+        },
+        {
+          "label": "Question 7",
+          "problem": "Find the value of Σₖ₌₁⁸ (cos 2kπ/9 + i sin 2kπ/9).",
+          "steps": [
+            "The 9th roots of unity are e^(i2kπ/9) for k = 0, 1, ..., 8.",
+            "Sum of all 9 roots: Σₖ₌₀⁸ e^(i2kπ/9) = 0.",
+            "k = 0 term is e^0 = 1.",
+            "1 + Σₖ₌₁⁸ (cos 2kπ/9 + i sin 2kπ/9) = 0 => Σₖ₌₁⁸ = -1."
+          ]
+        },
+        {
+          "label": "Question 8",
+          "problem": "If ω ≠ 1 is a cube root of unity, show that: (i) (1 - ω + ω²)⁶ + (1 + ω - ω²)⁶ = 128, (ii) (1 + ω)(1 + ω²)(1 + ω⁴)(1 + ω⁸)···(1 + ω^(2¹¹)) = 1.",
+          "steps": [
+            "(i) Since 1 + ω² = -ω, 1 - ω + ω² = -2ω. Since 1 + ω = -ω², 1 + ω - ω² = -2ω².",
+            "(-2ω)⁶ + (-2ω²)⁶ = 64(ω⁶) + 64(ω¹²) = 64(1) + 64(1) = 128. Proved.",
+            "(ii) Note that 1 + ω = -ω² and 1 + ω² = -ω. Their product is (-ω²)(-ω) = ω³ = 1.",
+            "Since ω⁴ = ω and ω⁸ = ω², every pair of factors evaluates to 1. The product of all 12 factors (6 pairs) is 1⁶ = 1. Proved."
+          ]
+        },
+        {
+          "label": "Question 9",
+          "problem": "If z = 2 - 2i, find the rotation of z by θ radians in the counter-clockwise direction about origin when: (i) θ = π/3, (ii) θ = 2π/3, (iii) θ = 3π/2.",
+          "steps": [
+            "Rotation by θ is obtained by multiplying z by e^(iθ): z' = z · e^(iθ).",
+            "z = 2 - 2i = 2√2(cos(-π/4) + i sin(-π/4)).",
+            "(i) θ = π/3: z' = 2√2 [cos(-π/4 + π/3) + i sin(-π/4 + π/3)] = 2√2 [cos(π/12) + i sin(π/12)].",
+            "(ii) θ = 2π/3: z' = 2√2 [cos(-π/4 + 2π/3) + i sin(-π/4 + 2π/3)] = 2√2 [cos(5π/12) + i sin(5π/12)].",
+            "(iii) θ = 3π/2: z' = z · (-i) = (2 - 2i)(-i) = -2i + 2i² = -2 - 2i."
+          ]
+        }
+      ]
+    }
+  ]
+}

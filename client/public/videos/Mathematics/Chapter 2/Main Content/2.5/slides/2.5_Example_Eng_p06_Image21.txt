@@ -1,0 +1,1 @@
+Example 2.11 Solution Problem The distance of a complex number z from the origin is Izl. Which one of the points Let us find the distance of each point from the origin. i, —2 + i, and 3 is farthest from the origin? For —2 + 1m 0) 2 3 For i: For 3: 3 Comparison: 02 + 12 = z: lil = + 12 1—2 = 1-2+1il = 32 + 02 = 31 13+0il= 1 < < 3 The farthest point from the origin is 3.

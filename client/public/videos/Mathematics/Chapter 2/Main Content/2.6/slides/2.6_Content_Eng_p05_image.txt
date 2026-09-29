@@ -1,0 +1,1 @@
+Cartesian-Form of Locus Example 2.21 Obtain the Cartesian form of the locus of Z in each of the following cases. (i) Izl - I z -il (ii) 1 2z -3 -il Solution (i) we have I z I I z -il I x +iyl - Ix+i(y-l)l 2 •x + y = x + y -2Y+1 2y -1 = 0.
